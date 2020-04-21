@@ -1,5 +1,7 @@
 // @ts-check
 
+'use strict'
+
 const {ConnectionPool} = require('mssql')
 const {db_config} = require('../config')
 /**

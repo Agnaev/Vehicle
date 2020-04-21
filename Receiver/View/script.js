@@ -8,29 +8,26 @@ document.addEventListener('DOMContentLoaded', e => new ConnectStatus())
 
 /**
  * @param {string} url Url to api.
- * @param {{[x:string]:[x:string]}} options Request options.
- * @param {x:any() => void | false} callback callback function called after request. Default false.
+ * @param {{[x:string]:[x:string | number]}} options Request options.
+ * @param {x:any() => void} callback Unnecessary callback function which can be called after request with request result.
  * @returns {Promise} Result from server.
  */
-async function fetch_data(url, options = {}, callback = false){
+const fetch_data = async (url, options = {}, callback = null) => {
     return await fetch(url, options)
         .then(x => x.json())
         .then(x => callback ? callback(x) : x);
 }
 
+
 const charts = [];
-fetch_data(
-    '/get_metrics', 
-    { method: 'post' }, 
-    data => data.map(x => charts.push(new ChartElement(x.Id, x.Name, 0, x.Value)))
-)
+fetch_data('/get_metrics', { 'method': 'post' })
+.then(data => data.map(x => charts.push(new ChartElement(x.Id, x.Name, 0, x.Value))))
 
 document.querySelector('#connect_to_server').addEventListener('click', async event => {
     let iterator = 1;
     const web_socket_port = await fetch_data('/get_socket_port', {}, x => x.port)
     if(!web_socket_port){
         throw Error('Web socket port is not received')
-        return;
     }
 
     const state = new ConnectStatus();

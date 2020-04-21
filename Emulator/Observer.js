@@ -1,7 +1,16 @@
+// @ts-check
+
+'use strict'
+
 module.exports.Observer = class {
-    constructor(number_generator){
+    /**
+     * @param {Function} data_generator
+     */
+    constructor(data_generator){
+        /** @type {Function[]} */
         this.subscribers = [];
-        this.generator = number_generator;
+        /** @type {Function} */
+        this.generator = data_generator;
         this.data = this.generator({init: true});
     }
 
@@ -16,6 +25,7 @@ module.exports.Observer = class {
 
     /**
      * @param {Function} callback Function that will be called.
+     * @returns {Function} unsubscribe function
      */
     subscribe(callback){
         this.subscribers.push(callback);
@@ -24,6 +34,7 @@ module.exports.Observer = class {
 
     /**
      * @param {Function} fn remove listener
+     * @returns {void | Error}
      */
     unsubscribe(fn){
         if(!this.subscribers.includes(fn)){

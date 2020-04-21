@@ -1,6 +1,13 @@
+// @ts-check
+
+'use strict'
+
 const {ConnectionPool}  = require('mssql');
 const {db_config}       = require('../../config');
 
+/**
+ * @param {string} requestString Request to database string
+ */
 module.exports.makeRequest = async requestString => {
     try{
         const connectionPool = new ConnectionPool(db_config)

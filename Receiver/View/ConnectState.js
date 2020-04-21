@@ -1,7 +1,14 @@
+// @ts-check
+
+'use strict'
+
 export default class ConnectStatus{
     constructor(){
+        /** @type {HTMLSelectElement} */
         this.connect_btn = document.querySelector('#connect_to_server');
+        /** @type {HTMLSelectElement} */
         this.disconnect_btn = document.querySelector('#close_connection');
+        /** @type {HTMLElement} */
         this.container = document.querySelector('div#connection_status');
         this.disconnect();
     }
