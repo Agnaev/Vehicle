@@ -11,25 +11,24 @@ document.addEventListener('DOMContentLoaded', e => new ConnectStatus())
 /**
  * @param {string} url Url to api.
  * @param {{[key:string]:string}} options Request options.
- * @param {Function} callback Unnecessary callback function which can be called after request with request result.
+ * @param {(Function)} callback Unnecessary callback function which can be called after request with request result.
  * @returns {Promise} Result from server.
  */
 const fetch_data = async (url, options = {}, callback = null) => {
-    return await fetch(url, options)
-        .then(x => x.json())
-        .then(x => callback ? callback(x) : x);
+    const response = await fetch(url, options).then(x => x.json());
+    return callback ? callback(response) : response;
 }
 
 
 const charts = [];
-fetch_data('/get_metrics', { 'method': 'post' })
+fetch_data('/get_metrics')
 .then(data => data.map(x => charts.push(new ChartElement(x.Id, x.Name, 0, x.Value))))
 
 document.querySelector('#connect_to_vehicle').addEventListener('click', async event => {
     let iterator = 1;
     const web_socket_port = await fetch_data('/get_socket_port', {}, x => x.port)
     if(!web_socket_port){
-        throw Error('Web socket port is not received')
+        throw Error('Web socket port was not received')
     }
 
     const state = new ConnectStatus();

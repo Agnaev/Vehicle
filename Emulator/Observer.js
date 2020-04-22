@@ -38,7 +38,7 @@ module.exports.Observer = class {
      */
     unsubscribe(fn){
         if(!this.subscribers.includes(fn)){
-            return new Error('Selected function is not a subscribe!');
+            return new Error('Selected function is not a subscribed!');
         }
         this.subscribers = this.subscribers.filter(x => x != fn);
     }

@@ -2,13 +2,13 @@
 
 'use strict'
 
-const ws                = require('ws');
-const {web_socket_port} = require('../config');
-const {Observer}        = require('./Observer');
-const {makeRequest}     = require('./db_request')
-const {generator}       = require('./data_generator') 
+const {Server: WebSocketServer} = require('ws');
+const {web_socket_port}         = require('../config');
+const {Observer}                = require('./Observer');
+const {makeRequest}             = require('./db_request')
+const {generator}               = require('./data_generator') 
 
-const webSocketServer = new ws.Server({
+const webSocketServer = new WebSocketServer({
     port: web_socket_port
 })
 

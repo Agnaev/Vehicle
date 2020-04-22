@@ -5,7 +5,7 @@
 export default class ConnectStatus{
     constructor(){
         /** @type {HTMLSelectElement} */
-        this.connect_btn = document.querySelector('#connect_to_server');
+        this.connect_btn = document.querySelector('#connect_to_vehicle');
         /** @type {HTMLSelectElement} */
         this.disconnect_btn = document.querySelector('#close_connection');
         /** @type {HTMLElement} */

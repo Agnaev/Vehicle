@@ -8,7 +8,7 @@ module.exports.db_config = {
     }
 };
 
-module.exports.debug = true;
 module.exports.ip = 'localhost' ;
 module.exports.port = 8080;
 module.exports.web_socket_port = 3000;
+module.exports.logger = console.log;
