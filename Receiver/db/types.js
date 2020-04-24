@@ -8,15 +8,22 @@ const {logger} = require('../../config')
 module.exports = {
     /** Получение всех метрик из базы данных
      */
-    GetMetrics: async () => 
-        await makeRequest(`SELECT * FROM MetricsTypes`)
-        .catch(exc => logger(`file: types; function:module.exports.GetMetrics error`, exc)),
+    async GetMetrics() {
+        try{
+            const data = await makeRequest(`SELECT * FROM MetricsTypes`);
+            return data.recordsets[0]
+        }
+        catch(exc){
+            logger(`file: types; function:module.exports.GetMetrics error`, exc);
+            return exc;
+        }
+    },
 
     /** Создание метрики в базе данных
      * @param {db_item} item 
      * @returns {Promise<string>}
     */
-    Create: async item => {
+    async Create(item) {
         try {
             const requestResult = await makeRequest(`
                 SELECT COUNT(*) as count
@@ -53,21 +60,33 @@ module.exports = {
      * @param {db_item} item 
      * @returns {Promise<void>}
      * */
-    Update: async item => 
-        await makeRequest(`
+    async Update(item) {
+        try{
+            await makeRequest(`
             UPDATE MetricsTypes
             SET Name = '${item.Name}',
             Description = '${item.Description}',
             MaxValue = '${item.MaxValue}',
             MinValue = '${item.MinValue}'
             WHERE id = '${item.Id}'`)
-        .catch(exc => logger(`file: ${__dirname}; function: module.exports.Update error`, exc)),
-    
+        }
+        catch(exc) {
+            logger(`file: ${__dirname}; function: module.exports.Update error`, exc);
+            return exc;
+        }
+    },
+
     /**Удаление метрики
      * @param {db_item} item 
      * @returns {Promise<void>}
     */
-    Delete: async item => 
-        await makeRequest(`DELETE FROM MetricsTypes WHERE Id = ${item.Id}`)
-        .catch(exc => logger(`file: ${__dirname}; function: module.exports.delete error`, exc))
+    async Delete(item) {
+        try {
+            await makeRequest(`DELETE FROM MetricsTypes WHERE Id = ${item.Id}`)
+        }
+        catch(exc){
+            logger(`file: ${__dirname}; function: module.exports.delete error`, exc);
+            return exc;
+        }
+    }
 }

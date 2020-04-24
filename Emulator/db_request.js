@@ -2,8 +2,8 @@
 
 'use strict'
 
-const {ConnectionPool} = require('mssql')
-const {db_config} = require('../config')
+const {ConnectionPool}  = require('mssql')
+const {db_config}       = require('../config')
 /**
 * @param {string} requestString Request string
 * @returns {Promise<any>} Result of the request

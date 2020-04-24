@@ -30,16 +30,14 @@ const connectToDatabase = config => {
 const DatabaseCheck = async () => {
     try {
         console.log('Database check...')
-        const master_config = {
+        let makeRequest = connectToDatabase({
             ...db_config,
             database: 'master'
-        };
-        let makeRequest = connectToDatabase(master_config);
+        });
         const requestResult = await makeRequest(`
             SELECT DB_ID('${ db_config.database}') as db_id
         `);
-        const isdbExist = requestResult.recordset[0]['db_id'] !== null;
-        if(!isdbExist){
+        if(!requestResult.recordset[0]['db_id']){
             console.log('database is not exist\r\nCreating database...');
             await makeRequest(`Create database ${db_config.database}`);
             makeRequest = connectToDatabase(db_config);

@@ -2,21 +2,26 @@
 
 'use strict'
 
-const express                       = require('express');
-const bodyParser                    = require('body-parser');
-const path                          = require('path');
-const {DatabaseCheck}               = require('./db/db_connection');
+const express           = require('express');
+const bodyParser        = require('body-parser');
+const path              = require('path');
+const {DatabaseCheck}   = require('./db/db_connection');
 const {
     port, 
     ip, 
     web_socket_port,
-    logger}                         = require('../config');
-const types                         = require('./db/types');
+    logger}             = require('../config');
+const types             = require('./db/types');
 
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true}))
 app.use(express.static(path.join(__dirname, 'View')));
+
+app.use((req, res, next) => {
+    console.log(`middleware ${req.method} ${req.path}`);
+    next();
+})
 
 app.get('/', (req, res) => {
     const fileName = path.join(__dirname, 'View', 'Index.html');
@@ -36,11 +41,11 @@ app.get('/get_socket_port', (req, res) => {
 
 app.get('/get_metrics', async (req, res) => {
     const data = await types.GetMetrics();
-    res.send(data.recordset);
+    res.send(data);
 })
 
 app.post('/create_metric', async (req, res) => {
-    try{
+    try {
         const data = await types.Create(req.body);
         res.send(data);
     }
@@ -51,7 +56,7 @@ app.post('/create_metric', async (req, res) => {
 })
 
 app.post('/delete_metric', async (req, res) => {
-    try{
+    try {
         await types.Delete(req.body)
         res.sendStatus(200)
     } 
@@ -62,7 +67,7 @@ app.post('/delete_metric', async (req, res) => {
 })
 
 app.post('/update_metric', async (req, res) => {
-    try{
+    try {
         const data = await types.Update(req.body)
         res.send(data)
     }
@@ -73,7 +78,7 @@ app.post('/update_metric', async (req, res) => {
 })
 
 app.listen(port, ip, async () => {
-    try{
+    try {
         await DatabaseCheck()
         logger('server has been started...')
     }
