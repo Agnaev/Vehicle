@@ -1,11 +1,10 @@
 import {} from './Chart.min.js'
 
 export default class ChartElement {
-    constructor(Id, title){
+    constructor(title){
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
         document.querySelector('#chartContainer').appendChild(canvas);
-        this.Id = Id;
         this.chart = new Chart(context, {
             type: 'bar',
             data: {

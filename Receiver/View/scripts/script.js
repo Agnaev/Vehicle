@@ -2,13 +2,15 @@
 
 import ChartElement from './Chart.js'
 import ConnectStatus from './ConnectState.js'
+import { } from './jquery.js'
 
 /**@typedef {{Id: number, Name: string, MinValue: number, MaxValue: number, Description: string}} db_item*/
+/**@typedef {{chart: ChartElement, Id: Number}} item */
 
 /** 
  * Initialize intial state 
  */
-document.addEventListener('DOMContentLoaded', e => new ConnectStatus())
+$(document).ready(e => new ConnectStatus());
 
 /**
  * @param {string} url Url to api.
@@ -25,12 +27,16 @@ const charts_list = fetch_data('/get_metrics')
         data.map(
             /**
              * @param {db_item} x
+             * @returns {item}
              */
-            x => new ChartElement(x.Id, x.Name)
+            x => ({
+                Id: x.Id,
+                chart: new ChartElement(x.Name)
+            })
         )
     )
 
-document.querySelector('#connect_to_vehicle').addEventListener('click', async event => {
+$('#connect_to_vehicle').click(async event => {
     let iterator = 1;
     const webSocketPort = await getWebSocketPort
     if(!webSocketPort){
@@ -48,17 +54,14 @@ document.querySelector('#connect_to_vehicle').addEventListener('click', async ev
     webSocket.onmessage = responce => {
         const data = JSON.parse(responce.data);
         console.log('onmessage', data);
-        charts.map(chart => {
-            const curr_val = data.filter(
-                /**@param {db_item} x */
-                x => x.Id === chart.Id)[0].value;
-            chart.add_data(iterator++, curr_val);
-        })
-        document.querySelector('#counter').textContent = iterator.toString();
+        charts.map(
+            /**@param {item} item*/
+            item => item.chart.add_data(iterator++, data[item.Id])
+        )
+        $('#counter').val(iterator);
     }
 
-    document.querySelector('#close_connection')
-        .addEventListener('click', () => webSocket.close())
+    $('#close_connection').click(() => webSocket.close())
 
     window.onunload = () => webSocket.close();
 })
