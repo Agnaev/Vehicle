@@ -15,25 +15,28 @@ const rand = ({min, max}) => Math.floor( Math.abs( Math.random() ) * (max - min)
 
 module.exports.generator = types => {
     return last_res => {
-        return types.reduce((acc, item) => {
-            let temp;
+        return types.reduce((accum, {Id, MinValue, MaxValue}) => {
+            let range;
             if(last_res.init){
-                temp = { 
-                    min: item.MinValue, 
-                    max: item.MaxValue 
+                range = { 
+                    min: MinValue, 
+                    max: MaxValue 
                 };
             }
             else {
-                const min = last_res[item.Id] - 5 < item.MinValue 
-                    ? item.MinValue 
-                    : last_res[item.Id] - 5;
-                const max = last_res[item.Id] + 5 > item.MaxValue 
-                    ? item.MaxValue 
-                    : last_res[item.Id] + 5;
-                temp = { min, max }
+                const min = last_res[Id] - 5 < MinValue 
+                    ? MinValue 
+                    : last_res[Id] - 5;
+                const max = last_res[Id] + 5 > MaxValue 
+                    ? MaxValue 
+                    : last_res[Id] + 5;
+                range = { min, max }
             }
-            acc[item.Id] = rand(temp); 
-            return acc;
+            if(Id in accum){
+                throw new Error(`Duplicate Error. Key ${Id} already defined in accumulator object.`);
+            }
+            accum[Id] = rand(range); 
+            return accum;
         }, {})
     }
 }

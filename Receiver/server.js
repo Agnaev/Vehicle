@@ -12,6 +12,7 @@ const {
     web_socket_port,
     logger}             = require('../config');
 const types             = require('./db/types');
+const fs = require('fs')
 
 const app = express();
 
@@ -75,6 +76,11 @@ app.post('/update_metric', async (req, res) => {
         logger('Error processing request /update_metric', exc)
         res.sendStatus(500)
     }
+})
+
+app.get('/get_images_list', (req, res) => {
+    const files = fs.readdirSync(path.join(__dirname, 'View', 'images'))
+    res.send(files)
 })
 
 app.listen(port, ip, async () => {

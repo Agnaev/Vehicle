@@ -64,8 +64,15 @@ $('#connect_to_vehicle').click(async event => {
     $('#close_connection').click(() => webSocket.close())
 
     window.onunload = () => webSocket.close();
-})
+});
 
-
-
-
+(async () => {
+    const images = await fetch_data('/get_images_list');
+    let pointer = 0;
+    const interval = () => {
+        $('#slider').attr('src', '/images/' + images[pointer]);
+        pointer = pointer + 1 === images.length ? 0 : pointer + 1;
+        setTimeout(interval, 5000);
+    }
+    interval()
+})()
