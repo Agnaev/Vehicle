@@ -1,6 +1,6 @@
 // @ts-check
 
-'use strict'
+'use strict';
 
 /**
  * @param {{min:number, max:number}} param0 object containing minimum and maximum values 
@@ -15,28 +15,24 @@ const rand = ({min, max}) => Math.floor( Math.abs( Math.random() ) * (max - min)
 
 module.exports.generator = types => {
     return last_res => {
-        return types.reduce((accum, {Id, MinValue, MaxValue}) => {
+        return types.reduce((result, {Id, MinValue, MaxValue}) => {
             let range;
-            if(last_res.init){
+            if(last_res.init) {
                 range = { 
                     min: MinValue, 
                     max: MaxValue 
                 };
             }
             else {
-                const min = last_res[Id] - 5 < MinValue 
-                    ? MinValue 
-                    : last_res[Id] - 5;
-                const max = last_res[Id] + 5 > MaxValue 
-                    ? MaxValue 
-                    : last_res[Id] + 5;
-                range = { min, max }
+                const min = last_res[Id] - 5 < MinValue ? MinValue : last_res[Id] - 5;
+                const max = last_res[Id] + 5 > MaxValue ? MaxValue : last_res[Id] + 5;
+                range = { min, max };
             }
-            if(Id in accum){
+            if(Id in result) {
                 throw new Error(`Duplicate Error. Key ${Id} already defined in accumulator object.`);
             }
-            accum[Id] = rand(range); 
-            return accum;
-        }, {})
-    }
-}
+            result[Id] = rand(range); 
+            return result;
+        }, {});
+    };
+};

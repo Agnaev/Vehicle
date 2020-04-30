@@ -1,46 +1,39 @@
 // @ts-check
+'use strict';
 
-import ChartElement from './Chart.js'
-import ConnectStatus from './ConnectState.js'
-import { } from './jquery.js'
+import ChartElement from './Chart.js';
+import ConnectStatus from './ConnectState.js';
 
-/**@typedef {{Id: number, Name: string, MinValue: number, MaxValue: number, Description: string}} db_item*/
-/**@typedef {{chart: ChartElement, Id: Number}} item */
-
-/** 
- * Initialize intial state 
- */
-$(document).ready(e => new ConnectStatus());
+/** Initialize intial state */
+document.addEventListener('DOMContentLoaded', e => {
+    new ConnectStatus();
+    document.querySelector('#counter').textContent = '0';
+});
 
 /**
  * @param {string} url Url to api.
  * @param {{[key:string]:string}} options Request options.
- * @returns {Promise} Result from server.
+ * @returns {Promise<any>} Result from server.
  */
-const fetch_data = async (url, options = {}) => 
-    await fetch(url, options).then(x => x.json());
+const fetch_data = (url, options = {}) => fetch(url, options).then(x => x.json());
 
-const getWebSocketPort = fetch_data('/get_socket_port').then(x => x.port);
+const getWebSocketPort = fetch_data('/api/get_socket_port').then(x => x.port);
 
-const charts_list = fetch_data('/get_metrics')
+const charts_list = fetch_data('/api/metrics/get')
     .then(data =>  
-        data.map(
-            /**
-             * @param {db_item} x
-             * @returns {item}
-             */
-            x => ({
-                Id: x.Id,
-                chart: new ChartElement(x.Name)
+        data.map (
+            ({Id, Name}) => ({
+                Id,
+                chart: new ChartElement(Name)
             })
         )
-    )
+    );
 
-$('#connect_to_vehicle').click(async event => {
+document.querySelector('#connect_to_vehicle').addEventListener('click', async event => {
     let iterator = 1;
-    const webSocketPort = await getWebSocketPort
+    const webSocketPort = await getWebSocketPort;
     if(!webSocketPort){
-        throw Error('Web socket port was not received')
+        throw Error('Web socket port was not received.');
     }
 
     const charts = await charts_list;
@@ -50,29 +43,34 @@ $('#connect_to_vehicle').click(async event => {
     
     webSocket.onopen = () => state.connect();
     webSocket.onclose = () => state.disconnect();
+    webSocket.onerror = error => console.log(`Произошла ошибка с веб сокетом. ${error}`);
 
     webSocket.onmessage = responce => {
         const data = JSON.parse(responce.data);
-        console.log('onmessage', data);
         charts.map(
-            /**@param {item} item*/
-            item => item.chart.add_data(iterator++, data[item.Id])
-        )
-        $('#counter').val(iterator);
+            ({chart, Id}) => chart.add_data(iterator, data[Id])
+        );
+        document.querySelector('#counter').textContent = iterator.toString();
+        ++iterator;
     }
 
-    $('#close_connection').click(() => webSocket.close())
+    const closeSocket = e => webSocket.close();
+    document.querySelector('#close_connection')
+        .addEventListener('click', closeSocket, {once: true});
 
-    window.onunload = () => webSocket.close();
+    window.onunload = closeSocket;
 });
 
 (async () => {
-    const images = await fetch_data('/get_images_list');
+    const images = await fetch_data('/api/get_images_list');
     let pointer = 0;
     const interval = () => {
-        $('#slider').attr('src', '/images/' + images[pointer]);
+        document.querySelector('#slider')
+            .setAttribute('src', '/images/' + images[pointer]);
         pointer = pointer + 1 === images.length ? 0 : pointer + 1;
         setTimeout(interval, 5000);
     }
-    interval()
-})()
+    interval();
+})();
+
+

@@ -14,22 +14,22 @@ const {db_config, logger}   = require('../../config');
 const connectToDatabase = config => {
     return async requestString => {
         try{
-            const connectionPool = new ConnectionPool(config)
-            const pool = await connectionPool.connect()
-            const data = await pool.query(requestString)
-            pool.close()
-            return data
+            const connectionPool = new ConnectionPool(config);
+            const pool = await connectionPool.connect();
+            const data = await pool.query(requestString);
+            pool.close();
+            return data;
         }
         catch(exc){
-            logger(`file: ${__dirname} function: connect(nested function), request stirng: ${requestString}`, exc)
-            return exc
+            logger(`file: ${__dirname} function: connect(nested function), request stirng: ${requestString}`, exc);
+            return exc;
         }
-    }
-}
+    };
+};
 
 const DatabaseCheck = async () => {
     try {
-        console.log('Database check...')
+        logger('Database check...');
         let makeRequest = connectToDatabase({
             ...db_config,
             database: 'master'
@@ -38,7 +38,7 @@ const DatabaseCheck = async () => {
             SELECT DB_ID('${ db_config.database}') as db_id
         `);
         if(!requestResult.recordset[0]['db_id']){
-            console.log('database is not exist\r\nCreating database...');
+            logger('database is not exist\r\nCreating database...');
             await makeRequest(`Create database ${db_config.database}`);
             makeRequest = connectToDatabase(db_config);
             await makeRequest(`
@@ -61,14 +61,14 @@ const DatabaseCheck = async () => {
                     CONSTRAINT FK_MetricsValue_MetricsTypes FOREIGN KEY (TypeId) REFERENCES MetricsValues(Id)
                 )
             `);
-            console.log('Database was created');
+            logger('Database was created');
         }
     }
     catch(exc) {
         logger(`Error while database checking; file: ${__dirname}`, exc);
         return exc;
     }
-}
+};
 
 module.exports = {
     makeRequest: connectToDatabase(db_config),

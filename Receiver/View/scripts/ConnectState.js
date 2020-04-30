@@ -1,25 +1,30 @@
 // @ts-check
-
-'use strict'
+'use strict';
 
 export default class ConnectStatus{
     constructor(){
-        /** @type {HTMLSelectElement} */
-        this.connect_btn = document.querySelector('#connect_to_vehicle');
-        /** @type {HTMLSelectElement} */
-        this.disconnect_btn = document.querySelector('#close_connection');
         /** @type {HTMLElement} */
-        this.container = document.querySelector('div#connection_status');
+        this.status = document.querySelector('div#connection_status');
+        /** @type {{
+         * connect: HTMLSelectElement, 
+         * disconnect: HTMLSelectElement
+         * }} */
+        this.btn = {
+            connect:    document.querySelector('#connect_to_vehicle'),
+            disconnect: document.querySelector('#close_connection')
+        }
         this.disconnect();
     }
+    /** disable connect btn & enable disconnect btn & set online status */
     connect() {
-        this.connect_btn.disabled = true;
-        this.disconnect_btn.disabled = false;
-        this.container.textContent = 'ONLINE';
+        this.btn.connect.disabled = true;
+        this.btn.disconnect.disabled = false;
+        this.status.textContent = 'ONLINE';
     }
+    /** enable connect btn & disable disconnect btn & set offline status */
     disconnect(){
-        this.connect_btn.disabled = false;
-        this.disconnect_btn.disabled = true;
-        this.container.textContent = 'OFFLINE';
+        this.btn.connect.disabled = false;
+        this.btn.disconnect.disabled = true;
+        this.status.textContent = 'OFFLINE';
     }
-}
+};
