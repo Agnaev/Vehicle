@@ -1,7 +1,7 @@
 // @ts-check
 'use strict'
 const {makeRequest} = require('./db_connection');
-const {logger} = require('../../config')
+const {logger} = require('../config')
 
 /**@typedef {{Id: number, Name: string, MinValue: number, MaxValue: number, Description: string}} db_item*/
 

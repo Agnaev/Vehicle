@@ -1,12 +1,12 @@
 // @ts-check
 'use strict';
 
-const {Router}   = require('express');
+const {Router}          = require('express');
 const {Delete, 
     Update, 
     Create, 
-    GetMetrics} = require('../db/types');
-const {logger}  = require('../../config');
+    GetMetrics}         = require('../db/types');
+const {logger}          = require('../config');
 
 const router = Router();
 router.post('/delete', async (req, res) => {
@@ -43,8 +43,14 @@ router.post('/create', async (req, res) => {
 });
 
 router.get('/get', async (req, res) => {
-    const data = await GetMetrics();
-    res.send(data);
+    try{
+        const data = await GetMetrics();
+        res.send(data);
+    }
+    catch(exc) {
+        logger(`Error processing request get metric\r\nfilename: ${__dirname}`, exc);
+        res.sendStatus(500);
+    }
 });
 
 module.exports = router;

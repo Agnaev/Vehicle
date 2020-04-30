@@ -1,9 +1,8 @@
 // @ts-check
-
 'use strict'
 
 const {Server: WebSocketServer} = require('ws');
-const {web_socket_port: port}   = require('../config');
+const {web_socket_port: port}   = require('./config');
 const {Observer}                = require('./Observer');
 const {makeRequest}             = require('./db_request')
 const {generator}               = require('./data_generator') 

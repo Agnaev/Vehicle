@@ -3,7 +3,7 @@
 'use strict'
 
 const {ConnectionPool}      = require('mssql');
-const {db_config, logger}   = require('../../config');
+const {db_config, logger}   = require('../config');
 
 /**@typedef {{user:string, password:string, server:string, database:string}} db_config */
 
