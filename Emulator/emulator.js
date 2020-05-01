@@ -19,12 +19,12 @@ const webSocketServer = new WebSocketServer({
 
     webSocketServer.on('connection', socket => {
         const unsubscribe = observer.subscribe(
-            /**@param {{[key:number]:number}} data*/
+            /**@param {string} data JSON string value*/
             data => socket.send(data)
         );
         socket.on('close', () => unsubscribe());
     });
-})()
+})();
 
 
 

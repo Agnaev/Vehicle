@@ -12,18 +12,27 @@ module.exports.Observer = class {
         this.data = this.generator({init: true});
     }
 
+    /** Send broadcast message */
+    broadcast() {
+        this.subscribers.forEach(
+            /**@param {Function} subscriber callback function */
+            subscriber => subscriber(
+                JSON.stringify(this.data)
+            )
+        );
+    }
+
     UpdateData() {
-        const interval = () => {
+        (function interval() {
             this.data = this.generator(this.data);
             this.broadcast();
             if(this.subscribers.length) {
-                setTimeout(interval, 1000);
+                setTimeout(interval.bind(this), 1000);
             }
             else {
                 this.generatorIsWork = false;
             }
-        };
-        interval();
+        }).call(this);
     }
 
     /**subscribe
@@ -48,15 +57,5 @@ module.exports.Observer = class {
             return new Error('Selected function is not a subscriber!');
         }
         this.subscribers = this.subscribers.filter(x => x != fn);
-    }
-
-    /** Send broadcast message */
-    broadcast() {
-        this.subscribers.forEach(
-            /**@param {Function} subscriber callback function */
-            subscriber => subscriber(
-                JSON.stringify(this.data)
-            )
-        );
     }
 };

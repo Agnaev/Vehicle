@@ -15,14 +15,14 @@ const {
 
 const app = express();
 
+app.set("view engine", "hbs");
+
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(express.static(path.join(basedir, 'View')));
 app.use((req, res, next) => {
     logger(`middleware ${req.method} ${req.path}`);
     next();
 });
-
-app.set("view engine", "hbs");
 
 app.use('/api/metrics', require('./routes/metrics_api'));
 app.use('/',            require('./routes/main_routes'));
@@ -41,7 +41,7 @@ app.listen(port, ip, async () => {
             )
         );
         await db_check;
-        logger('server has been started...');
+        logger(`server has been started at ${ip}:${port}.`);
     }
     catch(exc) {
         logger('Error starting application.', exc);

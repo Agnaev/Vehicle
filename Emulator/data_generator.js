@@ -7,31 +7,45 @@
  */
 const rand = ({min, max}) => Math.floor( Math.abs( Math.random() ) * (max - min) + min );
 
-/**
- * @param {Array<{Id: number, Name: string, MinValue: number, MaxValue: number}>} types 
- * @returns {Function} Data generator
- */
+/** Каррирование функции, т.е. превращение фцнкции из вида f(a, b, c) в f(a)(b)(c)
+ * @param {Function} func функция которую надо каррировать*/
+function Currying(func) {
+    return function curried(...args) {
+        if (args.length >= func.length) {
+            return func.apply(this, args);
+        } 
+        else {
+            return function(...args2) {
+                return curried.apply(this, [...args, ...args2]);
+            }
+        }
+    }
+}
 
-module.exports.generator = types => {
-    return last_res => {
-        return types.reduce((result, {Id, MinValue, MaxValue}) => {
-            let range;
-            if(last_res.init) {
-                range = { 
-                    min: MinValue, 
-                    max: MaxValue 
-                };
-            }
-            else {
-                const min = last_res[Id] - 5 < MinValue ? MinValue : last_res[Id] - 5;
-                const max = last_res[Id] + 5 > MaxValue ? MaxValue : last_res[Id] + 5;
-                range = { min, max };
-            }
-            if(Id in result) {
-                throw new Error(`Duplicate Error. Key ${Id} already defined in accumulator object.`);
-            }
-            result[Id] = rand(range); 
-            return result;
-        }, {});
-    };
+/** Непосредственно функция генерации новых данных
+ * @param {Array<{Id: number, Name: string, MinValue: number, MaxValue: number}>} types 
+ * @param {{ init:true, [key:number]:number }} last_res
+ */
+const data_generator = (types, last_res) => {
+    return types.reduce((result, {Id, MinValue, MaxValue}) => {
+        let range;
+        if(last_res.init) {
+            range = { 
+                min: MinValue, 
+                max: MaxValue 
+            };
+        }
+        else {
+            const min = last_res[Id] - 5 < MinValue ? MinValue : last_res[Id] - 5;
+            const max = last_res[Id] + 5 > MaxValue ? MaxValue : last_res[Id] + 5;
+            range = { min, max };
+        }
+        if(Id in result) {
+            throw new Error(`Duplicate Error. Key ${Id} already defined in accumulator object.`);
+        }
+        result[Id] = rand(range); 
+        return result;
+    }, {});
 };
+
+module.exports.generator = Currying(data_generator);

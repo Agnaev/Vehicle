@@ -64,13 +64,12 @@ document.querySelector('#connect_to_vehicle').addEventListener('click', async ev
 (async () => {
     const images = await fetch_data('/api/get_images_list');
     let pointer = 0;
-    const interval = () => {
+    (function interval() {
         document.querySelector('#slider')
-            .setAttribute('src', '/images/' + images[pointer]);
-        pointer = pointer + 1 === images.length ? 0 : pointer + 1;
-        setTimeout(interval, 5000);
-    }
-    interval();
+            .setAttribute('src', '/images/' + this.images[this.pointer]);
+        this.pointer = this.pointer + 1 === this.images.length ? 0 : this.pointer + 1;
+        setTimeout(interval.bind(this), 5000);
+    }).call({pointer, images});
 })();
 
 
