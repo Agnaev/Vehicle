@@ -1,7 +1,7 @@
-import {} from './Chart.min.js'
+import { } from './Chart.min.js'
 
 export default class ChartElement {
-    constructor(title){
+    constructor(title) {
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
         document.querySelector('#chartContainer').appendChild(canvas);

@@ -9,7 +9,7 @@ module.exports.Observer = class {
         /** @type {Function} */
         this.generator = data_generator;
         this.generatorIsWork = false;
-        this.data = this.generator({init: true});
+        this.data = this.generator({ init: true });
     }
 
     /** Send broadcast message */
@@ -26,7 +26,7 @@ module.exports.Observer = class {
         (function interval() {
             this.data = this.generator(this.data);
             this.broadcast();
-            if(this.subscribers.length) {
+            if (this.subscribers.length) {
                 setTimeout(interval.bind(this), 1000);
             }
             else {
@@ -41,19 +41,19 @@ module.exports.Observer = class {
      */
     subscribe(callback) {
         this.subscribers.push(callback);
-        if(!this.generatorIsWork) {
+        if (!this.generatorIsWork) {
             this.generatorIsWork = true;
             this.UpdateData();
         }
         return () => this.unsubscribe(callback);
     }
-
+    
     /**remove listener
      * @param {Function} fn unsubscribe function
      * @returns {void | Error}
      */
     unsubscribe(fn) {
-        if(!this.subscribers.includes(fn)) {
+        if (!this.subscribers.includes(fn)) {
             return new Error('Selected function is not a subscriber!');
         }
         this.subscribers = this.subscribers.filter(x => x != fn);

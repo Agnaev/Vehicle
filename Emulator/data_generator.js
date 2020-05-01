@@ -5,7 +5,7 @@
  * @param {{min:number, max:number}} param0 object containing minimum and maximum values 
  * @returns {number} Random value
  */
-const rand = ({min, max}) => Math.floor( Math.abs( Math.random() ) * (max - min) + min );
+const rand = ({ min, max }) => Math.floor(Math.abs(Math.random()) * (max - min) + min);
 
 /** Каррирование функции, т.е. превращение фцнкции из вида f(a, b, c) в f(a)(b)(c)
  * @param {Function} func функция которую надо каррировать*/
@@ -13,9 +13,9 @@ function Currying(func) {
     return function curried(...args) {
         if (args.length >= func.length) {
             return func.apply(this, args);
-        } 
+        }
         else {
-            return function(...args2) {
+            return function (...args2) {
                 return curried.apply(this, [...args, ...args2]);
             }
         }
@@ -27,12 +27,12 @@ function Currying(func) {
  * @param {{ init:true, [key:number]:number }} last_res
  */
 const data_generator = (types, last_res) => {
-    return types.reduce((result, {Id, MinValue, MaxValue}) => {
+    return types.reduce((result, { Id, MinValue, MaxValue }) => {
         let range;
-        if(last_res.init) {
-            range = { 
-                min: MinValue, 
-                max: MaxValue 
+        if (last_res.init) {
+            range = {
+                min: MinValue,
+                max: MaxValue
             };
         }
         else {
@@ -40,10 +40,10 @@ const data_generator = (types, last_res) => {
             const max = last_res[Id] + 5 > MaxValue ? MaxValue : last_res[Id] + 5;
             range = { min, max };
         }
-        if(Id in result) {
+        if (Id in result) {
             throw new Error(`Duplicate Error. Key ${Id} already defined in accumulator object.`);
         }
-        result[Id] = rand(range); 
+        result[Id] = rand(range);
         return result;
     }, {});
 };

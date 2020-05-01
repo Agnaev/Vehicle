@@ -1,8 +1,8 @@
 // @ts-check
 'use strict';
 
-export default class ConnectStatus{
-    constructor(){
+export default class ConnectStatus {
+    constructor() {
         /** @type {HTMLElement} */
         this.status = document.querySelector('div#connection_status');
         /** @type {{
@@ -10,7 +10,7 @@ export default class ConnectStatus{
          * disconnect: HTMLSelectElement
          * }} */
         this.btn = {
-            connect:    document.querySelector('#connect_to_vehicle'),
+            connect: document.querySelector('#connect_to_vehicle'),
             disconnect: document.querySelector('#close_connection')
         }
         this.disconnect();
@@ -22,7 +22,7 @@ export default class ConnectStatus{
         this.status.textContent = 'ONLINE';
     }
     /** enable connect btn & disable disconnect btn & set offline status */
-    disconnect(){
+    disconnect() {
         this.btn.connect.disabled = false;
         this.btn.disconnect.disabled = true;
         this.status.textContent = 'OFFLINE';
