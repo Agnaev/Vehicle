@@ -1,10 +1,10 @@
-const {Router}          = require('express');
-const {logger, 
-    basedir, 
+const { Router } = require('express');
+const { logger,
+    basedir,
     web_socket_port,
-    error_handler_404}  = require('../config');
-const fs                = require('fs');
-const path              = require('path');
+    error_handler_404 } = require('../config');
+const fs = require('fs');
+const path = require('path');
 
 const router = Router();
 
@@ -13,7 +13,7 @@ router.get('/', (req, res) => {
         const fileName = path.join(basedir, 'View', 'Index.html');
         res.sendFile(fileName);
     }
-    catch(exc) {
+    catch (exc) {
         logger(`Error processing request '/'.\r\nfilename: ${__dirname}`, exc);
         error_handler_404(res, exc);
     }
@@ -24,7 +24,7 @@ router.get('/metrics', (req, res) => {
         const fileName = path.join(basedir, 'View', 'Metrics.html');
         res.sendFile(fileName);
     }
-    catch(exc) {
+    catch (exc) {
         logger(`Error processing request '/metrics'.\r\nfilename: ${__dirname}`, exc);
         error_handler_404(res, exc);
     }
@@ -37,11 +37,18 @@ router.get('/api/get_socket_port', (req, res) => {
 });
 
 router.get('/api/get_images_list', (req, res) => {
-    try{
-        const files = fs.readdirSync(path.join(basedir, 'View', 'images'));
+    try {
+        const files = fs.readdirSync (
+            path.join(basedir, 'View', 'images')
+        ).filter(file =>
+            ['png', 'jpg', 'jpeg', 'svg']
+                .includes (
+                    path.extname(file).slice(1)
+                )
+        );
         res.send(files);
     }
-    catch(exc) {
+    catch (exc) {
         logger(`Error processing request '/api/get_images_list'.\r\nfilename: ${__dirname}`, exc);
         error_handler_404(res, exc);
     }

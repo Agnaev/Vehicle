@@ -9,11 +9,15 @@ module.exports = {
     /** Получение всех метрик из базы данных */
     async GetMetrics() {
         try {
-            const { recordsets: [types] } = await makeRequest(`SELECT * FROM MetricsTypes`);
+            const { 
+                recordsets: [
+                    types
+                ] 
+            } = await makeRequest(`SELECT * FROM MetricsTypes`);
             return types;
         }
         catch (exc) {
-            logger(`file: types; function:module.exports.GetMetrics error`, exc);
+            logger(`file: types; function: GetMetrics\r\nerror`, exc);
             return exc;
         }
     },
@@ -37,10 +41,10 @@ module.exports = {
             `);
             const count = requestResult.count;
             if (count > 0) {
-                throw `file: ${__dirname}; function: module.exports.create; Item with selected name ${item.Name} exist.`;
+                throw `file: ${__dirname}; function: create;\r\n Item with selected name ${item.Name} exist.`;
             }
             else if (item.MinValue > item.MaxValue) {
-                throw `file: ${__dirname}; function: module.exports.Create; Incorrect min and max values, min value(${item.MinValue}) greater than max value(${item.MaxValue})`;
+                throw `file: ${__dirname}; function: Create;\r\n Incorrect min and max values, min value(${item.MinValue}) greater than max value(${item.MaxValue})`;
             }
             else {
                 const { 
@@ -69,7 +73,7 @@ module.exports = {
             }
         }
         catch (exc) {
-            logger(`file: ${__dirname}; function: module.exports.create`, exc);
+            logger(`file: ${__dirname}; function: create\r\n`, exc);
             return exc;
         }
     },
@@ -88,7 +92,7 @@ module.exports = {
             WHERE id = '${item.Id}'`)
         }
         catch (exc) {
-            logger(`file: ${__dirname}; function: module.exports.Update error`, exc);
+            logger(`file: ${__dirname}; function: Update\r\nerror`, exc);
             return exc;
         }
     },
@@ -102,7 +106,7 @@ module.exports = {
             await makeRequest(`DELETE FROM MetricsTypes WHERE Id = ${item.Id}`);
         }
         catch (exc) {
-            logger(`file: ${__dirname}; function: module.exports.delete error`, exc);
+            logger(`file: ${__dirname}; function: delete\r\nerror`, exc);
             return exc;
         }
     }
