@@ -1,18 +1,22 @@
 // @ts-check
 'use strict';
 
-const { Server: WebSocketServer }    = require('ws');
-const { web_socket_port: port }      = require('./config');
-const { Observer }                   = require('./Observer');
-const { makeRequest }                = require('./db_request');
-const { generator }                  = require('./data_generator');
+const { Server: WebSocketServer } = require('ws');
+const { web_socket_port: port } = require('./config');
+const Observer = require('./Observer');
+const makeRequest = require('./db_request');
+const generator = require('./data_generator');
 
 const webSocketServer = new WebSocketServer({
-    port 
+    port
 });
 
 (async () => {
-    const { recordsets: [types] } = await makeRequest('select * from MetricsTypes');
+    const {
+        recordsets: [
+            types
+        ]
+    } = await makeRequest('select * from MetricsTypes');
 
     const observer = new Observer(generator(types));
 

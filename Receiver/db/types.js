@@ -1,19 +1,18 @@
 // @ts-check
 'use strict'
-const {makeRequest} = require('./db_connection');
-const {logger} = require('../config')
+const { makeRequest } = require('./db_connection');
+const { logger } = require('../config');
 
-/**@typedef {{Id: number, Name: string, MinValue: number, MaxValue: number, Description: string}} db_item*/
+/**@typedef {{Id: number, Name: string, MinValue: number, MaxValue: number, Description: string}} db_item */
 
 module.exports = {
-    /** Получение всех метрик из базы данных
-     */
+    /** Получение всех метрик из базы данных */
     async GetMetrics() {
-        try{
-            const data = await makeRequest(`SELECT * FROM MetricsTypes`);
-            return data.recordsets[0]
+        try {
+            const { recordsets: [types] } = await makeRequest(`SELECT * FROM MetricsTypes`);
+            return types;
         }
-        catch(exc){
+        catch (exc) {
             logger(`file: types; function:module.exports.GetMetrics error`, exc);
             return exc;
         }
@@ -25,35 +24,53 @@ module.exports = {
     */
     async Create(item) {
         try {
-            const requestResult = await makeRequest(`
+            const { 
+                recordsets: [
+                    [
+                        requestResult
+                    ]
+                ] 
+            } = await makeRequest(`
                 SELECT COUNT(*) as count
                 FROM MetricsTypes
                 WHERE Name LIKE '${item.Name}'
-            `)
-            const count = requestResult.recordset[0].count;
-            if(count > 0){
-                throw `file: ${__dirname}; function: module.exports.create; Item with selected name ${item.Name} exist.`
+            `);
+            const count = requestResult.count;
+            if (count > 0) {
+                throw `file: ${__dirname}; function: module.exports.create; Item with selected name ${item.Name} exist.`;
             }
-            else if(item.MinValue > item.MaxValue){
+            else if (item.MinValue > item.MaxValue) {
                 throw `file: ${__dirname}; function: module.exports.Create; Incorrect min and max values, min value(${item.MinValue}) greater than max value(${item.MaxValue})`;
             }
             else {
-                const metricId = await makeRequest(`
+                const { 
+                    recordsets: [
+                        [
+                            metricId
+                        ]
+                    ] 
+                } = await makeRequest(`
                     INSERT INTO MetricsTypes([Name], [Description], [MinValue], [MaxValue]) 
                     OUTPUT inserted.Id
                     VALUES ('${item.Name}', '${item.Description}', '${item.MinValue}', '${item.MaxValue}');
-                `)
-                const result = await makeRequest(`
+                `);
+                const { 
+                    recordsets: [
+                            [
+                                result
+                            ]
+                        ] 
+                    } = await makeRequest(`
                     SELECT * 
                     FROM MetricsTypes
-                    WHERE Id = '${metricId.recordsets[0][0].Id}'
-                `)
-                return JSON.stringify(result.recordset[0])
+                    WHERE Id = '${metricId.Id}'
+                `);
+                return JSON.stringify(result);
             }
         }
-        catch(exc){
-            logger(`file: ${__dirname}; function: module.exports.create`, exc)
-            return exc
+        catch (exc) {
+            logger(`file: ${__dirname}; function: module.exports.create`, exc);
+            return exc;
         }
     },
     /**Обновление метрики
@@ -61,7 +78,7 @@ module.exports = {
      * @returns {Promise<void>}
      * */
     async Update(item) {
-        try{
+        try {
             await makeRequest(`
             UPDATE MetricsTypes
             SET Name = '${item.Name}',
@@ -70,7 +87,7 @@ module.exports = {
             MinValue = '${item.MinValue}'
             WHERE id = '${item.Id}'`)
         }
-        catch(exc) {
+        catch (exc) {
             logger(`file: ${__dirname}; function: module.exports.Update error`, exc);
             return exc;
         }
@@ -82,11 +99,12 @@ module.exports = {
     */
     async Delete(item) {
         try {
-            await makeRequest(`DELETE FROM MetricsTypes WHERE Id = ${item.Id}`)
+            await makeRequest(`DELETE FROM MetricsTypes WHERE Id = ${item.Id}`);
         }
-        catch(exc){
+        catch (exc) {
             logger(`file: ${__dirname}; function: module.exports.delete error`, exc);
             return exc;
         }
     }
 }
+

@@ -1,17 +1,11 @@
 // @ts-check
 'use strict';
 
-/**
- * @param {{min:number, max:number}} param0 object containing minimum and maximum values 
- * @returns {number} Random value
- */
-const rand = ({ min, max }) => Math.floor(Math.random() * (max - min) + min);
-
 /** Каррирование функции, т.е. превращение фцнкции из вида f(a, b, c) в f(a)(b)(c)
  * @param {Function} func функция которую надо каррировать*/
 function Currying(func) {
     return function curried() {
-        return arguments.length >= func.length 
+        return arguments.length >= func.length
             ? func.apply(this, arguments)
             : (...args) => curried.apply(this, [...arguments, ...args]);
     }
@@ -24,8 +18,8 @@ function Currying(func) {
 const data_generator = (types, last_res) => types.reduce(
     (result, { Id, MinValue, MaxValue }) => ({
         ...result,
-        [Id]: (() => rand(
-            last_res.init
+        [Id]: (({ min, max }) => Math.floor(Math.random() * (max - min) + min))
+            (last_res.init
                 ? {
                     min: MinValue,
                     max: MaxValue
@@ -34,7 +28,8 @@ const data_generator = (types, last_res) => types.reduce(
                     min: last_res[Id] - 5 < MinValue ? MinValue : last_res[Id] - 5,
                     max: last_res[Id] + 5 > MaxValue ? MaxValue : last_res[Id] + 5
                 }
-        ))()
+            )
     }), {});
 
-module.exports.generator = Currying(data_generator);
+    module.exports = Currying(data_generator);
+

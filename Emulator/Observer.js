@@ -1,14 +1,14 @@
 // @ts-check
 'use strict';
 
-module.exports.Observer = class {
+module.exports = class {
     /** @param {Function} data_generator */
     constructor(data_generator) {
         /** @type {Function[]} */
         this.subscribers = [];
         /** @type {Function} */
         this.generator = data_generator;
-        this.generatorIsWork = false;
+        this.IsGeneratorWork = false;
         this.data = this.generator({ init: true });
     }
 
@@ -23,6 +23,9 @@ module.exports.Observer = class {
     }
 
     UpdateData() {
+        if(this.IsGeneratorWork){
+            return;
+        }
         (function interval() {
             this.data = this.generator(this.data);
             this.broadcast();
@@ -30,7 +33,7 @@ module.exports.Observer = class {
                 setTimeout(interval.bind(this), 1000);
             }
             else {
-                this.generatorIsWork = false;
+                this.IsGeneratorWork = false;
             }
         }).call(this);
     }
@@ -41,8 +44,8 @@ module.exports.Observer = class {
      */
     subscribe(callback) {
         this.subscribers.push(callback);
-        if (!this.generatorIsWork) {
-            this.generatorIsWork = true;
+        if (!this.IsGeneratorWork) {
+            this.IsGeneratorWork = true;
             this.UpdateData();
         }
         return () => this.unsubscribe(callback);

@@ -1,15 +1,19 @@
 {
   "name": "vehicle_emulator",
   "version": "1.0.0",
-  "description": "",
-  "main": "main.js",
+  "description": "Vehicle emulator",
+  "main": "emulator.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "release": "node emulator.js",
+    "dev": "nodemon emulator.js"
   },
   "author": "Agnaev Alan",
   "license": "ISC",
   "dependencies": {
     "mssql": "^6.2.0",
     "ws": "^7.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.3"
   }
 }
