@@ -1,6 +1,11 @@
 // @ts-check
 'use strict';
 
+const {writeToDatabase: writeTodb , 
+    countWriteToDb,
+    ip, port, isHttps} = require('./config');
+const request_promise = require('request-promise');
+
 module.exports = class {
     /** @param {Function} data_generator */
     constructor(data_generator) {
@@ -10,10 +15,29 @@ module.exports = class {
         this.generator = data_generator;
         this.IsGeneratorWork = false;
         this.data = this.generator({ init: true });
+        this.count = 0;
+        this.storage = [];
     }
 
     /** Send broadcast message */
     broadcast() {
+        if(writeTodb){
+            if(this.count++ < countWriteToDb) {
+                this.storage.push(this.data);
+            }
+            else {
+                request_promise({
+                    method: 'post',
+                    url: `http${isHttps && 's'}://${ip}:${port}/api/metric_values/create`,
+                    form: {data: JSON.stringify(this.storage)}
+                });
+                this.storage.splice(0, this.storage.length);
+                if(this.storage.length !== 0) {
+                    throw new Error('s/th wrong');
+                }
+                this.count = 0;
+            }
+        }
         this.subscribers.forEach(
             /**@param {Function} subscriber callback function */
             subscriber => subscriber(
@@ -26,6 +50,7 @@ module.exports = class {
         if(this.IsGeneratorWork){
             return;
         }
+        this.IsGeneratorWork = true;
         (function interval() {
             this.data = this.generator(this.data);
             this.broadcast();
@@ -45,7 +70,7 @@ module.exports = class {
     subscribe(callback) {
         this.subscribers.push(callback);
         if (!this.IsGeneratorWork) {
-            this.IsGeneratorWork = true;
+            
             this.UpdateData();
         }
         return () => this.unsubscribe(callback);

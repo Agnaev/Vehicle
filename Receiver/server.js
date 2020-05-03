@@ -4,7 +4,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
-const fs = require('fs');
 const { DatabaseCheck } = require('./db/db_connection');
 const {
     port,
@@ -13,6 +12,7 @@ const {
     basedir,
     error_handler_404 } = require('./config');
 const routers = require('./routes/router');
+const { copyFile } = require('./helper/helper'); 
 
 const app = express();
 
@@ -47,13 +47,12 @@ app.listen(port, ip, async () => {
     try {
         const isRelease = process.argv.splice(2).includes('release');
         const db_check = DatabaseCheck();
-        fs.createReadStream(
-            path.join(basedir, 'node_modules', 'jquery', 'dist', 'jquery.min.js')
-        ).pipe(
-            fs.createWriteStream(
-                path.join(basedir, 'View', 'scripts', 'jquery.min.js')
-            )
+
+        copyFile(
+            path.join(basedir, 'node_modules', 'jquery', 'dist', 'jquery.min.js'),
+            path.join(basedir, 'View', 'scripts', 'jquery.min.js')
         );
+
         await db_check;
         logger(`server has been started at ${ip}:${port}.`);
     }

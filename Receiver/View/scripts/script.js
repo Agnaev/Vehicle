@@ -1,7 +1,7 @@
 // @ts-check
 'use strict';
 
-import ChartElement from './Chart.js';
+import chartCreate from './Chart.js';
 import ConnectStatus from './ConnectState.js';
 
 /** Initialize intial state */
@@ -24,7 +24,7 @@ const charts_list = fetch_data('/api/metrics/get')
         data.map(
             ({ Id, Name }) => ({
                 Id,
-                chart: new ChartElement(Name)
+                chart: chartCreate(Name)
             })
         )
     );
@@ -48,7 +48,7 @@ document.querySelector('#connect_to_vehicle').addEventListener('click', async ev
     webSocket.onmessage = responce => {
         const data = JSON.parse(responce.data);
         charts.map(
-            ({ chart, Id }) => chart.add_data(iterator, data[Id])
+            ({ chart, Id }) => chart.push(iterator, data[Id]).update()
         );
         document.querySelector('#counter').textContent = iterator.toString();
         ++iterator;

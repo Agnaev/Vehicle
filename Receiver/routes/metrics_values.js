@@ -1,7 +1,8 @@
 const { Router } = require('express');
-const { logger, basedir } = require('../config');
-const {Create, Delete, Get} = require('../db/metrics_values');
-const path = require('path');
+const { logger } = require('../config');
+const {Create, 
+    Delete, 
+    Get} = require('../db/metrics_values');
 
 const router = Router();
 

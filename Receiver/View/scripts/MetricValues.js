@@ -1,43 +1,4 @@
-import { } from './jquery.min.js';
-import { } from './Chart.min.js';
-
-const chartCreate = (document, title) => {  
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    $('#chartContainer').append(canvas);
-    const chart = new Chart(context, {
-        type: 'bar',
-        data: {
-            labels: 0,
-            datasets: [{
-                label: title,
-                //data: data.map(x => x.Value),
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            }
-        }
-    })
-
-    return {
-        push(label, data) {
-            chart.data.labels.push(label);
-            chart.data.datasets.forEach(dataset => dataset.data.push(data));
-        },
-        update() {
-            chart.update();
-        }
-    }
-}
+import chartCreate from './Chart.js'
 
 Array.prototype.filterWithRemove = function (callback) {
     const indexes = [];
@@ -75,7 +36,7 @@ const fetch_data = (url, options = {}) => fetch(url, options).then(x => x.json()
     }), {});
 
     metrics.forEach(({Id, Name}) => {
-        const chart = chartCreate(document, Name);
+        const chart = chartCreate(Name);
         indexed_data[Id].map((x, index) => chart.push(index + 1, x.Value));
         chart.update();
     });

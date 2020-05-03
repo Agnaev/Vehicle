@@ -11,5 +11,10 @@ module.exports = {
     ip: 'localhost',
     port: 8080,
     web_socket_port: 3000,
-    logger: console.log
+    
+    logger: console.log,
+
+    writeToDatabase: true,
+    countWriteToDb: 10,
+    isHttps: false
 };
