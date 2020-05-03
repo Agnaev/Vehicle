@@ -2,8 +2,8 @@
 
 'use strict'
 
-const {ConnectionPool}      = require('mssql');
-const {db_config, logger}   = require('../config');
+const { ConnectionPool } = require('mssql');
+const { db_config, logger } = require('../config');
 
 /**@typedef {{user:string, password:string, server:string, database:string}} db_config */
 
@@ -13,14 +13,14 @@ const {db_config, logger}   = require('../config');
  */
 const connectToDatabase = config => {
     return async requestString => {
-        try{
+        try {
             const connectionPool = new ConnectionPool(config);
             const pool = await connectionPool.connect();
             const data = await pool.query(requestString);
             pool.close();
             return data;
         }
-        catch(exc){
+        catch (exc) {
             logger(`file: ${__dirname} function: connect(nested function), request stirng: ${requestString}`, exc);
             return exc;
         }
@@ -34,10 +34,16 @@ const DatabaseCheck = async () => {
             ...db_config,
             database: 'master'
         });
-        const requestResult = await makeRequest(`
+        const {
+            recordsets: [
+                [
+                    requestResult
+                ]
+            ]
+        } = await makeRequest(`
             SELECT DB_ID('${ db_config.database}') as db_id
         `);
-        if(!requestResult.recordset[0]['db_id']){
+        if (!requestResult.db_id) {
             logger('database is not exist\r\nCreating database...');
             await makeRequest(`Create database ${db_config.database}`);
             makeRequest = connectToDatabase(db_config);
@@ -64,7 +70,7 @@ const DatabaseCheck = async () => {
             logger('Database was created');
         }
     }
-    catch(exc) {
+    catch (exc) {
         logger(`Error while database checking; file: ${__dirname}`, exc);
         return exc;
     }

@@ -12,6 +12,7 @@ const {
     logger,
     basedir,
     error_handler_404 } = require('./config');
+const routers = require('./routes/router');
 
 const app = express();
 
@@ -33,18 +34,14 @@ app.use((req, res, next) => {
     logger(`middleware ${req.method} ${req.path}`);
     next();
 });
+app.use('/api/metric_values', routers.values);
+app.use('/api/metrics', routers.types);
+app.use('/', routers.main);
 
-app.use('/api/metrics',
-    require('./routes/metrics_router')
-);
-
-app.use('/',
-    require('./routes/main_routes')
-);
-
-app.use((req, res) =>
+app.use((req, res) =>{
+    logger(`Client with ip: ${req.ip} got 404 error with request: ${req.originalUrl}`);
     error_handler_404(res, 'Страница не найдена.')
-);
+});
 
 app.listen(port, ip, async () => {
     try {
