@@ -4,24 +4,41 @@
 <head>
     <meta charset="UTF-8">
     <title>Receiver</title>
-    <style rel='stylesheet' href='Styles/style.css'></style>
+    <link rel='stylesheet' href='Styles/style.css'>
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 </head>
 
 <body>
+    <header class="header">
+        <div class="container">
+            <nav class="navigation">
+                <ul class="site-navigation">
+                    <li>Диплом</li>
+                    <li><a href="#">Используемые технологии</a></li>
+                    <li><a href="#">Контакты</a></li>
+                    <li><a href="#">Метрики</a></li>
+                    <li><a href="#">Значения</a></li>
+                    <li><a href="#">Войти</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <div class="back-slider">
+            <div class="slider container">
+                <img id="slider" src="/images/js.png" />
+            </div>
+        </div>
+        <div id="counter"></div>
+        <div id="connection_status"></div>
+        <div class="buttons">
+            <input type="button" value="Открыть web socket соединение к БПЛА." id="connect_to_vehicle">
+            <input type="button" value="Закрыть web socket соединение к БПЛА." id="close_connection" />
+        </div>
+        <div id="chartContainer">
 
-    <div class="slider">
-        <img id="slider" src="/images/js.png"/>
-    </div>
-
-    <div id="counter"></div>
-    <div id="connection_status"></div>
-    <div>
-        <input type="button" value="Открыть web socket соединение к БПЛА." id="connect_to_vehicle">
-        <input type="button" value="Закрыть web socket соединение к БПЛА." id="close_connection" />
-    </div>
-    <div id="chartContainer">
-
-    </div>
+        </div>
+    </main>
     <script src="scripts/script.js" type="module"></script>
 </body>
 
