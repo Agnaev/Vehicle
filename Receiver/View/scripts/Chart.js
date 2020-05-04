@@ -2,8 +2,8 @@ import { } from './Chart.min.js';
 import { } from './jquery.min.js';
 
 export default function chartCreate (title) {  
-    const canvas = $('<canvas>');
-    const context = canvas[0].getContext('2d');
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
     $('#chartContainer').append(canvas);
     const chart = new Chart(context, {
         type: 'bar',

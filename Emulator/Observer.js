@@ -3,8 +3,9 @@
 
 const {writeToDatabase: writeTodb , 
     countWriteToDb,
-    ip, port, isHttps} = require('./config');
-const request_promise = require('request-promise');
+    ip, port, 
+    isHttps} = require('./config');
+const request = require('request-promise');
 
 module.exports = class {
     /** @param {Function} data_generator */
@@ -26,7 +27,7 @@ module.exports = class {
                 this.storage.push(this.data);
             }
             else {
-                request_promise({
+                request({
                     method: 'post',
                     url: `http${isHttps && 's'}://${ip}:${port}/api/metric_values/create`,
                     form: {data: JSON.stringify(this.storage)}
