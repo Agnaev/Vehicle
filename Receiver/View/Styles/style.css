@@ -1,4 +1,133 @@
-div#chartContainer canvas {
-    width: 400px;
-    height: 400px;
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Roboto", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 21px;
+    font-weight: normal;
+    color: #000000;
+    background-color: #ffffff;
+}
+
+.container {
+    margin: 0 auto;
+    max-width: 1160px;
+    position: relative;
+}
+
+a {
+    text-decoration: none;
+}
+
+.navigation {
+    display: flex;
+    padding-bottom: 15px;
+}
+
+.site-navigation {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%; 
+    justify-content: space-between;
+}
+
+.site-navigation a {
+    color: #000000;
+}
+
+.site-navigation a:hover {
+    color: #666666;
+}
+
+.site-navigation li:nth-child(1) {
+    font-size: 42px;
+    width: 20%;
+}
+
+.site-navigation li {
+    box-sizing: border-box;
+    padding-bottom: 20px;
+}
+
+.header {
+    padding: 49px 0 0;
+    background-color: #eee;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.slider {
+    display: flex;
+    padding-top: 20px;
+    padding-bottom: 35px;
+    background-color: #eee;
+}
+
+.slider img {
+    height: 310px;
+    width: auto;
+    margin: 0 auto;
+    animation: opacity 0.7s;
+}
+
+.back-slider {
+    background: #eee;
+}
+
+
+@keyframes opacity {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.buttons {
+    display: flex;
+    margin: 0 auto;
+    justify-content: center;
+}
+
+.buttons input { 
+    background: transparent;
+    border: 1px solid #000000;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-right: 20px;
+}
+
+.buttons input:hover {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.buttons input:active {
+    background-color: #666666;
+    color: #eee;
+}
+
+.container-canvas {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 auto;
+    justify-content: space-between;
+}
+
+.container-canvas canvas {
+    width: 47% !important;
+    height: auto !important;
+    margin: 40px auto 0 auto;
 }
