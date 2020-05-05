@@ -4,11 +4,28 @@
 import chartCreate from './Chart.js';
 import ConnectStatus from './ConnectState.js';
 
+Array.prototype['shuffle'] = function() {
+    let j = 0;
+    this.forEach((v, i) => {
+        j = Math.floor(Math.random() * (i + 1));
+        [this[i], this[j]] = [this[j], this[i]];
+    });
+    return this;
+}
+
 /** Initialize intial state */
-document.addEventListener('DOMContentLoaded', e => {
+document.addEventListener('DOMContentLoaded', function() {
+    ['contextmenu', 'selectstart', 'copy', 'select', 'dragstart', 'beforecopy']
+        .forEach(event => document.body.addEventListener(event, denyFunction));
     new ConnectStatus();
     document.querySelector('#counter').textContent = '0';
 });
+
+/** @param {Event} e */
+function denyFunction(e) {
+    e.preventDefault();
+    return false;
+}
 
 /**
  * @param {string} url Url to api.
@@ -16,9 +33,7 @@ document.addEventListener('DOMContentLoaded', e => {
  * @returns {Promise<any>} Result from server.
  */
 const fetch_data = (url, options = {}) => fetch(url, options).then(x => x.json());
-
 const getWebSocketPort = fetch_data('/api/get_socket_port').then(x => x.port);
-
 const charts_list = fetch_data('/api/metrics/get')
     .then(data =>
         data.map(
@@ -39,12 +54,11 @@ document.querySelector('#connect_to_vehicle').addEventListener('click', async ev
     const charts = await charts_list;
 
     const state = new ConnectStatus();
-    const webSocket = new WebSocket('ws://localhost:' + webSocketPort);
+    const webSocket = new WebSocket(`ws://localhost:${webSocketPort}`);
 
     webSocket.onopen = () => state.connect();
     webSocket.onclose = () => state.disconnect();
     webSocket.onerror = error => console.log(`Произошла ошибка с веб сокетом. ${error}`);
-
     webSocket.onmessage = responce => {
         const data = JSON.parse(responce.data);
         charts.map(
@@ -52,9 +66,9 @@ document.querySelector('#connect_to_vehicle').addEventListener('click', async ev
         );
         document.querySelector('#counter').textContent = iterator.toString();
         ++iterator;
-    }
+    };
 
-    const closeSocket = e => webSocket.close();
+    const closeSocket = () => webSocket.close();
     document.querySelector('#close_connection')
         .addEventListener('click', closeSocket, { once: true });
 
@@ -70,7 +84,7 @@ document.querySelector('#connect_to_vehicle').addEventListener('click', async ev
         setTimeout(interval.bind(this), 5000);
     }).call({ 
         pointer, 
-        images, 
+        images: images.shuffle(), 
         slider: document.querySelector('#slider') 
     });
 })();

@@ -10,6 +10,15 @@ Array.prototype.filterWithRemove = function (callback) {
     return indexes.map((index, shift) => this.splice(index - shift, 1)[0]);
 };
 
+Array.prototype['shuffle'] = function() {
+    let j = 0;
+    this.forEach((v, i) => {
+        j = Math.floor(Math.random() * (i + 1));
+        [this[i], this[j]] = [this[j], this[i]];
+    });
+    return this;
+}
+
 const fetch_data = (url, options = {}) => fetch(url, options).then(x => x.json());
 
 (async function () {
@@ -20,7 +29,7 @@ const fetch_data = (url, options = {}) => fetch(url, options).then(x => x.json()
         setTimeout(interval.bind(this), 5000);
     }).call({
         pointer: 0, 
-        images, 
+        images: images.shuffle(), 
         slider: document.querySelector('#slider') 
     });
     

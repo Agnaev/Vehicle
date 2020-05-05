@@ -3,16 +3,34 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Metrics values</title>
+    <title>Receiver</title>
+    <link rel='stylesheet' href='Styles/style.css'>
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <div class="slider">
-        <img id="slider" src="/images/js.png"/>
-    </div>
-    
-    <div id="chartContainer"></div>
-
+    <header class="header">
+        <div class="container">
+            <nav class="navigation">
+                <ul class="site-navigation">
+                    <li><a href="/">Диплом</a></li>
+                    <li><a href="#">Используемые технологии</a></li>
+                    <li><a href="#">Контакты</a></li>
+                    <li><a href="/metrics">Метрики</a></li>
+                    <li><a href="/values">Значения</a></li>
+                    <li style="display: none;"><a href="#">Войти</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <div class="back-slider">
+            <div class="slider container">
+                <img id="slider" src="/images/js.png" />
+            </div>
+        </div>
+        <div id="chartContainer"></div>
+    </main>
     <script type="module" src="scripts/MetricValues.js"></script>
 </body>
 
