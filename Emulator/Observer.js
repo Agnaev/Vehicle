@@ -29,7 +29,7 @@ module.exports = class {
             else {
                 request({
                     method: 'post',
-                    url: `http${isHttps && 's'}://${ip}:${port}/api/metric_values/create`,
+                    url: `http${isHttps && 's' || ''}://${ip}:${port}/api/metric_values/create`,
                     form: {data: JSON.stringify(this.storage)}
                 });
                 this.storage.splice(0, this.storage.length);

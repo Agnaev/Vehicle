@@ -4,28 +4,23 @@
 import chartCreate from './Chart.js';
 import ConnectStatus from './ConnectState.js';
 
-Array.prototype['shuffle'] = function() {
-    let j = 0;
-    this.forEach((v, i) => {
-        j = Math.floor(Math.random() * (i + 1));
-        [this[i], this[j]] = [this[j], this[i]];
-    });
-    return this;
+Array.prototype['shuffle'] = function () {
+    return this.reduce((acc, v, i) => {
+        const j = Math.floor(Math.random() * (i + 1));
+        [v, acc[j]] = [acc[j], v];
+        return acc;
+    }, [...this]);
 }
 
 /** Initialize intial state */
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     ['contextmenu', 'selectstart', 'copy', 'select', 'dragstart', 'beforecopy']
-        .forEach(event => document.body.addEventListener(event, denyFunction));
+        .forEach(
+            event => document.body.addEventListener(event, e => e.preventDefault())
+        );
     new ConnectStatus();
     document.querySelector('#counter').textContent = '0';
 });
-
-/** @param {Event} e */
-function denyFunction(e) {
-    e.preventDefault();
-    return false;
-}
 
 /**
  * @param {string} url Url to api.
@@ -75,18 +70,17 @@ document.querySelector('#connect_to_vehicle').addEventListener('click', async ev
     window.onunload = closeSocket;
 });
 
-(async () => {
-    const images = await fetch_data('/api/get_images_list');
-    let pointer = 0;
-    (function interval() {
-        this.slider.setAttribute('src', '/images/' + this.images[this.pointer]);
-        this.pointer = this.pointer + 1 === this.images.length ? 0 : this.pointer + 1;
-        setTimeout(interval.bind(this), 5000);
-    }).call({ 
-        pointer, 
-        images: images.shuffle(), 
-        slider: document.querySelector('#slider') 
+fetch_data('/api/get_images_list')
+    .then(images => {
+        (function interval() {
+            this.slider.setAttribute('src', '/images/' + this.images[this.pointer]);
+            this.pointer = this.pointer + 1 === this.images.length ? 0 : this.pointer + 1;
+            setTimeout(interval.bind(this), 5000);
+        }).call({
+            pointer: 0,
+            images: images.shuffle(),
+            slider: document.querySelector('#slider')
+        });
     });
-})();
 
 

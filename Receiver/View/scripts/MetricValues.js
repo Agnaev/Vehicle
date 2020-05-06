@@ -1,28 +1,35 @@
-import chartCreate from './Chart.js'
+// @ts-check
+'use strict';
+import chartCreate from './Chart.js';
 
-Array.prototype.filterWithRemove = function (callback) {
-    const indexes = [];
-    this.forEach((value, index, array) => {
-        if (callback(value, index, array)) {
-            indexes.push(index);
+Array.prototype['filterWithRemove'] = function (callback) {
+    return this.reduce((acc, val, index, arr) => {
+        if(callback(val, index, arr)) {
+            acc.push(index);
         }
-    });
-    return indexes.map((index, shift) => this.splice(index - shift, 1)[0]);
+        return acc;
+    }, [])
+    .map(
+        /** @param {number} index 
+         * @param {number} shift смещение*/
+        (index, shift) => this.splice(index - shift, 1)[0]
+    );
 };
 
 Array.prototype['shuffle'] = function() {
-    let j = 0;
-    this.forEach((v, i) => {
-        j = Math.floor(Math.random() * (i + 1));
-        [this[i], this[j]] = [this[j], this[i]];
-    });
-    return this;
-}
+    return this.reduce((acc, v, i) => {
+        const j = Math.floor(Math.random() * (i + 1));
+        [v, acc[j]] = [acc[j], v];
+        return acc;
+    }, [...this]);
+};
 
 const fetch_data = (url, options = {}) => fetch(url, options).then(x => x.json());
+const promise_data = fetch_data('/api/metric_values/get');
+const promise_metrics = fetch_data('/api/metrics/get');
 
-(async function () {
-    const images = await fetch_data('/api/get_images_list');
+fetch_data('/api/get_images_list')
+.then(images => {
     (function interval() {
         this.slider.setAttribute('src', '/images/' + this.images[this.pointer]);
         this.pointer = this.pointer + 1 === this.images.length ? 0 : this.pointer + 1;
@@ -32,10 +39,9 @@ const fetch_data = (url, options = {}) => fetch(url, options).then(x => x.json()
         images: images.shuffle(), 
         slider: document.querySelector('#slider') 
     });
-    
-    const promise_data = fetch_data('/api/metric_values/get');
-    const promise_metrics = fetch_data('/api/metrics/get');
+});
 
+(async function () {
     const data = await promise_data;
     const metrics = await promise_metrics;
 
@@ -50,3 +56,10 @@ const fetch_data = (url, options = {}) => fetch(url, options).then(x => x.json()
         chart.update();
     });
 })();
+
+document.addEventListener('DOMContentLoaded', e => {
+    ['contextmenu', 'selectstart', 'copy', 'select', 'dragstart', 'beforecopy']
+        .forEach(
+            event => document.body.addEventListener(event, e => e.preventDefault())
+        );
+})
