@@ -11,24 +11,23 @@ const webSocketServer = new WebSocketServer({
     port
 });
 
-(async () => {
-    const {
-        recordsets: [
-            types
-        ]
-    } = await makeRequest('select * from MetricsTypes');
-
+makeRequest('select * from MetricsTypes')
+.then(x => x.recordsets[0])
+.then(types => {
     const observer = new Observer(generator(types));
-
-    webSocketServer.on('connection', (socket, req) => {
-        console.log(`User with ip: ${req.socket.remoteAddress} was connected.`);
+    webSocketServer.on('connection', (socket, request) => {
+        console.log(`User with ip: ${request.socket.remoteAddress} was connected.`);
         const unsubscribe = observer.subscribe(
             /**@param {string} data JSON string value*/
             data => socket.send(data)
         );
         socket.on('close', () => unsubscribe());
     });
-})();
+    webSocketServer.on('listening', (...args) => console.log(`listening ${args.join()}`));
+    webSocketServer.on('close', (...args) => console.log(`close ${args.join()}`));
+    webSocketServer.on('error', (...args) => console.log(`error ${args.join()}`));
+    webSocketServer.on('headers', (...args) => console.log(`headers ${args.join()}`));
+});
 
 
 

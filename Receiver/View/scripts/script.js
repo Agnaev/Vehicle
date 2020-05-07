@@ -5,10 +5,10 @@ import chartCreate from './Chart.js';
 import ConnectStatus from './ConnectState.js';
 
 Array.prototype['shuffle'] = function () {
-    return this.reduce((acc, v, i) => {
-        const j = Math.floor(Math.random() * (i + 1));
-        [v, acc[j]] = [acc[j], v];
-        return acc;
+    return this.reduce((total, v) => {
+        const j = Math.floor(Math.random() * total.length);
+        [v, total[j]] = [total[j], v];
+        return total;
     }, [...this]);
 }
 
@@ -27,9 +27,9 @@ document.addEventListener('DOMContentLoaded', function () {
  * @param {{[key:string]:string}} options Request options.
  * @returns {Promise<any>} Result from server.
  */
-const fetch_data = (url, options = {}) => fetch(url, options).then(x => x.json());
-const getWebSocketPort = fetch_data('/api/get_socket_port').then(x => x.port);
-const charts_list = fetch_data('/api/metrics/get')
+const fetch_json = (url, options = {}) => fetch(url, options).then(x => x.json());
+const getWebSocketPort = fetch_json('/api/get_socket_port').then(x => x.port);
+const charts_list = fetch_json('/api/metrics/get')
     .then(data =>
         data.map(
             ({ Id, Name }) => ({
@@ -40,7 +40,8 @@ const charts_list = fetch_data('/api/metrics/get')
     );
 
 document.querySelector('#connect_to_vehicle').addEventListener('click', async event => {
-    let iterator = 1;
+    event.preventDefault();
+    
     const webSocketPort = await getWebSocketPort;
     if (!webSocketPort) {
         throw Error('Web socket port was not received.');
@@ -49,19 +50,21 @@ document.querySelector('#connect_to_vehicle').addEventListener('click', async ev
     const charts = await charts_list;
 
     const state = new ConnectStatus();
-    const webSocket = new WebSocket(`ws://localhost:${webSocketPort}`);
+    const webSocket = new WebSocket(`ws${location.protocol.includes('s') && 's' || ''}://${location.hostname}:${webSocketPort}`);
 
     webSocket.onopen = () => state.connect();
     webSocket.onclose = () => state.disconnect();
     webSocket.onerror = error => console.log(`Произошла ошибка с веб сокетом. ${error}`);
-    webSocket.onmessage = responce => {
-        const data = JSON.parse(responce.data);
-        charts.map(
-            ({ chart, Id }) => chart.push(iterator, data[Id]).update()
+    webSocket.onmessage = function({data}) {
+        this.charts.map(
+            ({ chart, Id }) => chart.push(this.iterator, JSON.parse(data)[Id]).update()
         );
-        document.querySelector('#counter').textContent = iterator.toString();
-        ++iterator;
-    };
+        this.counter.textContent = (this.iterator++).toString();
+    }.bind({
+        counter: document.querySelector('#counter'),
+        charts,
+        iterator: 0
+    });
 
     const closeSocket = () => webSocket.close();
     document.querySelector('#close_connection')
@@ -70,11 +73,11 @@ document.querySelector('#connect_to_vehicle').addEventListener('click', async ev
     window.onunload = closeSocket;
 });
 
-fetch_data('/api/get_images_list')
+fetch_json('/api/get_images_list')
     .then(images => {
         (function interval() {
             this.slider.setAttribute('src', '/images/' + this.images[this.pointer]);
-            this.pointer = this.pointer + 1 === this.images.length ? 0 : this.pointer + 1;
+            this.pointer = this.pointer + 1 !== this.images.length && this.pointer + 1 || 0;
             setTimeout(interval.bind(this), 5000);
         }).call({
             pointer: 0,

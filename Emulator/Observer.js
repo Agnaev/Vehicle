@@ -7,6 +7,8 @@ const {writeToDatabase: writeTodb ,
     isHttps} = require('./config');
 const request = require('request-promise');
 
+/** @typedef {{[key:number]:number}} datatype */
+
 module.exports = class {
     /** @param {Function} data_generator */
     constructor(data_generator) {
@@ -15,9 +17,13 @@ module.exports = class {
         /** @type {Function} */
         this.generator = data_generator;
         this.IsGeneratorWork = false;
+        /** @type {datatype} */
         this.data = this.generator({ init: true });
-        this.count = 0;
-        this.storage = [];
+        if(writeTodb) {
+            this.count = 0;
+            /** @type {Array<datatype>} */
+            this.storage = [];
+        }
     }
 
     /** Send broadcast message */
@@ -34,7 +40,7 @@ module.exports = class {
                 });
                 this.storage.splice(0, this.storage.length);
                 if(this.storage.length !== 0) {
-                    throw new Error('s/th wrong');
+                    throw new Error(`Current(observer) storage of data was not erased.`);
                 }
                 this.count = 0;
             }

@@ -31,5 +31,5 @@ const data_generator = (types, last_res) => types.reduce(
             )
     }), {});
 
-    module.exports = Currying(data_generator);
+module.exports = Currying(data_generator);
 

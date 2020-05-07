@@ -2,12 +2,16 @@
 'use strict';
 import chartCreate from './Chart.js';
 
-Array.prototype['filterWithRemove'] = function (callback) {
-    return this.reduce((acc, val, index, arr) => {
-        if(callback(val, index, arr)) {
-            acc.push(index);
+Array.prototype['filterWithRemove'] = 
+/**
+ * @param {(value:number, index:number, array:Array) => boolean} callback 
+ */
+ function (callback) {
+    return this.reduce((total, ...args) => {
+        if(callback(...args)) {
+            total.push(args[1]);
         }
-        return acc;
+        return total;
     }, [])
     .map(
         /** @param {number} index 
@@ -24,6 +28,10 @@ Array.prototype['shuffle'] = function() {
     }, [...this]);
 };
 
+/**
+ * @param {string} url request url
+ * @param {{[key:string]: string | number}} options request options
+ */
 const fetch_data = (url, options = {}) => fetch(url, options).then(x => x.json());
 const promise_data = fetch_data('/api/metric_values/get');
 const promise_metrics = fetch_data('/api/metrics/get');
@@ -41,21 +49,18 @@ fetch_data('/api/get_images_list')
     });
 });
 
-(async function () {
-    const data = await promise_data;
-    const metrics = await promise_metrics;
-
+Promise.all([promise_data, promise_metrics]).then(([data, metrics]) => {
     const indexed_data = metrics.reduce((store, { Id }) => ({
         ...store,
-        [Id]: data.filterWithRemove(x => x.TypeId === Id)
+        [Id]: data.filterWithRemove(({TypeId}) => TypeId === Id)
     }), {});
 
     metrics.forEach(({Id, Name}) => {
         const chart = chartCreate(Name);
-        indexed_data[Id].map((x, index) => chart.push(index + 1, x.Value));
+        indexed_data[Id].map(({Value}, index) => chart.push(index + 1, Value));
         chart.update();
     });
-})();
+});
 
 document.addEventListener('DOMContentLoaded', e => {
     ['contextmenu', 'selectstart', 'copy', 'select', 'dragstart', 'beforecopy']

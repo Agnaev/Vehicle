@@ -8,8 +8,8 @@ module.exports = {
             enableArithAbort: true
         }
     },
-    ip: 'localhost',
-    port: 8080,
+    ip: '192.168.0.11',
+    port: 80,
     web_socket_port: 3000,
     
     logger: console.log,
