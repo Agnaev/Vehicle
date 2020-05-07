@@ -12,13 +12,15 @@ const request = require('request-promise');
 module.exports = class {
     /** @param {Function} data_generator */
     constructor(data_generator) {
-        /** @type {Function[]} */
+        /** @type {Array<Function>} */
         this.subscribers = [];
         /** @type {Function} */
         this.generator = data_generator;
         this.IsGeneratorWork = false;
         /** @type {datatype} */
-        this.data = this.generator({ init: true });
+        this.data = this.generator({ 
+            init: true 
+        });
         if(writeTodb) {
             this.count = 0;
             /** @type {Array<datatype>} */
@@ -50,11 +52,11 @@ module.exports = class {
             subscriber => subscriber(
                 JSON.stringify(this.data)
             )
-        );
+        )
     }
 
     UpdateData() {
-        if(this.IsGeneratorWork){
+        if(this.IsGeneratorWork) {
             return;
         }
         this.IsGeneratorWork = true;

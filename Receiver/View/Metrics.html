@@ -35,35 +35,9 @@
         <div id="grid"></div>
     </main>
     <script type="module" src="./scripts/metrics_grid.js"></script>
-    <script>
-        Array.prototype.shuffle = function() {
-            return this.reduce((acc, v, i) => {
-                const j = Math.floor(Math.random() * (i + 1));
-                [v, acc[j]] = [acc[j], v];
-                return acc;
-            }, [...this]);
-        };
-
-        fetch('/api/get_images_list')
-        .then(response => response.json())
-        .then(images => {
-            (function interval() {
-                this.slider.setAttribute('src', '/images/' + this.images[this.pointer]);
-                this.pointer = ++this.pointer !== this.images.length && this.pointer || 0;
-                setTimeout(interval.bind(this), 5000);
-            }).call({ 
-                pointer: 0, 
-                images: images.shuffle(), 
-                slider: document.querySelector('#slider') 
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', e => {
-            ['contextmenu', 'selectstart', 'copy', 'select', 'dragstart', 'beforecopy']
-            .forEach(
-                event => document.body.addEventListener(event, e => e.preventDefault())
-            );
-        })
+    <script type="module">
+        import {slider} from './scripts/common.js';
+        slider();
     </script>
 </body>
 </html>
