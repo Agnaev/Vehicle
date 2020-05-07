@@ -3,6 +3,7 @@
 
 import chartCreate from './Chart.js';
 import ConnectStatus from './ConnectState.js';
+import { } from './notify.min.js';
 
 Array.prototype['shuffle'] = function () {
     return this.reduce((total, v) => {
@@ -12,13 +13,15 @@ Array.prototype['shuffle'] = function () {
     }, [...this]);
 }
 
+$.notify.defaults({globalPosition:'top centre'})
+
 /** Initialize intial state */
 document.addEventListener('DOMContentLoaded', function () {
     ['contextmenu', 'selectstart', 'copy', 'select', 'dragstart', 'beforecopy']
         .forEach(
             event => document.body.addEventListener(event, e => e.preventDefault())
         );
-    new ConnectStatus();
+    new ConnectStatus($.notify, false);
     document.querySelector('#counter').textContent = '0';
 });
 
@@ -49,12 +52,15 @@ document.querySelector('#connect_to_vehicle').addEventListener('click', async ev
 
     const charts = await charts_list;
 
-    const state = new ConnectStatus();
-    const webSocket = new WebSocket(`ws${location.protocol.includes('s') && 's' || ''}://${location.hostname}:${webSocketPort}`);
+    const state = new ConnectStatus($.notify);
+    const webSocket = new WebSocket(`ws${location.protocol.includes('s') ? 's' : ''}://${location.hostname}:${webSocketPort}`);
 
     webSocket.onopen = () => state.connect();
     webSocket.onclose = () => state.disconnect();
-    webSocket.onerror = error => console.log(`Произошла ошибка с веб сокетом. ${error}`);
+    webSocket.onerror = error => {
+        $.notify('Произошла ошибка подключения к БПЛА', 'error');
+        console.log(`Произошла ошибка с веб сокетом. ${error}`);
+    }
     webSocket.onmessage = function({data}) {
         this.charts.map(
             ({ chart, Id }) => chart.push(this.iterator, JSON.parse(data)[Id]).update()

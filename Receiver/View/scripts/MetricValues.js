@@ -4,7 +4,7 @@ import chartCreate from './Chart.js';
 
 Array.prototype['filterWithRemove'] = 
 /**
- * @param {(value:number, index:number, array:Array) => boolean} callback 
+ * @param {(value?:number, index?:number, array?:Array) => boolean} callback 
  */
  function (callback) {
     return this.reduce((total, ...args) => {

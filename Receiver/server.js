@@ -12,7 +12,7 @@ const {
     basedir,
     error_handler_404 } = require('./config');
 const routers = require('./routes/router');
-const { copyFile } = require('./helper/helper'); 
+const { copyFile } = require('./helper/helper');
 
 const app = express();
 
@@ -39,7 +39,7 @@ app.use('/api/metrics', routers.types);
 app.use('/api/cards', routers.partials);
 app.use('/', routers.main);
 
-app.use((req, res) =>{
+app.use((req, res) => {
     logger(`Client with ip: ${req.ip} got 404 error with request: ${req.originalUrl}`);
     error_handler_404(res, 'Страница не найдена.')
 });
