@@ -3,7 +3,7 @@
 
 const { Server: WebSocketServer } = require('ws');
 const { web_socket_port: port } = require('./config');
-const Observer = require('./Observer');
+const { DataSender } = require('./DataSender');
 const makeRequest = require('./db_request');
 const generator = require('./data_generator');
 
@@ -14,10 +14,10 @@ makeRequest('SELECT * FROM MetricsTypes')
         port
     });
 
-    const observer = new Observer(generator(types));
+    const dataSender = new DataSender(generator(types));
     webSocketServer.on('connection', (socket, request) => {
         console.log(`User with ip: ${request.socket.remoteAddress} was connected.`);
-        const unsubscribe = observer.subscribe(
+        const unsubscribe = dataSender.subscribe(
             /**@param {string} data JSON string value*/
             data => socket.send(data)
         );

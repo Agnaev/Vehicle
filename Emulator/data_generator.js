@@ -18,8 +18,8 @@ function Currying(func) {
 const data_generator = (types, last_res) => types.reduce(
     (result, { Id, MinValue, MaxValue }) => ({
         ...result,
-        [Id]: (({ min, max }) => Math.floor(Math.random() * (max - min) + min))
-            (last_res.init
+        [Id]: (({ min, max }) => Math.floor(Math.random() * (max - min) + min)) // iife function
+            (last_res.init // call iife function here
                 ? {
                     min: MinValue,
                     max: MaxValue
