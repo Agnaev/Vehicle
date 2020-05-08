@@ -1,22 +1,28 @@
-// @ts-check
-'use strict';
-
 /** Каррирование функции, т.е. превращение фцнкции из вида f(a, b, c) в f(a)(b)(c)
  * @param {Function} func функция которую надо каррировать*/
-function Currying(func) {
+function Currying(func:Function) {
     return function curried() {
+        const _args = Array.apply(null, arguments);
         return arguments.length >= func.length
             ? func.apply(this, arguments)
-            : (...args) => curried.apply(this, [...arguments, ...args]);
+            : (...args) => curried.apply(this, [..._args, ...args]);
     }
 }
 
+type db_item = {
+    Id: number, 
+    Name: string, 
+    Description: string,
+    MinValue: number, 
+    MaxValue: number
+}
+
 /** Непосредственно функция генерации новых данных
- * @param {Array<{Id: number, Name: string, MinValue: number, MaxValue: number}>} types метрики из базы данных
+ * @param {Array<db_item>} types метрики из базы данных
  * @param {{ init:true, [key:number]:number }} last_res последний результат работы функции
  */
-const data_generator = (types, last_res) => types.reduce(
-    (result, { Id, MinValue, MaxValue }) => ({
+const data_generator = (types: Array<db_item>, last_res:{ [key:number]:number, init?:boolean}):{[key:number]:number} => types.reduce(
+    (result: { [key:number]:number }, { Id, MinValue, MaxValue }) => ({
         ...result,
         [Id]: (({ min, max }) => Math.floor(Math.random() * (max - min) + min)) // iife function
             (last_res.init // call iife function here
@@ -31,5 +37,5 @@ const data_generator = (types, last_res) => types.reduce(
             )
     }), {});
 
-module.exports = Currying(data_generator);
+export const generator = Currying(data_generator);
 

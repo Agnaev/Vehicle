@@ -1,36 +1,29 @@
-// @ts-check
-'use strict';
+import request from 'request-promise';
+import * as config from '../../config';
+import { Observer } from './Observer';
 
-const request = require('request-promise');
-const { writeToDatabase: writeTodb,
-    countWriteToDb,
-    ip, port,
-    isHttps } = require('./config');
-const { Observer } = require('./Observer');
+type datatype = {
+    [ key:number ]: number
+};
 
-/** @typedef { {[ key:number ]: number}} datatype */
-/** @typedef { function(string): void } fntype */
-/** @typedef { function(datatype | {init:true}) :datatype } generator_type */
+export default class extends Observer {
+    generator:any;
+    IsGeneratorWork:boolean = false;
+    data:{ [key: number]:number };
+    count:number = 0;
+    storage: Array<datatype> = []
 
-module.exports.DataSender = class extends Observer {
     /** @param {function(datatype | {init:true}):datatype} data_generator */
-    constructor(data_generator) {
+    constructor(data_generator:(data:datatype) => datatype ) {
         super();
         this.generator = data_generator;
-        this.IsGeneratorWork = false;
         /** @type {datatype} */
         this.data = this.generator({
             init: true
         });
-        if (writeTodb) {
-            this.count = 0;
-            /** @type {Array<datatype>} */
-            this.storage = [];
-        }
     }
 
-    /** @param {fntype} callback */
-    subscribe(callback) {
+    subscribe(callback: (data:string) => void) :() => void {
         super.subscribe(callback);
         if(!this.IsGeneratorWork) {
             this.UpdateData();
@@ -38,7 +31,7 @@ module.exports.DataSender = class extends Observer {
         return () => super.unsubscribe(callback);
     }
 
-    UpdateData() {
+    UpdateData():void {
         if (this.IsGeneratorWork) {
             return;
         }
@@ -55,15 +48,15 @@ module.exports.DataSender = class extends Observer {
         }).call(this);
     }
 
-    broadcast() {
-        if (writeTodb) {
-            if (this.count++ < countWriteToDb) {
+    broadcast():void {
+        if (config.default.writeToDatabase) {
+            if (this.count++ < config.default.countWriteToDb) {
                 this.storage.push(this.data);
             }
             else {
                 request({
                     method: 'post',
-                    url: `http${isHttps && 's' || ''}://${ip}:${port}/api/metric_values/create`,
+                    url: `http${config.default.isHttps && 's' || ''}://${config.default.ip}:${config.default.port}/api/metric_values/create`,
                     form: { 
                         data: JSON.stringify(this.storage) 
                     }
