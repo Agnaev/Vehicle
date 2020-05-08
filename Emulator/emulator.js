@@ -7,13 +7,13 @@ const Observer = require('./Observer');
 const makeRequest = require('./db_request');
 const generator = require('./data_generator');
 
-const webSocketServer = new WebSocketServer({
-    port
-});
-
-makeRequest('select * from MetricsTypes')
+makeRequest('SELECT * FROM MetricsTypes')
 .then(x => x.recordsets[0])
 .then(types => {
+    const webSocketServer = new WebSocketServer({
+        port
+    });
+
     const observer = new Observer(generator(types));
     webSocketServer.on('connection', (socket, request) => {
         console.log(`User with ip: ${request.socket.remoteAddress} was connected.`);

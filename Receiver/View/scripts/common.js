@@ -2,7 +2,7 @@
 'use strict';
 
 Array.prototype['filterWithRemove'] =
-    /**
+    /**remove elements from current array and return them
      * @param {(value?:number, index?:number, array?:Array) => boolean} callback 
      */
     function (callback) {
@@ -32,6 +32,8 @@ document.addEventListener('DOMContentLoaded', e => {
         .forEach(
             event => document.body.addEventListener(event, e => e.preventDefault())
         );
+}, {
+    once: true
 });
 
 $.notify?.defaults({
@@ -51,7 +53,7 @@ export const slider = (slider = document.querySelector('#slider')) =>
         .then(images => {
             (function interval() {
                 this.slider.setAttribute('src', '/images/' + this.images[this.pointer]);
-                this.pointer = this.pointer + 1 !== this.images.length && this.pointer + 1 || 0;
+                this.pointer = ++this.pointer !== this.images.length && this.pointer || 0;
                 setTimeout(interval.bind(this), 5000);
             }).call({
                 pointer: 0,

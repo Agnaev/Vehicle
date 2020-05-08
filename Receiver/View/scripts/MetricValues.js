@@ -6,8 +6,6 @@ import { slider, fetch_json } from './common.js';
 const promise_data = fetch_json('/api/metric_values/get');
 const promise_metrics = fetch_json('/api/metrics/get');
 
-slider();
-
 Promise.all([promise_data, promise_metrics])
     .then(([data, metrics]) => {
         const indexed_data = metrics.reduce((store, { Id }) => ({
@@ -24,3 +22,4 @@ Promise.all([promise_data, promise_metrics])
         });
     });
 
+slider();

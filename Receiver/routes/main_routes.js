@@ -21,7 +21,7 @@ router.get('/', (req, res) => {
 
 router.get('/values', async (req, res) => {
     try {
-        res.status(200).sendFile(path.join(basedir, 'View', 'MetricsValues.html'));
+        res.sendFile(path.join(basedir, 'View', 'MetricsValues.html'));
     }
     catch(exc) {
         logger(`Error while getting metrics values from database. filename: ${__dirname}.\r\nError${exc}`);
