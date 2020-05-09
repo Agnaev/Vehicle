@@ -32,6 +32,19 @@ document.addEventListener('DOMContentLoaded', e => {
         .forEach(
             event => document.body.addEventListener(event, e => e.preventDefault())
         );
+    document.querySelector('#clearTable')?.addEventListener('click', e => 
+        fetch('/api/metric_values/delete', { 
+            method: 'post' 
+        })
+        .then(response => {
+            if(response.ok) {
+                return response.json();
+            }
+            throw new Error('error')
+        })
+        .then($.notify.bind(null, 'Данные из таблицы значений были удалены.', 'success'))
+        .catch($.notify.bind(null, 'Произошла ошибка при удалении значений из таблицы значений', 'error'))
+    )
 }, {
     once: true
 });
@@ -46,7 +59,7 @@ $.notify?.defaults({
 * @returns {Promise} Result from server.
 */
 export const fetch_json = (url, options = {}) => fetch(url, options)
-    .then(x => x.json());
+    .then(x => x.json()).catch(e => e);
 
 export const slider = (slider = document.querySelector('#slider')) =>
     fetch_json('/api/get_images_list')

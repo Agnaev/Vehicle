@@ -35,7 +35,7 @@ router.post('/delete', async (req, res) => {
     }
     catch(exc) {
         logger(`Error while deleting metrics values. filename: ${__dirname}.\r\nError: ${exc}`);
-        res.sendStatus(500);
+        res.status(500).send(false);
     }
 })
 

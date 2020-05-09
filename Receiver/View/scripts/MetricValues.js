@@ -1,6 +1,7 @@
 // @ts-check
 'use strict';
 import chartCreate from './Chart.js';
+import { } from './notify.min.js';
 import { slider, fetch_json } from './common.js';
 
 const promise_data = fetch_json('/api/metric_values/get');
@@ -23,3 +24,4 @@ Promise.all([promise_data, promise_metrics])
     });
 
 slider();
+
