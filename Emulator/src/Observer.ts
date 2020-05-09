@@ -1,10 +1,8 @@
-type subscribe_fn = (key:string) => void
+export type subscribe_fn = (key:string) => void
 
 export class Observer {
-    subscribers:Array<subscribe_fn>;
-    constructor() {
-        this.subscribers = [];
-    }
+    subscribers:Array<subscribe_fn> = [];
+    constructor() { }
 
     subscribe(callback:subscribe_fn):void {
         this.subscribers.push(callback);

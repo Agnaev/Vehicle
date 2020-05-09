@@ -4,14 +4,13 @@
   "description": "Vehicle emulator",
   "main": "emulator.js",
   "scripts": {
-    "compile": "npx tsc",
+    "build": "npx tsc",
     "release": "node dist\\emulator.js",
     "dev": "nodemon dist\\emulator.js"
   },
   "author": "Agnaev Alan",
   "license": "ISC",
   "dependencies": {
-    "@types/request-promise": "^4.1.46",
     "mssql": "^6.2.0",
     "request": "^2.88.2",
     "request-promise": "^4.2.5",
@@ -20,6 +19,7 @@
   },
   "devDependencies": {
     "@types/mssql": "^6.0.0",
+    "@types/request-promise": "^4.1.46",
     "@types/ws": "^7.2.4",
     "nodemon": "^2.0.3"
   }

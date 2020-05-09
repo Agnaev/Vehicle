@@ -1,19 +1,14 @@
-import { Observer } from './Observer';
-declare type datatype = {
-    [key: number]: number;
-};
+import { Observer, subscribe_fn } from './Observer';
+import { generator_type, response_type } from './data_generator';
 export default class extends Observer {
     generator: any;
     IsGeneratorWork: boolean;
-    data: {
-        [key: number]: number;
-    };
+    data: response_type;
     count: number;
-    storage: Array<datatype>;
-    constructor(data_generator: (data: datatype) => datatype);
-    subscribe(callback: (data: string) => void): () => void;
+    storage: Array<response_type>;
+    constructor(data_generator: (data: generator_type) => response_type);
+    subscribe(callback: subscribe_fn): () => void;
     UpdateData(): void;
     broadcast(): void;
 }
-export {};
 //# sourceMappingURL=DataSender.d.ts.map

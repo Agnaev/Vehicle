@@ -1,29 +1,26 @@
 import request from 'request-promise';
 import * as config from '../../config';
-import { Observer } from './Observer';
-
-type datatype = {
-    [ key:number ]: number
-};
+import { Observer, subscribe_fn } from './Observer';
+import { generator_type, response_type } from './data_generator';
 
 export default class extends Observer {
     generator:any;
     IsGeneratorWork:boolean = false;
-    data:{ [key: number]:number };
+    data:response_type;
     count:number = 0;
-    storage: Array<datatype> = []
+    storage: Array<response_type> = [];
 
-    /** @param {function(datatype | {init:true}):datatype} data_generator */
-    constructor(data_generator:(data:datatype) => datatype ) {
+    /** @param {(data:generator_type) => response_type} data_generator */
+    constructor(data_generator:(data:generator_type) => response_type ) {
         super();
         this.generator = data_generator;
-        /** @type {datatype} */
+        /** @type {response_type} */
         this.data = this.generator({
             init: true
         });
     }
 
-    subscribe(callback: (data:string) => void) :() => void {
+    subscribe(callback: subscribe_fn) :() => void {
         super.subscribe(callback);
         if(!this.IsGeneratorWork) {
             this.UpdateData();
