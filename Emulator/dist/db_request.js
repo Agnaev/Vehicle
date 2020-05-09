@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 var mssql_1 = require("mssql");
-var config = tslib_1.__importStar(require("../../config"));
+var config = tslib_1.__importStar(require("../config"));
 exports.makeRequest = function (requestString) { return tslib_1.__awaiter(void 0, void 0, void 0, function () {
     var connectionPool, pool, data, exc_1;
     return tslib_1.__generator(this, function (_a) {

@@ -1,17 +1,17 @@
 import request from 'request-promise';
-import * as config from '../../config';
+import * as config from '../config';
 import { Observer, subscribe_fn } from './Observer';
 import { generator_type, response_type } from './data_generator';
 
 export default class extends Observer {
-    generator:any;
-    IsGeneratorWork:boolean = false;
-    data:response_type;
-    count:number = 0;
+    generator: any;
+    IsGeneratorWork: boolean = false;
+    data: response_type;
+    count: number = 0;
     storage: Array<response_type> = [];
 
     /** @param {(data:generator_type) => response_type} data_generator */
-    constructor(data_generator:(data:generator_type) => response_type ) {
+    constructor(data_generator: (data: generator_type) => response_type) {
         super();
         this.generator = data_generator;
         /** @type {response_type} */
@@ -20,15 +20,15 @@ export default class extends Observer {
         });
     }
 
-    subscribe(callback: subscribe_fn) :() => void {
+    subscribe(callback: subscribe_fn): () => void {
         super.subscribe(callback);
-        if(!this.IsGeneratorWork) {
+        if (!this.IsGeneratorWork) {
             this.UpdateData();
         }
         return () => super.unsubscribe(callback);
     }
 
-    UpdateData():void {
+    UpdateData(): void {
         if (this.IsGeneratorWork) {
             return;
         }
@@ -45,7 +45,7 @@ export default class extends Observer {
         }).call(this);
     }
 
-    broadcast():void {
+    broadcast(): void {
         if (config.default.writeToDatabase) {
             if (this.count++ < config.default.countWriteToDb) {
                 this.storage.push(this.data);
@@ -54,8 +54,8 @@ export default class extends Observer {
                 request({
                     method: 'post',
                     url: `http${config.default.isHttps && 's' || ''}://${config.default.ip}:${config.default.port}/api/metric_values/create`,
-                    form: { 
-                        data: JSON.stringify(this.storage) 
+                    form: {
+                        data: JSON.stringify(this.storage)
                     }
                 });
                 this.storage.splice(0, this.storage.length);

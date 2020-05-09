@@ -1,5 +1,5 @@
 import { Server as WebSocketServer } from 'ws';
-import * as config from '../../config';
+import * as config from '../config';
 import DataSender from './DataSender'
 import { makeRequest } from './db_request';
 import { generator } from './data_generator';
@@ -8,7 +8,7 @@ makeRequest('SELECT * FROM MetricsTypes')
     // @ts-ignore
     .then(x => x.recordsets[0])
     .then(types => {
-        
+
         const webSocketServer = new WebSocketServer({
             port: config.default.web_socket_port
         });

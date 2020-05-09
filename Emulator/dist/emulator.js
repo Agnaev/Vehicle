@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 var ws_1 = require("ws");
-var config = tslib_1.__importStar(require("../../config"));
+var config = tslib_1.__importStar(require("../config"));
 var DataSender_1 = tslib_1.__importDefault(require("./DataSender"));
 var db_request_1 = require("./db_request");
 var data_generator_1 = require("./data_generator");

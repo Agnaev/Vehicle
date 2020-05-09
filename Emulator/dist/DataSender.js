@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 var request_promise_1 = tslib_1.__importDefault(require("request-promise"));
-var config = tslib_1.__importStar(require("../../config"));
+var config = tslib_1.__importStar(require("../config"));
 var Observer_1 = require("./Observer");
 var default_1 = (function (_super) {
     tslib_1.__extends(default_1, _super);
