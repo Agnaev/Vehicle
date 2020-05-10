@@ -3,7 +3,7 @@
 
 export default class ConnectStatus {
     /** @param {Function} notificator */
-    constructor(notificator, showMessage = true) {
+    constructor(notificator) {
         /** @type {HTMLElement} */
         this.status = document.querySelector('div#connection_status');
         /** @type {{
@@ -13,9 +13,9 @@ export default class ConnectStatus {
         this.btn = {
             connect: document.querySelector('#connect_to_vehicle'),
             disconnect: document.querySelector('#close_connection')
-        }
+        };
         this.notificator = notificator;
-        this.disconnect(showMessage);
+        this.disconnect(false);
     }
     /** disable connect btn & enable disconnect btn & set online status */
     connect() {

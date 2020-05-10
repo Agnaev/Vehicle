@@ -3,7 +3,7 @@
 
 Array.prototype['filterWithRemove'] =
     /**remove elements from current array and return them
-     * @param {(value?:number, index?:number, array?:Array) => boolean} callback 
+     * @param { (value?:number, index?:number, array?:Array) => boolean } callback 
      */
     function (callback) {
         return this.reduce((total, ...args) => {
@@ -20,9 +20,9 @@ Array.prototype['filterWithRemove'] =
     };
 
 Array.prototype['shuffle'] = function () {
-    return this.reduce((acc, v, i) => {
-        const j = Math.floor(Math.random() * (i + 1));
-        [v, acc[j]] = [acc[j], v];
+    return this.reduce((acc, val) => {
+        const j = Math.floor(Math.random() * acc.length);
+        [val, acc[j]] = [acc[j], val];
         return acc;
     }, [...this]);
 };
@@ -32,18 +32,18 @@ document.addEventListener('DOMContentLoaded', e => {
         .forEach(
             event => document.body.addEventListener(event, e => e.preventDefault())
         );
-    document.querySelector('#clearTable')?.addEventListener('click', e => 
-        fetch('/api/metric_values/delete', { 
-            method: 'post' 
+    document.querySelector('#clearTable')?.addEventListener('click', e =>
+        fetch('/api/metric_values/delete', {
+            method: 'post'
         })
-        .then(response => {
-            if(response.ok) {
-                return response.json();
-            }
-            throw new Error('error')
-        })
-        .then($.notify.bind(null, 'Данные из таблицы значений были удалены.', 'success'))
-        .catch($.notify.bind(null, 'Произошла ошибка при удалении значений из таблицы значений', 'error'))
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error('error')
+            })
+            .then($.notify.bind(null, 'Данные из таблицы значений были удалены.', 'success'))
+            .catch($.notify.bind(null, 'Произошла ошибка при удалении значений из таблицы значений', 'error'))
     )
 }, {
     once: true
@@ -58,8 +58,10 @@ $.notify?.defaults({
 * @param {{[key:string]:string}} options Request options.
 * @returns {Promise} Result from server.
 */
-export const fetch_json = (url, options = {}) => fetch(url, options)
-    .then(x => x.json()).catch(e => e);
+export const fetch_json = (url, options = {}) =>
+    fetch(url, options)
+        .then(x => x.json())
+        .catch(e => e);
 
 export const slider = (slider = document.querySelector('#slider')) =>
     fetch_json('/api/get_images_list')

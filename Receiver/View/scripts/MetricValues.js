@@ -4,24 +4,26 @@ import chartCreate from './Chart.js';
 import { } from './notify.min.js';
 import { slider, fetch_json } from './common.js';
 
-const promise_data = fetch_json('/api/metric_values/get');
-const promise_metrics = fetch_json('/api/metrics/get');
-
-Promise.all([promise_data, promise_metrics])
-    .then(([data, metrics]) => {
-        const indexed_data = metrics.reduce((store, { Id }) => ({
-            ...store,
-            [Id]: data.filterWithRemove(({ TypeId }) => TypeId === Id)
-        }), {});
-
+Promise.all([
+    fetch_json('/api/metric_values/get'),
+    fetch_json('/api/metrics/get')
+])
+    .then(([
+        values,
+        metrics
+    ]) =>
         metrics.forEach(({ Id, Name }) => {
             const chart = chartCreate(Name);
-            indexed_data[Id].map(
-                ({ Value }, index) => chart.push(index + 1, Value)
-            );
+            values
+                .filterWithRemove(({ TypeId }) => TypeId === Id)
+                .map(
+                    /**@param {{Value:number}} arg0 
+                     * @param {number} index */
+                    ({ Value }, index) => chart.push(index + 1, Value)
+                );
             chart.update();
-        });
-    });
+        })
+    );
 
 slider();
 

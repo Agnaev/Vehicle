@@ -7,7 +7,7 @@ import { } from './notify.min.js';
 import { slider, fetch_json } from './common.js';
 
 document.addEventListener('DOMContentLoaded', function () {
-    new ConnectStatus($.notify, false);
+    new ConnectStatus($.notify);
     document.querySelector('#counter').textContent = '0';
 });
 
@@ -33,18 +33,18 @@ document.querySelector('#connect_to_vehicle').addEventListener('click', async ev
     }
 
     const state = new ConnectStatus($.notify);
-    const webSocket = new WebSocket(`ws${location.protocol.includes('s') ? 's' : ''}://${location.hostname}:${webSocketPort}`);
+    const ws_client = new WebSocket(`ws${location.protocol.includes('s') ? 's' : ''}://${location.hostname}:${webSocketPort}`);
 
-    webSocket.onopen = () => state.connect();
-    webSocket.onclose = () => state.disconnect();
-    webSocket.onerror = error => {
+    ws_client.onopen = () => state.connect();
+    ws_client.onclose = () => state.disconnect();
+    ws_client.onerror = error => {
         $.notify('Произошла ошибка подключения к БПЛА', 'error');
         console.log(`Произошла ошибка с веб сокетом. ${error}`);
     };
     
     const charts = await charts_list;
 
-    webSocket.onmessage = function({data}) {
+    ws_client.onmessage = function({data}) {
         this.charts.map(
             ({ chart, Id }) => chart.push(this.iterator, JSON.parse(data)[Id]).update()
         );
@@ -55,9 +55,11 @@ document.querySelector('#connect_to_vehicle').addEventListener('click', async ev
         iterator: 0
     });
 
-    const closeSocket = () => webSocket.close();
+    const closeSocket = () => ws_client.close();
     document.querySelector('#close_connection')
-        .addEventListener('click', closeSocket, { once: true });
+        .addEventListener('click', closeSocket, { 
+            once: true 
+        });
 
     window.onunload = closeSocket;
 });
