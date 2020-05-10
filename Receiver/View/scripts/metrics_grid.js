@@ -1,6 +1,6 @@
 import { } from './jquery.min.js';
 import { } from './kendo.all.min.js';
-import { slider } from './scripts/common.js';
+import { slider } from './common.js';
 
 const refresh_grid = () => $('#grid').data('kendoGrid').dataSource.read();
 const dataSource = new kendo.data.DataSource({

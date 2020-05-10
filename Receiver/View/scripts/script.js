@@ -1,14 +1,15 @@
 // @ts-check
 'use strict';
 
+import { } from './jquery.min.js';
 import chartCreate from './Chart.js';
 import ConnectStatus from './ConnectState.js';
 import { } from './notify.min.js';
 import { slider, fetch_json } from './common.js';
 
-document.addEventListener('DOMContentLoaded', function () {
+$(document).ready(function () {
     new ConnectStatus($.notify);
-    document.querySelector('#counter').textContent = '0';
+    $('#counter').text('0');
 });
 
 const getWebSocketPort = fetch_json('/api/get_socket_port')
@@ -24,7 +25,7 @@ const charts_list = fetch_json('/api/metrics/get')
         )
     );
 
-document.querySelector('#connect_to_vehicle').addEventListener('click', async event => {
+$('#connect_to_vehicle').on('click', async event => {
     event.preventDefault();
     
     const webSocketPort = await getWebSocketPort;
@@ -48,18 +49,15 @@ document.querySelector('#connect_to_vehicle').addEventListener('click', async ev
         this.charts.map(
             ({ chart, Id }) => chart.push(this.iterator, JSON.parse(data)[Id]).update()
         );
-        this.counter.textContent = (this.iterator++).toString();
+        this.counter.text(this.iterator++);
     }.bind({
-        counter: document.querySelector('#counter'),
+        counter: $('#counter'),
         charts,
         iterator: 0
     });
 
     const closeSocket = () => ws_client.close();
-    document.querySelector('#close_connection')
-        .addEventListener('click', closeSocket, { 
-            once: true 
-        });
+    $('#close_connection').one('click', closeSocket);
 
     window.onunload = closeSocket;
 });

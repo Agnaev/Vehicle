@@ -32,12 +32,12 @@ Storage.prototype.removeBlobs = function () {
         .forEach(([key, val]) => val.startsWith('blob') && this.removeItem(key));
 };
 
-document.addEventListener('DOMContentLoaded', e => {
+$(document).ready(e => {
     ['contextmenu', 'selectstart', 'copy', 'select', 'dragstart', 'beforecopy']
         .forEach(
             event => document.body.addEventListener(event, e => e.preventDefault())
         );
-    document.querySelector('#clearTable')?.addEventListener('click', e =>
+    $('#clearTable')?.on('click', e =>
         fetch('/api/metric_values/delete', {
             method: 'post'
         })
@@ -50,8 +50,6 @@ document.addEventListener('DOMContentLoaded', e => {
             .then($.notify.bind(null, 'Данные из таблицы значений были удалены.', 'success'))
             .catch($.notify.bind(null, 'Произошла ошибка при удалении значений из таблицы значений', 'error'))
     )
-}, {
-    once: true
 });
 
 $.notify?.defaults({
@@ -68,7 +66,7 @@ export const fetch_json = (url, options = {}) =>
         .then(x => x.json())
         .catch(e => e);
 
-export const slider = async (slider = document.querySelector('#slider')) => {
+export const slider = async (slider = $('#slider')[0]) => {
     const images = (await fetch_json('/api/get_images_list')).shuffle();
     localStorage.removeBlobs();
     (async function interval() {
