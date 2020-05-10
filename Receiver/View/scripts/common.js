@@ -27,6 +27,11 @@ Array.prototype['shuffle'] = function () {
     }, [...this]);
 };
 
+Storage.prototype.removeBlobs = function () {
+    Object.entries(this)
+        .forEach(([key, val]) => val.startsWith('blob') && this.removeItem(key));
+};
+
 document.addEventListener('DOMContentLoaded', e => {
     ['contextmenu', 'selectstart', 'copy', 'select', 'dragstart', 'beforecopy']
         .forEach(
@@ -63,17 +68,25 @@ export const fetch_json = (url, options = {}) =>
         .then(x => x.json())
         .catch(e => e);
 
-export const slider = (slider = document.querySelector('#slider')) =>
-    fetch_json('/api/get_images_list')
-        .then(images => {
-            (function interval() {
-                this.slider.setAttribute('src', '/images/' + this.images[this.pointer]);
-                this.pointer = ++this.pointer !== this.images.length && this.pointer || 0;
-                setTimeout(interval.bind(this), 5000);
-            }).call({
-                pointer: 0,
-                images: images.shuffle(),
-                slider
-            });
-        });
+export const slider = async (slider = document.querySelector('#slider')) => {
+    const images = (await fetch_json('/api/get_images_list')).shuffle();
+    localStorage.removeBlobs();
+    (async function interval() {
+        const img_name = this.images[this.pointer];
+        let src = localStorage.getItem(img_name);
+        if (!src) {
+            src = `/images/${img_name}`;
+            const blob = await fetch(src).then(x => x.blob());
+            src = URL.createObjectURL(blob);
+            localStorage.setItem(img_name, src);
+        }
+        this.slider.src = src;
+        this.pointer = ++this.pointer !== this.images.length && this.pointer || 0;
+        setTimeout(interval.bind(this), 5000);
+    }).call({
+        pointer: 0,
+        images,
+        slider
+    });
+}
 
