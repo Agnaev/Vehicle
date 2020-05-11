@@ -43,6 +43,9 @@ $(document).ready(e => {
         })
             .then(response => {
                 if (response.ok) {
+                    if(window['redrawCharts']) {
+                        window['redrawCharts']();
+                    }
                     return response.json();
                 }
                 throw new Error('error')

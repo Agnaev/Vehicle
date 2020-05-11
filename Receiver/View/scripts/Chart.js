@@ -29,12 +29,19 @@ export default function chartCreate (title) {
     });
 
     return {
+        chart,
         push(label, data) {
             chart.data.labels.push(label);
             chart.data.datasets.forEach(dataset => dataset.data.push(data));
             return this;
         },
         update() {
+            chart.update();
+        },
+        removeData() {
+            do {
+                chart.data.datasets[0].data.pop();
+            } while(chart.data.labels.pop());
             chart.update();
         }
     }

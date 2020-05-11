@@ -27,7 +27,7 @@ const charts_list = fetch_json('/api/metrics/get')
 
 $('#connect_to_vehicle').on('click', async event => {
     event.preventDefault();
-    
+
     const webSocketPort = await getWebSocketPort;
     if (!webSocketPort) {
         throw Error('Web socket port was not received.');
@@ -42,10 +42,10 @@ $('#connect_to_vehicle').on('click', async event => {
         $.notify('Произошла ошибка подключения к БПЛА', 'error');
         console.log(`Произошла ошибка с веб сокетом. ${error}`);
     };
-    
+
     const charts = await charts_list;
 
-    ws_client.onmessage = function({data}) {
+    ws_client.onmessage = function ({ data }) {
         this.charts.map(
             ({ chart, Id }) => chart.push(this.iterator, JSON.parse(data)[Id]).update()
         );
@@ -60,6 +60,15 @@ $('#connect_to_vehicle').on('click', async event => {
     $('#close_connection').one('click', closeSocket);
 
     window.onunload = closeSocket;
+
+    window['redrawCharts'] = () =>{
+        if(ws_client.readyState < 2) {
+            return new Error('Connection is steel alive!');
+        }
+        charts.forEach(
+            chart => chart.chart.removeData()
+        );
+    }
 });
 
 slider();

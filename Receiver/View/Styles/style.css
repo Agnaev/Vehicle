@@ -109,7 +109,7 @@ a {
     margin-right: 20px;
 }
 
-.buttons input:hover {
+.buttons input:hover:enabled {
     background-color: #000000;
     color: #ffffff;
 }
