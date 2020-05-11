@@ -5,17 +5,20 @@ import { } from './jquery.min.js';
 import chartCreate from './Chart.js';
 import ConnectStatus from './ConnectState.js';
 import { } from './notify.min.js';
-import { slider, fetch_json } from './common.js';
+import { slider, fetch_json, getCookie } from './common.js';
 
 $(document).ready(function () {
     new ConnectStatus($.notify);
     $('#counter').text('0');
 });
 
-const getWebSocketPort = fetch_json('/api/get_socket_port')
-    .then(x => x.port);
+const getWebSocketPort = () => fetch_json('/api/get_socket_port')
+    .then(x => {
+        document.cookie = `ws_port=${x.port};max-age=1800;`
+        return x.port;
+    });
 
-const charts_list = fetch_json('/api/metrics/get')
+const charts_list = fetch_json('/api/metrics')
     .then(data =>
         data.map(
             ({ Id, Name }) => ({
@@ -28,7 +31,11 @@ const charts_list = fetch_json('/api/metrics/get')
 $('#connect_to_vehicle').on('click', async event => {
     event.preventDefault();
 
-    const webSocketPort = await getWebSocketPort;
+    let webSocketPort = getCookie('ws_port');
+    if(!webSocketPort) {
+        webSocketPort = await getWebSocketPort();
+    }
+    
     if (!webSocketPort) {
         throw Error('Web socket port was not received.');
     }

@@ -6,8 +6,8 @@ import { slider, fetch_json } from './common.js';
 
 (window['redrawCharts'] = () => {
     Promise.all([
-        fetch_json('/api/metric_values/get'),
-        fetch_json('/api/metrics/get')
+        fetch_json('/api/metric_values'),
+        fetch_json('/api/metrics')
     ])
         .then(([
             values,

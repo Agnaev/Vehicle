@@ -6,7 +6,7 @@ const {Create,
 
 const router = Router();
 
-router.get('/get', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const data = await Get();
         res.status(200).send(data);
@@ -17,10 +17,10 @@ router.get('/get', async (req, res) => {
     }
 })
 
-router.post('/create', async (req, res) => {
+router.post('/', async (req, res) => {
     try {
         const result = await Create(req.body);
-        res.send(result);
+        res.status(200).send(result);
     }
     catch (exc){
         logger(`Error while adding metrics values to database. filename: ${__dirname}.\r\nError: ${exc}`)
@@ -28,10 +28,10 @@ router.post('/create', async (req, res) => {
     }
 })
 
-router.post('/delete', async (req, res) => {
+router.delete('/', async (req, res) => {
     try {
         const result = await Delete();
-        res.send(result);
+        res.status(200).send(result);
     }
     catch(exc) {
         logger(`Error while deleting metrics values. filename: ${__dirname}.\r\nError: ${exc}`);

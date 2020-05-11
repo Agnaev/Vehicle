@@ -35,11 +35,11 @@ Storage.prototype.removeBlobs = function () {
 $(document).ready(e => {
     ['contextmenu', 'selectstart', 'copy', 'select', 'dragstart', 'beforecopy']
         .forEach(
-            event => document.body.addEventListener(event, e => e.preventDefault())
+            event => $('body').on(event, e => e.preventDefault())
         );
     $('#clearTable')?.on('click', e =>
-        fetch('/api/metric_values/delete', {
-            method: 'post'
+        fetch('/api/metric_values', {
+            method: 'delete'
         })
             .then(response => {
                 if (response.ok) {
@@ -69,8 +69,18 @@ export const fetch_json = (url, options = {}) =>
         .then(x => x.json())
         .catch(e => e);
 
+/** @param {String} key cookie key*/
+export const getCookie = key => 
+    document.cookie.split(';').filter(cook => 
+        key.trim() === cook.split('=')[0].trim()
+    )[0]?.split('=')[1] ?? '';
+
 export const slider = async (slider = $('#slider')[0]) => {
-    const images = (await fetch_json('/api/get_images_list')).shuffle();
+    let images = JSON.parse(getCookie('images_list') ?? '[]');
+    if(!images || images.length === 0) {
+        images = (await fetch_json('/api/get_images_list')).shuffle();
+        document.cookie = `images_list=${JSON.stringify(images)};max-age=1800;`;
+    }
     localStorage.removeBlobs();
     (async function interval() {
         const img_name = this.images[this.pointer];

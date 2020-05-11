@@ -53,7 +53,7 @@ export default class extends Observer {
             else {
                 request({
                     method: 'post',
-                    url: `http${config.default.isHttps && 's' || ''}://${config.default.ip}:${config.default.port}/api/metric_values/create`,
+                    url: `http${config.default.isHttps && 's' || ''}://${config.default.ip}:${config.default.port}/api/metric_values/`,
                     form: {
                         data: JSON.stringify(this.storage)
                     }

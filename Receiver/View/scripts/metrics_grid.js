@@ -6,25 +6,25 @@ const refresh_grid = () => $('#grid').data('kendoGrid').dataSource.read();
 const dataSource = new kendo.data.DataSource({
     transport: {
         create: {
-            url: '/api/metrics/create',
+            url: '/api/metrics',
             type: 'post',
             dataType: 'Json',
             complete: refresh_grid
         },
         read: {
-            url: '/api/metrics/get',
+            url: '/api/metrics',
             type: 'get',
             dataType: 'Json'
         },
         update: {
-            url: '/api/metrics/update',
-            type: 'post',
+            url: '/api/metrics',
+            type: 'put',
             dataType: 'Json',
             complete: refresh_grid
         },
         destroy: {
-            url: '/api/metrics/delete',
-            type: 'post',
+            url: '/api/metrics',
+            type: 'delete',
             dataType: 'Json',
             complete: refresh_grid
         }

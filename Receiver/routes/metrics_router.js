@@ -9,7 +9,7 @@ const { Delete,
 const { logger } = require('../config');
 
 const router = Router();
-router.post('/delete', async (req, res) => {
+router.delete('/', async (req, res) => {
     try {
         await Delete(req.body);
         res.sendStatus(200);
@@ -20,10 +20,10 @@ router.post('/delete', async (req, res) => {
     }
 });
 
-router.post('/update', async (req, res) => {
+router.put('/', async (req, res) => {
     try {
         const data = await Update(req.body);
-        res.send(data);
+        res.status(200).send(data);
     }
     catch (exc) {
         logger('Error processing request update metric\r\nfilename', __dirname, exc);
@@ -31,10 +31,10 @@ router.post('/update', async (req, res) => {
     }
 });
 
-router.post('/create', async (req, res) => {
+router.post('/', async (req, res) => {
     try {
         const data = await Create(req.body);
-        res.send(data);
+        res.status(200).send(data);
     }
     catch (exc) {
         logger('Error processing request create metric\r\nfilename: ', __dirname, exc);
@@ -42,10 +42,10 @@ router.post('/create', async (req, res) => {
     }
 });
 
-router.get('/get', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const data = await GetMetrics();
-        res.send(data);
+        res.status(200).send(data);
     }
     catch (exc) {
         logger(`Error processing request get metric\r\nfilename: ${__dirname}`, exc);
