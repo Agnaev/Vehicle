@@ -37,22 +37,25 @@ $(document).ready(e => {
         .forEach(
             event => $('body').on(event, e => e.preventDefault())
         );
-    $('#clearTable')?.on('click', e =>
+    $('#clearTable')?.on('click', e => {
+        if (confirm('Вы действительно хотите удалить все записи из базы данных?') === false) {
+            return;
+        }
         fetch('/api/metric_values', {
             method: 'delete'
         })
             .then(response => {
                 if (response.ok) {
-                    if(window['redrawCharts']) {
+                    if (window['redrawCharts']) {
                         window['redrawCharts']();
                     }
                     return response.json();
                 }
-                throw new Error('error')
+                throw new Error('error');
             })
             .then($.notify.bind(null, 'Данные из таблицы значений были удалены.', 'success'))
-            .catch($.notify.bind(null, 'Произошла ошибка при удалении значений из таблицы значений', 'error'))
-    )
+            .catch($.notify.bind(null, 'Произошла ошибка при удалении значений из таблицы значений', 'error'));
+    });
 });
 
 $.notify?.defaults({
@@ -69,15 +72,17 @@ export const fetch_json = (url, options = {}) =>
         .then(x => x.json())
         .catch(e => e);
 
-/** @param {String} key cookie key*/
-export const getCookie = key => 
-    document.cookie.split(';').filter(cook => 
+/** @param { String } key cookie key
+ * @returns { string | null } cookie value by key
+*/
+export const getCookie = key =>
+    document.cookie.split(';').filter(cook =>
         key.trim() === cook.split('=')[0].trim()
-    )[0]?.split('=')[1] ?? '';
+    )[0]?.split('=')[1];
 
 export const slider = async (slider = $('#slider')[0]) => {
     let images = JSON.parse(getCookie('images_list') ?? '[]');
-    if(!images || images.length === 0) {
+    if (!images || images.length === 0) {
         images = (await fetch_json('/api/get_images_list')).shuffle();
         document.cookie = `images_list=${JSON.stringify(images)};max-age=1800;`;
     }

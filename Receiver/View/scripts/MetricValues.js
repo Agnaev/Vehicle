@@ -1,6 +1,6 @@
 // @ts-check
 'use strict';
-import chartCreate from './Chart.js';
+import ChartCreate from './Chart.js';
 import { } from './notify.min.js';
 import { slider, fetch_json } from './common.js';
 
@@ -15,7 +15,7 @@ import { slider, fetch_json } from './common.js';
         ]) => {
             $('canvas.chartjs-render-monitor').map((_, v) => v.remove());
             return metrics.forEach(({ Id, Name }) => {
-                const chart = chartCreate(Name);
+                const chart = new ChartCreate(Name);
                 values
                     .filterWithRemove(({ TypeId }) => TypeId === Id)
                     .map(
@@ -26,5 +26,6 @@ import { slider, fetch_json } from './common.js';
             });
         });
 })();
+
 slider();
 

@@ -2,14 +2,14 @@
 'use strict';
 
 import { } from './jquery.min.js';
-import chartCreate from './Chart.js';
+import ChartCreate from './Chart.js';
 import ConnectStatus from './ConnectState.js';
 import { } from './notify.min.js';
 import { slider, fetch_json, getCookie } from './common.js';
 
-$(document).ready(function () {
+$(document).ready(() => {
     new ConnectStatus($.notify);
-    $('#counter').text('0');
+    $('#counter').text(0);
 });
 
 const getWebSocketPort = () => fetch_json('/api/get_socket_port')
@@ -23,7 +23,7 @@ const charts_list = fetch_json('/api/metrics')
         data.map(
             ({ Id, Name }) => ({
                 Id,
-                chart: chartCreate(Name)
+                chart: new ChartCreate(Name)
             })
         )
     );
@@ -32,10 +32,10 @@ $('#connect_to_vehicle').on('click', async event => {
     event.preventDefault();
 
     let webSocketPort = getCookie('ws_port');
-    if(!webSocketPort) {
+    if (!webSocketPort) {
         webSocketPort = await getWebSocketPort();
     }
-    
+
     if (!webSocketPort) {
         throw Error('Web socket port was not received.');
     }
@@ -60,7 +60,7 @@ $('#connect_to_vehicle').on('click', async event => {
     }.bind({
         counter: $('#counter'),
         charts,
-        iterator: 0
+        iterator: 1
     });
 
     const closeSocket = () => ws_client.close();
@@ -68,8 +68,8 @@ $('#connect_to_vehicle').on('click', async event => {
 
     window.onunload = closeSocket;
 
-    window['redrawCharts'] = () =>{
-        if(ws_client.readyState < 2) {
+    window['redrawCharts'] = () => {
+        if (ws_client.readyState < 2) {
             return new Error('Connection is steel alive!');
         }
         charts.forEach(
