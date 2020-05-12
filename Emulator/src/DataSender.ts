@@ -25,7 +25,7 @@ export default class extends Observer {
         if (!this.IsGeneratorWork) {
             this.UpdateData();
         }
-        return () => super.unsubscribe(callback);
+        return super.unsubscribe.bind(this, callback);
     }
 
     UpdateData(): void {

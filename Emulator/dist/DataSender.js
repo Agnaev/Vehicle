@@ -18,12 +18,11 @@ var default_1 = (function (_super) {
         return _this;
     }
     default_1.prototype.subscribe = function (callback) {
-        var _this = this;
         _super.prototype.subscribe.call(this, callback);
         if (!this.IsGeneratorWork) {
             this.UpdateData();
         }
-        return function () { return _super.prototype.unsubscribe.call(_this, callback); };
+        return _super.prototype.unsubscribe.bind(this, callback);
     };
     default_1.prototype.UpdateData = function () {
         if (this.IsGeneratorWork) {

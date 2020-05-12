@@ -4,6 +4,13 @@ import DataSender from './DataSender'
 import { makeRequest } from './db_request';
 import { generator } from './data_generator';
 
+/** @param { string } message */
+function justPrint(message: string, ...args: any[]): void {
+    console.group(message);
+    console.log(...args);
+    console.groupEnd();
+}
+
 makeRequest('SELECT * FROM MetricsTypes')
     // @ts-ignore
     .then(x => x.recordsets[0])
@@ -21,12 +28,12 @@ makeRequest('SELECT * FROM MetricsTypes')
                 /**@param {string} data JSON string value*/
                 (data: string) => socket.send(data)
             );
-            socket.on('close', () => unsubscribe());
+            socket.on('close', unsubscribe);
         });
-        webSocketServer.on('listening', (...args) => console.log(`listening ${args.join()}`));
-        webSocketServer.on('close', (...args) => console.log(`close ${args.join()}`));
-        webSocketServer.on('error', (...args) => console.log(`error ${args.join()}`));
-        webSocketServer.on('headers', (...args) => console.log(`headers ${args.join()}`));
+        webSocketServer.on('listening', justPrint.bind(null, 'listening'));
+        webSocketServer.on('close', justPrint.bind(null, `close`));
+        webSocketServer.on('error', justPrint.bind(null, `error`));
+        webSocketServer.on('headers', justPrint.bind(null, `headers`));
     });
 
 
