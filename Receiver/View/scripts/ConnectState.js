@@ -24,17 +24,17 @@ export default class ConnectStatus {
     /** disable connect btn & enable disconnect btn & set online status */
     connect() {
         this.notificator('Подключение к БПЛА прошло успешно', 'success');
-        this.btn.connect.prop('disabled', true);
         this.btn.disconnect.prop('disabled', false);
-        this.btn.clear.prop('disabled', true);
+        [this.btn.connect, this.btn.clear]
+            .forEach(btn => btn.prop('disabled', true));
         this.status.text('ONLINE');
     }
     /** enable connect btn & disable disconnect btn & set offline status */
     disconnect(showMessage = true) {
         showMessage && this.notificator('Подключения к БПЛА было прервано', 'warn');
-        this.btn.connect.prop('disabled', false);
+        [this.btn.connect, this.btn.clear]
+            .forEach(btn => btn.prop('disabled', false));
         this.btn.disconnect.prop('disabled', true);
-        this.btn.clear.prop('disabled', false);
         this.status.text('OFFLINE');
     }
 };

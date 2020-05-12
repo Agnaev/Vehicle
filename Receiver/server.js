@@ -46,7 +46,6 @@ app.use((req, res) => {
 
 app.listen(port, ip, async () => {
     try {
-        const isRelease = process.argv.splice(2).includes('release');
         const db_check = DatabaseCheck();
 
         copyFile(

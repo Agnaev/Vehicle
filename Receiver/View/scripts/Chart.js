@@ -40,9 +40,8 @@ export default class {
     }
 
     removeData() {
-        do {
-            this.chart.data.datasets[0].data.pop();
-        } while (this.chart.data.labels.pop());
+        this.chart.data.datasets[0].data.splice(0);
+        this.chart.data.labels.splice(0);
         this.update();
     }
 }

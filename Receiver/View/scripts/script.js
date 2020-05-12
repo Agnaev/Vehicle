@@ -14,8 +14,11 @@ $(document).ready(() => {
 
 const getWebSocketPort = () => fetch_json('/api/get_socket_port')
     .then(x => {
-        document.cookie = `ws_port=${x.port};max-age=1800;`
-        return x.port;
+        if(x.port){
+            document.cookie = `ws_port=${x.port};max-age=1800;`
+            return x.port;
+        }
+        else return null;
     });
 
 const charts_list = fetch_json('/api/metrics')

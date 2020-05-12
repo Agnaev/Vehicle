@@ -109,6 +109,10 @@ a {
     margin-right: 20px;
 }
 
+.buttons input:disabled {
+    cursor: auto;
+}
+
 .buttons input:hover:enabled {
     background-color: #000000;
     color: #ffffff;
