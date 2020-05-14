@@ -8,7 +8,7 @@ module.exports = {
             enableArithAbort: true
         }
     },
-    ip: '192.168.0.11',
+    ip: '192.168.0.13',
     port: 80,
     web_socket_port: 3000,
     
