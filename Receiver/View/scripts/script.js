@@ -12,11 +12,12 @@ $(document).ready(() => {
     $('#counter').text(0);
 });
 
-const getWebSocketPort = () => fetch_json('/api/get_socket_port')
-    .then(x => {
-        if(x.port){
-            document.cookie = `ws_port=${x.port};max-age=1800;`
-            return x.port;
+/** @returns {Promise<{port:number, host:string} | null>} */
+const getWebSocketPort = () => fetch_json('/api/get_socket_connection')
+    .then(({ web_socket: x }) => {
+        if(x.port && x.host) {
+            document.cookie = `ws_connection=ws://${x.host}:${x.port};max-age=1800;`
+            return x;
         }
         else return null;
     });
@@ -34,17 +35,25 @@ const charts_list = fetch_json('/api/metrics')
 $('#connect_to_vehicle').on('click', async event => {
     event.preventDefault();
 
-    let webSocketPort = getCookie('ws_port');
-    if (!webSocketPort) {
-        webSocketPort = await getWebSocketPort();
+    /** @type {{port:number, host:String} | string} */
+    let ws_connection = getCookie('ws_connection');
+    if (!ws_connection) {
+        ws_connection = await getWebSocketPort();
     }
 
-    if (!webSocketPort) {
+    if (!ws_connection || !Object.keys(ws_connection).length) {
         throw Error('Web socket port was not received.');
     }
 
     const state = new ConnectStatus($.notify);
-    const ws_client = new WebSocket(`ws${location.protocol.includes('s') ? 's' : ''}://${location.hostname}:${webSocketPort}`);
+    let ws_client;
+
+    if(ws_connection instanceof Object) {
+        ws_client = new WebSocket(`ws://${ws_connection.host}:${ws_connection.port}`);
+    }
+    else {
+        ws_client = new WebSocket(ws_connection);
+    }
 
     ws_client.onopen = () => state.connect();
     ws_client.onclose = () => state.disconnect();

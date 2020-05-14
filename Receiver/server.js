@@ -7,7 +7,7 @@ const path = require('path');
 const { DatabaseCheck } = require('./db/db_connection');
 const {
     port,
-    ip,
+    host,
     logger,
     basedir,
     error_handler_404 } = require('./config');
@@ -44,7 +44,7 @@ app.use((req, res) => {
     error_handler_404(res, 'Страница не найдена.')
 });
 
-app.listen(port, ip, async () => {
+app.listen(port, host, async () => {
     try {
         const db_check = DatabaseCheck();
 
@@ -54,7 +54,7 @@ app.listen(port, ip, async () => {
         );
 
         await db_check;
-        logger(`server has been started at ${ip}:${port}.`);
+        logger(`server has been started at ${host}:${port}.`);
     }
     catch (exc) {
         logger('Error starting application.', exc);

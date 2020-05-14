@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const { logger,
     basedir,
-    web_socket_port,
+    web_socket,
     error_handler_404 } = require('../config');
 const fs = require('fs');
 const path = require('path');
@@ -40,10 +40,8 @@ router.get('/metrics', (req, res) => {
     }
 });
 
-router.get('/api/get_socket_port', (req, res) => {
-    res.send({
-        port: web_socket_port
-    });
+router.get('/api/get_socket_connection', (req, res) => {
+    res.send(web_socket);
 });
 
 router.get('/api/get_images_list', (req, res) => {
