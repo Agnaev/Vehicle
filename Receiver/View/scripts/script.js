@@ -14,10 +14,13 @@ $(document).ready(() => {
 
 /** @returns {Promise<{port:number, host:string} | null>} */
 const getWebSocketPort = () => fetch_json('/api/get_socket_connection')
-    .then(({ web_socket: x }) => {
-        if(x.port && x.host) {
-            document.cookie = `ws_connection=ws://${x.host}:${x.port};max-age=1800;`
-            return x;
+    .then(({ port, host }) => {
+        if(port && host) {
+            document.cookie = `ws_connection=ws://${host}:${port};max-age=1800;`
+            return {
+                host, 
+                port
+            };
         }
         else return null;
     });

@@ -11,7 +11,7 @@ module.exports = {
     host: '192.168.0.13',
     port: 80,
     web_socket: {
-        host: 'localhost',
+        host: '192.168.0.16',
         port: 3000
     },
     
