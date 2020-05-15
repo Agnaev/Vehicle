@@ -9,10 +9,10 @@ module.exports = {
     /** Получение всех метрик из базы данных */
     async GetMetrics() {
         try {
-            const { 
+            const {
                 recordsets: [
                     types
-                ] 
+                ]
             } = await makeRequest(`SELECT * FROM MetricsTypes`);
             return types;
         }
@@ -28,12 +28,12 @@ module.exports = {
     */
     async Create(item) {
         try {
-            const { 
+            const {
                 recordsets: [
                     [
                         requestResult
                     ]
-                ] 
+                ]
             } = await makeRequest(`
                 SELECT COUNT(*) as count
                 FROM MetricsTypes
@@ -47,24 +47,24 @@ module.exports = {
                 throw `file: ${__dirname}; function: Create;\r\n Incorrect min and max values, min value(${item.MinValue}) greater than max value(${item.MaxValue})`;
             }
             else {
-                const { 
+                const {
                     recordsets: [
                         [
                             metricId
                         ]
-                    ] 
+                    ]
                 } = await makeRequest(`
-                    INSERT INTO MetricsTypes([Name], [Description], [MinValue], [MaxValue]) 
-                    OUTPUT inserted.Id
-                    VALUES ('${item.Name}', '${item.Description}', '${item.MinValue}', '${item.MaxValue}');
-                `);
-                const { 
+                        INSERT INTO MetricsTypes([Name], [Description], [MinValue], [MaxValue]) 
+                        OUTPUT inserted.Id
+                        VALUES ('${item.Name}', '${item.Description}', '${item.MinValue}', '${item.MaxValue}');
+                    `);
+                const {
                     recordsets: [
-                            [
-                                result
-                            ]
-                        ] 
-                    } = await makeRequest(`
+                        [
+                            result
+                        ]
+                    ]
+                } = await makeRequest(`
                     SELECT * 
                     FROM MetricsTypes
                     WHERE Id = '${metricId.Id}'
@@ -84,12 +84,12 @@ module.exports = {
     async Update(item) {
         try {
             await makeRequest(`
-            UPDATE MetricsTypes
-            SET Name = '${item.Name}',
-            Description = '${item.Description}',
-            MaxValue = '${item.MaxValue}',
-            MinValue = '${item.MinValue}'
-            WHERE id = '${item.Id}'`)
+                UPDATE MetricsTypes
+                SET Name = '${item.Name}',
+                Description = '${item.Description}',
+                MaxValue = '${item.MaxValue}',
+                MinValue = '${item.MinValue}'
+                WHERE id = '${item.Id}'`)
         }
         catch (exc) {
             logger(`file: ${__dirname}; function: Update\r\nerror`, exc);

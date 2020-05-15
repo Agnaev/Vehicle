@@ -2,56 +2,38 @@
 'use strict';
 
 const { Router } = require('express');
-const { Delete,
-    Update,
-    Create,
-    GetMetrics } = require('../db/types');
+const types = require('../db/types');
 const { logger } = require('../config');
 
+function local_logger(res, action, exc) {
+    logger(`Error processing request ${action} metric\r\nfilename:`, __dirname, exc);
+    res.sendStatus(500);
+}
+
 const router = Router();
-router.delete('/', async (req, res) => {
-    try {
-        await Delete(req.body);
-        res.sendStatus(200);
-    }
-    catch (exc) {
-        logger('Error processing request delete metric\r\nfilename:', __dirname, exc);
-        res.sendStatus(500);
-    }
-});
+router.delete('/', (req, res) =>
+    types.Delete(req.body)
+        .then(() => res.sendStatus(200))
+        .catch(local_logger.bind(null, res, 'delete'))
+);
 
-router.put('/', async (req, res) => {
-    try {
-        const data = await Update(req.body);
-        res.status(200).send(data);
-    }
-    catch (exc) {
-        logger('Error processing request update metric\r\nfilename', __dirname, exc);
-        res.sendStatus(500);
-    }
-});
+router.put('/', (req, res) =>
+    types.Update(req.body)
+        .then(data => res.status(200).send(data))
+        .catch(local_logger.bind(null, res, 'update'))
+);
 
-router.post('/', async (req, res) => {
-    try {
-        const data = await Create(req.body);
-        res.status(200).send(data);
-    }
-    catch (exc) {
-        logger('Error processing request create metric\r\nfilename: ', __dirname, exc);
-        res.sendStatus(500);
-    }
-});
+router.post('/', (req, res) =>
+    types.Create(req.body)
+        .then(data => res.status(200).send(data))
+        .catch(local_logger.bind(null, res, 'create'))
+);
 
-router.get('/', async (req, res) => {
-    try {
-        const data = await GetMetrics();
-        res.status(200).send(data);
-    }
-    catch (exc) {
-        logger(`Error processing request get metric\r\nfilename: ${__dirname}`, exc);
-        res.sendStatus(500);
-    }
-});
+router.get('/', (req, res) =>
+    types.GetMetrics()
+        .then(data => res.status(200).send(data))
+        .catch(local_logger.bind(null, res, 'get'))
+);
 
 module.exports = router;
 
