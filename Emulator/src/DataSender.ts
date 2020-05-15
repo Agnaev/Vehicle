@@ -46,14 +46,16 @@ export default class extends Observer {
     }
 
     broadcast(): void {
-        if (config.default.writeToDatabase) {
-            if (this.count++ < config.default.countWriteToDb) {
+        const { writeToDatabase, countWriteToDb } = config.default;
+        if (writeToDatabase) {
+            if (this.count++ < countWriteToDb) {
                 this.storage.push(this.data);
             }
             else {
+                const { isHttps, host, port } = config.default;
                 request({
                     method: 'post',
-                    url: `http${config.default.isHttps && 's' || ''}://${config.default.ip}:${config.default.port}/api/metric_values/`,
+                    url: `http${isHttps && 's' || ''}://${host}:${port}/api/metric_values/`,
                     form: {
                         data: JSON.stringify(this.storage)
                     }
