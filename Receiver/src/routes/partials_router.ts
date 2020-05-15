@@ -1,11 +1,17 @@
 // @ts-check
 'use strict';
 
-const { Router } = require('express'); 
+import { Router, Request, Response } from 'express';
 
 const router = Router();
 
-const cards = {
+const cards: { 
+    [key: string]: { 
+        name: string, 
+        image: string, 
+        description: string 
+    } 
+} = {
     nodejs: {
         name: 'Node js',
         image: '/images/nodejs.png',
@@ -68,11 +74,11 @@ const cards = {
     }
 }
 
-router.get('/', (req, res) => res.status(200).send(cards));
+router.get('/', (req: Request, res: Response):Response<any> => res.status(200).send(cards));
 
-router.get('/:name', (req, res) => {
+router.get('/:name', (req: Request, res: Response):Response<any> => {
     const name = req.params && Object.keys(cards).includes(req.params.name) && req.params.name || 'js';
-    res.send(cards[name]);
+    return res.send(cards[name]);
 });
 
-module.exports = router;
+export default router;

@@ -2,21 +2,35 @@
 
 'use strict'
 
-const { ConnectionPool } = require('mssql');
-const { db_config, logger } = require('../config');
+import { ConnectionPool, IResult } from 'mssql';
+import config from '../config';
 
-/**@typedef {{user:string, password:string, server:string, database:string}} db_config */
+const { logger, db_config } = config;
 
+export type db_config = {
+    user: string,
+    password: string,
+    server: string,
+    database: string
+};
+
+
+type config_type = {
+    user: string,
+    password: string,
+    server: string,
+    database: string
+}
 /**
  * @param {db_config} config 
  * @returns {(requestString:string) => Promise<any>} функция которая может делать запросы к базе данных
  */
-const connectToDatabase = config => {
-    return async requestString => {
+function connectToDatabase(config: config_type): (requestString: string) => Promise<IResult<any>> {
+    return async (requestString: string) => {
         try {
-            const connectionPool = new ConnectionPool(config);
-            const pool = await connectionPool.connect();
-            const data = await pool.query(requestString);
+            const connectionPool: ConnectionPool = new ConnectionPool(config);
+            const pool: ConnectionPool = await connectionPool.connect();
+            const data: IResult<any> = await pool.query(requestString);
             pool.close();
             return data;
         }
@@ -27,7 +41,7 @@ const connectToDatabase = config => {
     };
 };
 
-const DatabaseCheck = async () => {
+export const DatabaseCheck = async (): Promise<void> => {
     try {
         logger('Database check...');
         let makeRequest = connectToDatabase({
@@ -76,7 +90,5 @@ const DatabaseCheck = async () => {
     }
 };
 
-module.exports = {
-    makeRequest: connectToDatabase(db_config),
-    DatabaseCheck
-};
+export const makeRequest = connectToDatabase(db_config);
+

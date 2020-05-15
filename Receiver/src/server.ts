@@ -1,18 +1,20 @@
 // @ts-check
 'use strict'
 
-const express = require('express');
-const bodyParser = require('body-parser');
-const path = require('path');
-const { DatabaseCheck } = require('./db/db_connection');
+import express from 'express';
+import bodyParser from 'body-parser';
+import path from 'path';
+import { DatabaseCheck } from './db/db_connection';
+import config from './config';
+import routers from './routes/router';
+import { copyFile } from './helper/helper';
+
 const {
     port,
     host,
     logger,
     basedir,
-    error_handler_404 } = require('./config');
-const routers = require('./routes/router');
-const { copyFile } = require('./helper/helper');
+    error_handler_404 } = config;
 
 const app = express();
 
