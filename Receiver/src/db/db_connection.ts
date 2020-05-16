@@ -14,13 +14,13 @@ export type db_config = {
     database: string
 };
 
-
 type config_type = {
     user: string,
     password: string,
     server: string,
     database: string
-}
+};
+
 /**
  * @param {db_config} config 
  * @returns {(requestString:string) => Promise<any>} функция которая может делать запросы к базе данных

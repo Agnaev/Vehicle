@@ -31,11 +31,11 @@ function createWebSocketServer(types) {
     });
     webSocketServer.on('listening', function () {
         console.log('listening');
-        console.log("WebSocketServer has been started at ws://" + config.default.web_socket.host + ":" + config.default.web_socket.port);
+        var _a = config.default.web_socket, host = _a.host, port = _a.port;
+        console.log("WebSocketServer has been started at ws://" + host + ":" + port);
     });
     webSocketServer.on('close', justPrint.bind(null, "close"));
     webSocketServer.on('error', justPrint.bind(null, "error"));
-    webSocketServer.on('headers', justPrint.bind(null, "headers"));
 }
 var timeout = 1000;
 function gotcha() {

@@ -10,19 +10,22 @@ function local_logger(res, action, exc) {
     logger("Error while " + action + " metrics values. filename: " + __dirname + ".\r\nError" + exc);
     res.sendStatus(500);
 }
+function send(data) {
+    data ? this.status(200).send(data) : this.sendStatus(200);
+}
 router.get('/', function (req, res) {
-    return values.Get()
-        .then(function (data) { return res.status(200).send(data); })
+    values.Get()
+        .then(send.bind(res))
         .catch(local_logger.bind(null, res, 'getting'));
 });
 router.post('/', function (req, res) {
-    return values.Create(req.body)
-        .then(function (data) { return res.status(200).send(data); })
+    values.Create(req.body)
+        .then(send.bind(res))
         .catch(local_logger.bind(null, res, 'adding'));
 });
 router.delete('/', function (req, res) {
-    return values.Delete()
-        .then(function () { return res.sendStatus(200); })
+    values.Delete()
+        .then(send.bind(res, null))
         .catch(local_logger.bind(null, res, 'deleting'));
 });
 exports.default = router;

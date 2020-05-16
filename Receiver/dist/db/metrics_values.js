@@ -60,17 +60,29 @@ function Create(_a) {
 }
 exports.Create = Create;
 function Delete() {
-    return db_connection_1.makeRequest("DELETE FROM MetricsValues")
-        .then(function (x) { return true; })
-        .catch(function (exc) {
-        logger("An error occurred while deleting data from the metrics table of values. filename: " + __dirname + ".\r\nError: " + exc);
-        return exc;
+    return tslib_1.__awaiter(this, void 0, void 0, function () {
+        var exc_2;
+        return tslib_1.__generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    return [4, db_connection_1.makeRequest("DELETE FROM MetricsValues")];
+                case 1:
+                    _a.sent();
+                    return [2, true];
+                case 2:
+                    exc_2 = _a.sent();
+                    logger("An error occurred while deleting data from the metrics table of values. filename: " + __dirname + ".\r\nError: " + exc_2);
+                    return [2, exc_2];
+                case 3: return [2];
+            }
+        });
     });
 }
 exports.Delete = Delete;
 function Get() {
     return tslib_1.__awaiter(this, void 0, void 0, function () {
-        var data, exc_2;
+        var data, exc_3;
         return tslib_1.__generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -80,9 +92,9 @@ function Get() {
                     data = (_a.sent()).recordsets[0];
                     return [2, data];
                 case 2:
-                    exc_2 = _a.sent();
-                    logger("An error occurred while retrieving data from the metrics table of values. filename: " + __dirname + ".\r\nError: " + exc_2);
-                    return [2, exc_2];
+                    exc_3 = _a.sent();
+                    logger("An error occurred while retrieving data from the metrics table of values. filename: " + __dirname + ".\r\nError: " + exc_3);
+                    return [2, exc_3];
                 case 3: return [2];
             }
         });

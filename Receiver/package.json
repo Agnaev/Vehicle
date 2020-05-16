@@ -4,8 +4,9 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "release": "node server.js",
-    "dev": "node server.js"
+    "release": "node dist\\server.js",
+    "dev": "node dist\\server.js",
+    "build": "npx tsc"
   },
   "author": "",
   "license": "ISC",

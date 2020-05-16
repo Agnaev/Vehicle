@@ -11,9 +11,7 @@ var helper_1 = require("./helper/helper");
 var port = config_1.default.port, host = config_1.default.host, logger = config_1.default.logger, basedir = config_1.default.basedir, error_handler_404 = config_1.default.error_handler_404;
 var app = express_1.default();
 app.set("view engine", "hbs");
-app.use(body_parser_1.default.urlencoded({
-    extended: true
-}));
+app.use(body_parser_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.static(path_1.default.join(basedir, 'View')));
 app.use(function (req, res, next) {
     logger("middleware " + req.method + " " + req.path);
