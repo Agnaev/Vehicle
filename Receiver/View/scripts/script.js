@@ -12,7 +12,7 @@ $(document).ready(() => {
     $('#counter').text(0);
 });
 
-/** @returns {Promise<{port:number, host:string} | null>} */
+/** @returns {Promise<{port:number, host:string}>} */
 const getWebSocketPort = () => fetch_json('/api/get_socket_connection')
     .then(({ port, host }) => {
         if(port && host) {
@@ -52,7 +52,8 @@ $('#connect_to_vehicle').on('click', async event => {
     let ws_client;
 
     if(ws_connection instanceof Object) {
-        ws_client = new WebSocket(`ws://${ws_connection.host}:${ws_connection.port}`);
+        const { host, port } = ws_connection;
+        ws_client = new WebSocket(`ws://${host}:${port}`);
     }
     else {
         ws_client = new WebSocket(ws_connection);

@@ -19,20 +19,9 @@ const {
 const app = express();
 
 app.set("view engine", "hbs");
-
-app.use(
-    bodyParser.urlencoded({
-        extended: true
-    })
-);
-
-app.use(
-    express.static(
-        path.join(basedir, 'View')
-    )
-);
-
-app.use((req, res, next) => {
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.join(basedir, 'View')));
+app.use((req, res, next): void => {
     logger(`middleware ${req.method} ${req.path}`);
     next();
 });
@@ -40,13 +29,12 @@ app.use('/api/metric_values', routers.values);
 app.use('/api/metrics', routers.types);
 app.use('/api/cards', routers.partials);
 app.use('/', routers.main);
-
-app.use((req, res) => {
+app.use((req, res): void => {
     logger(`Client with ip: ${req.ip} got 404 error with request: ${req.originalUrl}`);
     error_handler_404(res, 'Страница не найдена.')
 });
 
-app.listen(port, host, async () => {
+app.listen(port, host, async (): Promise<void> => {
     try {
         const db_check = DatabaseCheck();
 

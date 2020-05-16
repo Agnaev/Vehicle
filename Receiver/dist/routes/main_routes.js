@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 var express_1 = require("express");
-var config_1 = tslib_1.__importDefault(require("../config"));
 var fs_1 = tslib_1.__importDefault(require("fs"));
 var path_1 = tslib_1.__importDefault(require("path"));
+var config_1 = tslib_1.__importDefault(require("../config"));
 var logger = config_1.default.logger, basedir = config_1.default.basedir, web_socket = config_1.default.web_socket, error_handler_404 = config_1.default.error_handler_404;
 var router = express_1.Router();
 router.get('/', function (req, res) {
@@ -19,7 +19,8 @@ router.get('/', function (req, res) {
 });
 router.get('/values', function (req, res) {
     try {
-        res.sendFile(path_1.default.join(basedir, 'View', 'MetricsValues.html'));
+        var filename = path_1.default.join(basedir, 'View', 'MetricsValues.html');
+        res.sendFile(filename);
     }
     catch (exc) {
         logger("Error while getting metrics values from database. filename: " + __dirname + ".\r\nError" + exc);

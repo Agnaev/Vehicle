@@ -2,6 +2,7 @@
 'use strict'
 import { makeRequest } from './db_connection';
 import config from '../config';
+import { IRecordSet } from 'mssql';
 
 const { logger } = config;
 // @ts-ignore
@@ -57,7 +58,7 @@ export async function Delete(): Promise<boolean> {
     }
 }
 
-export async function Get(): Promise<any> {
+export async function Get(): Promise<IRecordSet<any>> {
     try {
         const {
             recordsets: [

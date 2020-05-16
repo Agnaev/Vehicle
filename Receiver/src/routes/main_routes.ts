@@ -1,7 +1,7 @@
 import { Router, Response, Request } from 'express';
-import config from '../config';
 import fs from 'fs';
 import path from 'path';
+import config from '../config';
 
 const {
     logger,
@@ -12,7 +12,7 @@ const {
 
 const router = Router();
 
-router.get('/', (req: Request, res: Response) => {
+router.get('/', (req: Request, res: Response): void => {
     try {
         const fileName: string = path.join(basedir, 'View', 'Index.html');
         res.sendFile(fileName);
@@ -23,9 +23,10 @@ router.get('/', (req: Request, res: Response) => {
     }
 })
 
-router.get('/values', (req: Request, res: Response) => {
+router.get('/values', (req: Request, res: Response): void => {
     try {
-        res.sendFile(path.join(basedir, 'View', 'MetricsValues.html'));
+        const filename = path.join(basedir, 'View', 'MetricsValues.html');
+        res.sendFile(filename);
     }
     catch (exc) {
         logger(`Error while getting metrics values from database. filename: ${__dirname}.\r\nError${exc}`);
@@ -44,11 +45,11 @@ router.get('/metrics', (req: Request, res: Response) => {
     }
 });
 
-router.get('/api/get_socket_connection', (req: Request, res: Response) => {
+router.get('/api/get_socket_connection', (req: Request, res: Response): void => {
     res.send(web_socket)
 });
 
-router.get('/api/get_images_list', (req: Request, res: Response) => {
+router.get('/api/get_images_list', (req: Request, res: Response): void => {
     try {
         const files: string[] = fs.readdirSync(
             path.join(basedir, 'View', 'images')
