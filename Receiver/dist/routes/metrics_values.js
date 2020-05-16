@@ -11,17 +11,17 @@ function local_logger(res, action, exc) {
     res.sendStatus(500);
 }
 router.get('/', function (req, res) {
-    return values.Get()
+    values.Get()
         .then(function (data) { return res.status(200).send(data); })
         .catch(local_logger.bind(null, res, 'getting'));
 });
 router.post('/', function (req, res) {
-    return values.Create(req.body)
+    values.Create(req.body)
         .then(function (data) { return res.status(200).send(data); })
         .catch(local_logger.bind(null, res, 'adding'));
 });
 router.delete('/', function (req, res) {
-    return values.Delete()
+    values.Delete()
         .then(function () { return res.sendStatus(200); })
         .catch(local_logger.bind(null, res, 'deleting'));
 });

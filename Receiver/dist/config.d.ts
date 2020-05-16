@@ -1,3 +1,3 @@
-declare const local_config: any;
-export default local_config;
+declare const config: any;
+export default config;
 //# sourceMappingURL=config.d.ts.map
