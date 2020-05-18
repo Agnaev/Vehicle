@@ -64,6 +64,8 @@ function Update(item) {
     return tslib_1.__awaiter(this, void 0, void 0, function () {
         return tslib_1.__generator(this, function (_a) {
             db_connection_1.makeRequest("\n            UPDATE MetricsTypes\n            SET Name = '" + item.Name + "',\n            Description = '" + item.Description + "',\n            MaxValue = '" + item.MaxValue + "',\n            MinValue = '" + item.MinValue + "'\n            WHERE id = '" + item.Id + "'")
+                .then(function () { return db_connection_1.makeRequest("SELECT * FROM MetricsTypes WHERE Id=" + item.Id); })
+                .then(function (x) { return x.recordsets[0]; })
                 .catch(function (exc) {
                 logger("file: " + __dirname + "; function: Update\r\nerror", exc);
                 return exc;

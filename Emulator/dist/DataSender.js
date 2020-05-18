@@ -59,6 +59,15 @@ var default_1 = (function (_super) {
                 this.count = 0;
             }
         }
+        if (![null, undefined].includes(global['mydata'])) {
+            var fn_foreach = function (data) {
+                if ((data === null || data === void 0 ? void 0 : data.Id) in this.data && Number.isInteger(+(data === null || data === void 0 ? void 0 : data.val))) {
+                    this.data[data.Id] = data.val;
+                }
+            }.bind(this);
+            global['mydata'].forEach(fn_foreach);
+            global['mydata'] = undefined;
+        }
         _super.prototype.broadcast.call(this, JSON.stringify(this.data));
     };
     return default_1;

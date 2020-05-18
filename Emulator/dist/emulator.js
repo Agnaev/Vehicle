@@ -19,6 +19,10 @@ function createWebSocketServer(types) {
     if (typeof types === 'string') {
         types = JSON.parse(types);
     }
+    var indexed_types = types.reduce(function (result, item) {
+        result[item.Id] = item;
+        return result;
+    }, {});
     var webSocketServer = new ws_1.Server({
         host: config.default.web_socket.host,
         port: config.default.web_socket.port
@@ -28,6 +32,35 @@ function createWebSocketServer(types) {
         console.log("User with ip: " + request.socket.remoteAddress + " was connected.");
         var unsubscribe = dataSender.subscribe(function (data) { return socket.send(data); });
         socket.on('close', unsubscribe);
+        socket.on('message', function (data) {
+            try {
+                var parsed_data = JSON.parse(data);
+                global['mydata'] = Object.entries(parsed_data)
+                    .map(function (_a) {
+                    var Id = _a[0], val = _a[1];
+                    var type = indexed_types[Id];
+                    if (!type) {
+                        return null;
+                    }
+                    if (+val < +type.MinValue) {
+                        val = type.MinValue;
+                    }
+                    else if (+val > type.MaxValue) {
+                        val = type.MaxValue;
+                    }
+                    return {
+                        Id: Id,
+                        val: val
+                    };
+                });
+            }
+            catch (exc) {
+                console.log('Received incorrect data from request.');
+            }
+            finally {
+                global['mydata'] = null;
+            }
+        });
     });
     webSocketServer.on('listening', function () {
         console.log('listening');

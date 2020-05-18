@@ -4,29 +4,24 @@ import { slider, fetch_json } from './common.js';
 
 const refresh_grid = () => $('#grid').data('kendoGrid').dataSource.read();
 
-const config = {
-    url: '/api/states',
-    dataType: 'Json',
-};
-
 const dataSource = new kendo.data.DataSource({
     transport: {
         create: {
             type: 'post',
-            ...config,
+            url: '/api/states',
             complete: refresh_grid
         },
         read: {
-            ...config,
+            url: '/api/states',
             type: 'get',
         },
         update: {
-            ...config,
+            url: '/api/states',
             type: 'put',
             complete: refresh_grid
         },
         destroy: {
-            ...config,
+            url: '/api/states',
             type: 'delete',
             complete: refresh_grid
         }
@@ -47,29 +42,26 @@ const dataSource = new kendo.data.DataSource({
 });
 
 function editor(container, options) {
-    const dataSource = Object.keys(this)
-        .filter(x => +x)
-        .map(x => ({
-            Id: x,
-            Name: this[x]?.Name
-        }));
+    const dataSource = Object.entries(this)
+        .filter(x => +x[0])
+        .map(([Id, { Name }]) => ({ Id, Name }));
     $(`<input required name="${options.field}"/>`)
         .appendTo(container)
         .kendoDropDownList({
             dataTextField: "Name",
             dataValueField: "Id",
             dataSource
-        })
+        });
 }
 
 const createGrid = (metrics, states) => {
     const getColor = color => {
-        return { 
-            'green': '#6bf35c', 
-            'yellow': '#ffff55' 
+        return {
+            'green': '#6bf35c',
+            'red': 'red',
+            'yellow': '#ffff55'
         }[color] || color;
     };
-
     $('#grid').kendoGrid({
         dataSource,
         pageble: true,
@@ -90,8 +82,8 @@ const createGrid = (metrics, states) => {
                 editor: editor.bind(states),
                 field: 'StateId',
                 template: item => {
-                    const { color, Name } = states[+item.StateId];
-                    return `<div style='background-color: ${getColor(color)}'>${Name}</div>`;
+                    const _state = states[+item.StateId];
+                    return `<div style='background-color: ${getColor(_state?.color)}'>${_state?.Name}</div>`;
                 }
             },
             { field: 'MinValue', title: 'Минимальное значение' },

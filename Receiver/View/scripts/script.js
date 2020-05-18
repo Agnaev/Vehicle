@@ -6,7 +6,7 @@ import ChartCreate from './Chart.js';
 import ConnectStatus from './ConnectState.js';
 import { } from './notify.min.js';
 import { slider, fetch_json, getCookie } from './common.js';
-import { } from './Array.prototype.js';
+import { groupBy } from './Array.prototype.js';
 
 $(document).ready(() => {
     new ConnectStatus($.notify);
@@ -44,6 +44,7 @@ STATES.then(data => {
 });
 states.then(data => {
     window['states'] = data;
+    window['bystates'] = groupBy(data)
 });
 
 $('#connect_to_vehicle').on('click', async event => {

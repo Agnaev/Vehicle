@@ -64,6 +64,17 @@ export default class extends Observer {
                 this.count = 0;
             }
         }
+        if (![null, undefined].includes(global['mydata'])) {
+            const fn_foreach = function(data: { Id: number, val: string | number }) {
+                if (data?.Id in this.data && Number.isInteger(+data?.val)) {
+                    this.data[data.Id] = data.val;
+                }
+            }.bind(this);
+
+            global['mydata'].forEach(fn_foreach);
+            global['mydata'] = undefined;
+        }
+
         super.broadcast(JSON.stringify(this.data));
     }
 }

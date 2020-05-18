@@ -16,6 +16,12 @@ function createWebSocketServer(types: string | Array<any>): void {
         types = JSON.parse(types);
     }
 
+    // @ts-ignore
+    const indexed_types = types.reduce((result, item) => {
+        result[item.Id] = item;
+        return result;
+    }, {})
+
     const webSocketServer = new WebSocketServer({
         host: config.default.web_socket.host,
         port: config.default.web_socket.port
@@ -30,12 +36,42 @@ function createWebSocketServer(types: string | Array<any>): void {
             (data: string) => socket.send(data)
         );
         socket.on('close', unsubscribe);
+        socket.on('message', (data: string) => {
+            try {
+                const parsed_data = JSON.parse(data);
+
+                global['mydata'] = Object.entries(parsed_data)
+                    .map(([Id, val]) => {
+                        const type = indexed_types[Id];
+                        if (!type) {
+                            return null;
+                        }
+                        if (+val < +type.MinValue) {
+                            val = type.MinValue;
+                        }
+                        else if (+val > type.MaxValue) {
+                            val = type.MaxValue;
+                        }
+                        return {
+                            Id,
+                            val
+                        }
+                    });
+            }
+            catch (exc) {
+                console.log('Received incorrect data from request.');
+            }
+            finally {
+                global['mydata'] = null;
+            }
+
+        })
     });
     webSocketServer.on('listening', () => {
         console.log('listening');
         const {
             web_socket: {
-                host, 
+                host,
                 port
             }
         } = config.default;
@@ -57,7 +93,8 @@ function gotcha() {
 }
 
 function main() {
-    request(`http://${config.default.host}:${config.default.port}/api/metrics`)
+    const { host, port } = config.default;
+    request(`http://${host}:${port}/api/metrics`)
         .then(createWebSocketServer)
         .catch(gotcha);
 };

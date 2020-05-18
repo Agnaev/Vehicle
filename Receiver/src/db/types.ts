@@ -97,6 +97,8 @@ export async function Update(item: db_item): Promise<void> {
             MaxValue = '${item.MaxValue}',
             MinValue = '${item.MinValue}'
             WHERE id = '${item.Id}'`)
+        .then(() => makeRequest(`SELECT * FROM MetricsTypes WHERE Id=${item.Id}`))
+        .then(x => x.recordsets[0])
         .catch(exc => {
             logger(`file: ${__dirname}; function: Update\r\nerror`, exc);
             return exc;
