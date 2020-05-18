@@ -20,6 +20,7 @@ app.use(function (req, res, next) {
 app.use('/api/metric_values', router_1.default.values);
 app.use('/api/metrics', router_1.default.types);
 app.use('/api/cards', router_1.default.partials);
+app.use('/api/states', router_1.default.states);
 app.use('/', router_1.default.main);
 app.use(function (req, res) {
     logger("Client with ip: " + req.ip + " got 404 error with request: " + req.originalUrl);

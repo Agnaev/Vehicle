@@ -6,6 +6,7 @@ import ChartCreate from './Chart.js';
 import ConnectStatus from './ConnectState.js';
 import { } from './notify.min.js';
 import { slider, fetch_json, getCookie } from './common.js';
+import { } from './Array.prototype.js';
 
 $(document).ready(() => {
     new ConnectStatus($.notify);
@@ -34,6 +35,16 @@ const charts_list = fetch_json('/api/metrics')
             })
         )
     );
+
+const STATES = fetch_json('/api/states/list');
+const states = fetch_json('/api/states');
+
+STATES.then(data => {
+    window['STATES'] = data;
+});
+states.then(data => {
+    window['states'] = data;
+});
 
 $('#connect_to_vehicle').on('click', async event => {
     event.preventDefault();
@@ -67,12 +78,14 @@ $('#connect_to_vehicle').on('click', async event => {
     };
 
     const charts = await charts_list;
-
+    window['metrics'] = await fetch_json('/api/metrics');
+    let i = 0;
     ws_client.onmessage = function ({ data }) {
         this.charts.map(
             ({ chart, Id }) => chart.push(this.iterator, JSON.parse(data)[Id]).update()
         );
         this.counter.text(this.iterator++);
+        window['data_' + i++] = data;
     }.bind({
         counter: $('#counter'),
         charts,

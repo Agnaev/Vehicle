@@ -29,6 +29,11 @@ export default class {
         });
     }
 
+    changeColor(color) {
+        this.chart.data.datasets.borderColor = color;
+        this.chart.data.datasets.backgroundColor = color;
+    }
+
     push(label, data) {
         this.chart.data.labels.push(label);
         this.chart.data.datasets.forEach(dataset => dataset.data.push(data));

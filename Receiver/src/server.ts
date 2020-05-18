@@ -28,6 +28,7 @@ app.use((req, res, next): void => {
 app.use('/api/metric_values', routers.values);
 app.use('/api/metrics', routers.types);
 app.use('/api/cards', routers.partials);
+app.use('/api/states', routers.states);
 app.use('/', routers.main);
 app.use((req, res): void => {
     logger(`Client with ip: ${req.ip} got 404 error with request: ${req.originalUrl}`);

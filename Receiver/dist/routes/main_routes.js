@@ -37,6 +37,16 @@ router.get('/metrics', function (req, res) {
         error_handler_404(res, exc);
     }
 });
+router.get('/states', function (req, res) {
+    try {
+        var filename = path_1.default.join(basedir, 'View', 'States.html');
+        res.sendFile(filename);
+    }
+    catch (exc) {
+        logger("Error processing request '/states'.\r\nfilename: " + __dirname, exc);
+        error_handler_404(res, exc);
+    }
+});
 router.get('/api/get_socket_connection', function (req, res) {
     res.send(web_socket);
 });

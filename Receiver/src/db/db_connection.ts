@@ -81,6 +81,33 @@ export const DatabaseCheck = async (): Promise<void> => {
                     CONSTRAINT FK_MetricsValue_MetricsTypes FOREIGN KEY (TypeId) REFERENCES MetricsValues(Id)
                 )
             `);
+
+            await makeRequest(`
+                CREATE TABLE States (
+                    Id	INT IDENTITY NOT NULL,
+                    Name NVARCHAR(MAX) NOT NULL
+                    CONSTRAINT PK_States PRIMARY KEY (Id)
+                )
+            `);
+
+            await makeRequest(`
+                CREATE TABLE MetricsStates (
+                    Id INT IDENTITY NOT NULL,
+                    MetricTypeId INT NOT NULL,
+                    StateId INT NOT NULL,
+                    MinValue INT NOT NULL,
+                    MaxValue INT NOT NULL,
+                    CONSTRAINT PK_MetricsStates PRIMARY KEY (Id),
+                    CONSTRAINT FK_MetricsStates_To_MetricTypes FOREIGN KEY (MetricTypeId) REFERENCES [dbo].[MetricsTypes](Id),
+                    CONSTRAINT FK_MetricsStates_To_States FOREIGN KEY (StateId) REFERENCES [dbo].[States]
+                )
+            `);
+
+            await makeRequest(`
+                INSERT INTO States(Name)
+                VALUES ('Критическое'), ('Стабильное'), ('Хорошее')
+            `)
+
             logger('Database was created');
         }
     }

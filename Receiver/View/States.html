@@ -1,27 +1,29 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
     <meta charset="UTF-8">
-    <title>Receiver</title>
-    
+    <title>Состояния</title>
     <link rel="stylesheet" href="Styles/kendo.default-v2.min.css" type="text/css"/>
-    <link rel='stylesheet' href='Styles/style.css'>
+    <link rel="stylesheet" href="Styles/style.css" />
     <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 </head>
-
 <body>
     <header class="header">
         <div class="container">
             <nav class="navigation">
                 <ul class="site-navigation">
-                    <li><a href="/">Диплом</a></li>
+                    <li>
+                        <a href="/">Диплом</a>
+                    </li>
                     <li>
                         <a href="/states">Состояния</a>
                     </li>
-                    <li><a href="/metrics">Метрики</a></li>
-                    <li><a href="/values">Значения</a></li>
-                    <li style="display: none;"><a href="#">Войти</a></li>
+                    <li>
+                        <a href="/metrics">Метрики</a>
+                    </li>
+                    <li>
+                        <a href="/values">Значения</a>
+                    </li>
                 </ul>
             </nav>
         </div>
@@ -32,13 +34,9 @@
                 <img id="slider" src="/images/js.png" />
             </div>
         </div>
-        <h1>Метрики</h1>
+        <h1>Состояния</h1>
         <div id="grid"></div>
     </main>
-    <script type="module" src="./scripts/metrics_grid.js"></script>
+    <script src="./scripts/StatesGrid.js" type="module"></script>
 </body>
 </html>
-
-
-
-
