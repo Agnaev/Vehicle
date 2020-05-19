@@ -80,7 +80,19 @@ export const getCookie = key =>
         key.trim() === cook.split('=')[0].trim()
     )[0]?.split('=')[1];
 
-export const slider = async (slider = $('#slider')[0]) => {
+const makePartialViwe = requestString =>
+    fetch(requestString)
+        .then(x => x.text())
+        .then(x => $.parseHTML(x)[0])
+
+makePartialViwe('/header.html')
+    .then(x => $(x).appendTo($('header.header')));
+
+export const slider = async slider => {
+    await makePartialViwe('/slider.html')
+        .then(x => $(x).prependTo($('main')))
+        .then(() => slider = slider || $('#slider')[0]);
+
     let images = JSON.parse(getCookie('images_list') ?? '[]');
     if (!images || images.length === 0) {
         images = (await fetch_json('/api/get_images_list')).shuffle();
@@ -106,3 +118,6 @@ export const slider = async (slider = $('#slider')[0]) => {
     });
 }
 
+
+// makePartialViwe('/slider.html')
+//     .then(x => $(x).prependTo($('main')))

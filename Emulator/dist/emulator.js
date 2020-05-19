@@ -57,9 +57,6 @@ function createWebSocketServer(types) {
             catch (exc) {
                 console.log('Received incorrect data from request.');
             }
-            finally {
-                global['mydata'] = null;
-            }
         });
     });
     webSocketServer.on('listening', function () {
@@ -79,7 +76,8 @@ function gotcha() {
     timeout += 500;
 }
 function main() {
-    request_promise_1.default("http://" + config.default.host + ":" + config.default.port + "/api/metrics")
+    var _a = config.default, host = _a.host, port = _a.port;
+    request_promise_1.default("http://" + host + ":" + port + "/api/metrics")
         .then(createWebSocketServer)
         .catch(gotcha);
 }

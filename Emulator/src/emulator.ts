@@ -61,9 +61,6 @@ function createWebSocketServer(types: string | Array<any>): void {
             catch (exc) {
                 console.log('Received incorrect data from request.');
             }
-            finally {
-                global['mydata'] = null;
-            }
 
         })
     });

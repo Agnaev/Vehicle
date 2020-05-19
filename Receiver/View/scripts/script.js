@@ -16,10 +16,10 @@ $(document).ready(() => {
 /** @returns {Promise<{port:number, host:string}>} */
 const getWebSocketPort = () => fetch_json('/api/get_socket_connection')
     .then(({ port, host }) => {
-        if(port && host) {
+        if (port && host) {
             document.cookie = `ws_connection=ws://${host}:${port};max-age=1800;`
             return {
-                host, 
+                host,
                 port
             };
         }
@@ -44,6 +44,20 @@ STATES.then(data => {
 });
 states.then(data => {
     window['states'] = data;
+    window['indexed_states_by_metricid'] = data.reduce((result, item) => {
+        if (result[item.MetricTypeId]) {
+            result[item.MetricTypeId] = {
+                ...result[item.MetricTypeId],
+                [item.StateId]: item
+            }
+        }
+        else {
+            result[item.MetricTypeId] = {
+                [item.StateId]: item
+            }
+        }
+        return result;
+    }, {});
     window['bystates'] = groupBy(data)
 });
 
@@ -63,7 +77,7 @@ $('#connect_to_vehicle').on('click', async event => {
     const state = new ConnectStatus($.notify);
     let ws_client;
 
-    if(ws_connection instanceof Object) {
+    if (ws_connection instanceof Object) {
         const { host, port } = ws_connection;
         ws_client = new WebSocket(`ws://${host}:${port}`);
     }
@@ -81,9 +95,22 @@ $('#connect_to_vehicle').on('click', async event => {
     const charts = await charts_list;
     window['metrics'] = await fetch_json('/api/metrics');
     let i = 0;
+    const _STATES = await STATES;
     ws_client.onmessage = function ({ data }) {
-        this.charts.map(
-            ({ chart, Id }) => chart.push(this.iterator, JSON.parse(data)[Id]).update()
+        const _data = JSON.parse(data);
+        this.charts.forEach(
+            ({ chart, Id }) => {
+                let res;
+                const _metric = window['indexed_states_by_metricid'][Id];
+                for (const item in _metric) {
+                    if (_metric[item].MinValue <= _data[Id] && _metric[item].MaxValue >= _data[Id]) {
+                        res = _metric[item];
+                        break;
+                    }
+                }
+                const color = _STATES[res.StateId].color;
+                chart.push(this.iterator, _data[Id], color).update()
+            }
         );
         this.counter.text(this.iterator++);
         window['data_' + i++] = data;

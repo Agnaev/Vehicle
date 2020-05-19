@@ -12,8 +12,8 @@ export default class {
                 datasets: [{
                     label,
                     //data: data.map(x => x.Value),
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: ['rgba(255, 99, 132, 0.2)'],
+                    borderColor: ['rgba(255, 99, 132, 1)'],
                     borderWidth: 1
                 }]
             },
@@ -30,11 +30,13 @@ export default class {
     }
 
     changeColor(color) {
-        this.chart.data.datasets.borderColor = color;
-        this.chart.data.datasets.backgroundColor = color;
+        const ds = this.chart.data.datasets[0];
+        ds.borderColor.splice(ds.borderColor.length - 1, 0, color);
+        ds.backgroundColor.splice(ds.backgroundColor.length - 1, 0, color);
     }
 
-    push(label, data) {
+    push(label, data, color) {
+        this.changeColor(color);
         this.chart.data.labels.push(label);
         this.chart.data.datasets.forEach(dataset => dataset.data.push(data));
         return this;
