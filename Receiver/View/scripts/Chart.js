@@ -1,10 +1,20 @@
 import { } from './Chart.min.js';
 import { } from './jquery.min.js';
 
+Chart.pluginService.register({
+    afterDatasetsUpdate({chart, legend}) {
+        const bgcolors = chart.data.datasets[0].backgroundColor;
+        const legendItem = legend.legendItems[0];
+        legendItem.fillStyle = bgcolors[bgcolors.length - 2];
+        legendItem.strokeStyle = bgcolors[bgcolors.length - 2];
+    }
+});
+
 export default class {
     constructor(label) {
         const canvas = document.createElement('canvas');
         $('#chartContainer').append(canvas);
+        this.label = label;
         this.chart = new Chart(canvas.getContext('2d'), {
             type: 'bar',
             data: {
@@ -47,8 +57,13 @@ export default class {
     }
 
     removeData() {
-        this.chart.data.datasets[0].data.splice(0);
-        this.chart.data.labels.splice(0);
+        const ds = this.chart.data;
+        ds.datasets[0].data.splice(0);
+        ds.labels.splice(0);
         this.update();
+    }
+
+    changeLabel(state) {
+        this.chart.data.datasets[0].label = `${this.label} - ${state}`
     }
 }

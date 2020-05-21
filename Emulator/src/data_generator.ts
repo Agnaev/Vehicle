@@ -34,8 +34,8 @@ const data_generator = (types: Array<db_item>, last_res: generator_type): respon
     types.reduce(
         (result: response_type, { Id, MinValue, MaxValue }) => ({
             ...result,
-            [Id]: (({ min, max }) => Math.floor(Math.random() * (max - min) + min)) // iife function
-                (last_res.init // call iife function here
+            [Id]: (({ min, max }) => Math.floor(Math.random() * (max - min) + min)) /** iife function */
+                (last_res.init /** call iife function here */
                     ? {
                         min: MinValue,
                         max: MaxValue

@@ -44,20 +44,35 @@ STATES.then(data => {
 });
 states.then(data => {
     window['states'] = data;
-    window['indexed_states_by_metricid'] = data.reduce((result, item) => {
-        if (result[item.MetricTypeId]) {
-            result[item.MetricTypeId] = {
-                ...result[item.MetricTypeId],
-                [item.StateId]: item
+    window['indexed_states_by_metricid'] = data
+        .reduce((result, item) => {
+            if (result[item.MetricTypeId]) {
+                result[item.MetricTypeId] = {
+                    ...result[item.MetricTypeId],
+                    [item.StateId]: item
+                }
             }
-        }
-        else {
-            result[item.MetricTypeId] = {
-                [item.StateId]: item
+            else {
+                result[item.MetricTypeId] = {
+                    [item.StateId]: item
+                }
             }
-        }
-        return result;
-    }, {});
+            return result;
+        }, {});
+
+    window['norm_metrics'] = Object.values(JSON.parse(JSON.stringify(window['indexed_states_by_metricid'])))
+        .reduce((res, item) => {
+            const moved_obj = Object.values(item);
+            const max = moved_obj['getMaxByField']('MaxValue');
+            const min = moved_obj['getMinByField']('MinValue');
+            res[item[1].MetricTypeId] = moved_obj.map(x => {
+                x.MaxValue = (x.MaxValue - min) / ((max - min) || 1);
+                x.MinValue = (x.MinValue - min) / ((max - min) || 1);
+                return x;
+            });
+            return res;
+        }, {});
+
     window['bystates'] = groupBy(data)
 });
 
@@ -92,32 +107,59 @@ $('#connect_to_vehicle').on('click', async event => {
         console.log(`Произошла ошибка с веб сокетом. ${error}`);
     };
 
-    const charts = await charts_list;
+    // const charts = await charts_list;
     window['metrics'] = await fetch_json('/api/metrics');
-    let i = 0;
+    // let i = 0;
     const _STATES = await STATES;
+
+
+
     ws_client.onmessage = function ({ data }) {
-        const _data = JSON.parse(data);
+        const parsed_data = JSON.parse(data);
+        const find = (Id, value) => window['norm_metrics'][+Id].find(x => x.MinValue <= value && x.MaxValue >= value);
+
+        const normalize_data = Object.entries(parsed_data)
+            .reduce((res, item) => {
+                const [Id, val] = item;
+                const metric = window['indexed_states_by_metricid'][Id];
+                return {
+                    ...res,
+                    [Id]: (val - metric[1].MinValue) / (metric[3].MaxValue - metric[1].MinValue)
+                };
+            }, {});
+
+        let min = Infinity;
+        let j_min = Infinity;
+        for (let j = 0; j < 3; j++) {
+            let sum = 0;
+            for(const item of window['metrics']) {
+                const _state = window['norm_metrics'][item.Id][j];
+                sum += Math.pow(normalize_data[item.Id] - (_state.MaxValue + _state.MinValue) / 2, 2);
+            }
+            if (min > sum) {
+                j_min = j;
+                min = sum;
+            }
+        }
+
+        this.common_state.text(_STATES[j_min + 1].Name);
+
+        const current_states = Object.entries(normalize_data)
+            .map(item => window['STATES'][find(...item).StateId]);
+
         this.charts.forEach(
-            ({ chart, Id }) => {
-                let res;
-                const _metric = window['indexed_states_by_metricid'][Id];
-                for (const item in _metric) {
-                    if (_metric[item].MinValue <= _data[Id] && _metric[item].MaxValue >= _data[Id]) {
-                        res = _metric[item];
-                        break;
-                    }
-                }
-                const color = _STATES[res.StateId].color;
-                chart.push(this.iterator, _data[Id], color).update()
+            ({ chart, Id }, i) => {
+                chart.push(this.iterator, parsed_data[Id], current_states[i].color).update();
+                chart.changeLabel(current_states[i].Name)
             }
         );
         this.counter.text(this.iterator++);
-        window['data_' + i++] = data;
+        //window['data_' + i++] = _data;
     }.bind({
         counter: $('#counter'),
-        charts,
-        iterator: 1
+        charts: await charts_list,
+        iterator: 1,
+        common_state: $('#common_state')
     });
 
     const closeSocket = () => ws_client.close();
@@ -129,8 +171,10 @@ $('#connect_to_vehicle').on('click', async event => {
         if (ws_client.readyState < 2) {
             return new Error('Connection is steel alive!');
         }
-        charts.forEach(
-            chart => chart.chart.removeData()
+        charts_list.then(x =>
+            x.forEach(
+                chart => chart.chart.removeData()
+            )
         );
     }
 });

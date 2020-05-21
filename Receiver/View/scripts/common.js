@@ -80,6 +80,10 @@ export const getCookie = key =>
         key.trim() === cook.split('=')[0].trim()
     )[0]?.split('=')[1];
 
+
+/** @param {string} requestString 
+ * @returns {Promise<any>}
+*/
 const makePartialViwe = requestString =>
     fetch(requestString)
         .then(x => x.text())
@@ -118,6 +122,3 @@ export const slider = async slider => {
     });
 }
 
-
-// makePartialViwe('/slider.html')
-//     .then(x => $(x).prependTo($('main')))
