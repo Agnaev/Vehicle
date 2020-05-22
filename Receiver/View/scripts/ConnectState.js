@@ -1,7 +1,7 @@
 // @ts-check
 'use strict';
 
-import { } from './jquery.min.js';
+import { } from './minifyjs/jquery.min.js';
 
 export default class ConnectStatus {
     /** @param {Function} notificator */

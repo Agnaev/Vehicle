@@ -1,7 +1,7 @@
 // @ts-check
 'use strict';
 import ChartCreate from './Chart.js';
-import { } from './notify.min.js';
+import { } from './minifyjs/notify.min.js';
 import { slider, fetch_json } from './common.js';
 
 (window['redrawCharts'] = () => {

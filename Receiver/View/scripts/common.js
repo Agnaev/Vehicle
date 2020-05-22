@@ -101,7 +101,7 @@ export const slider = async slider => {
     if (!images || images.length === 0) {
         images = (await fetch_json('/api/get_images_list')).shuffle();
         document.cookie = `images_list=${JSON.stringify(images)};max-age=1800;`;
-    }
+    };
     localStorage.removeBlobs();
     (async function interval() {
         const img_name = this.images[this.pointer];

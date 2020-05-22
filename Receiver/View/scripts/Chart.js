@@ -1,5 +1,5 @@
-import { } from './Chart.min.js';
-import { } from './jquery.min.js';
+import { } from './minifyjs/Chart.min.js';
+import { } from './minifyjs/jquery.min.js';
 
 Chart.pluginService.register({
     afterDatasetsUpdate({chart, legend}) {

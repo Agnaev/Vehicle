@@ -41,7 +41,7 @@ app.listen(port, host, async (): Promise<void> => {
 
         copyFile(
             path.join(basedir, 'node_modules', 'jquery', 'dist', 'jquery.min.js'),
-            path.join(basedir, 'View', 'scripts', 'jquery.min.js')
+            path.join(basedir, 'View', 'scripts', 'minifyjs', 'jquery.min.js')
         );
 
         await db_check;

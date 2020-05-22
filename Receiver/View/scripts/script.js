@@ -1,12 +1,12 @@
 // @ts-check
 'use strict';
 
-import { } from './jquery.min.js';
+import { } from './minifyjs/jquery.min.js';
 import ChartCreate from './Chart.js';
 import ConnectStatus from './ConnectState.js';
-import { } from './notify.min.js';
+import { } from './minifyjs/notify.min.js';
 import { slider, fetch_json, getCookie } from './common.js';
-import { groupBy } from './Array.prototype.js';
+import { } from './Array.prototype.js';
 
 $(document).ready(() => {
     new ConnectStatus($.notify);
@@ -36,44 +36,37 @@ const charts_list = fetch_json('/api/metrics')
         )
     );
 
-const STATES = fetch_json('/api/states/list');
-const states = fetch_json('/api/states');
+const [ STATES, states, metrics ] = [
+    fetch_json('/api/states/list'), 
+    fetch_json('/api/states'), 
+    fetch_json('/api/metrics')
+];
 
-STATES.then(data => {
-    window['STATES'] = data;
-});
 states.then(data => {
-    window['states'] = data;
     window['indexed_states_by_metricid'] = data
         .reduce((result, item) => {
-            if (result[item.MetricTypeId]) {
-                result[item.MetricTypeId] = {
+            return Object.assign({}, result, {
+                [item.MetricTypeId]: {
                     ...result[item.MetricTypeId],
                     [item.StateId]: item
                 }
-            }
-            else {
-                result[item.MetricTypeId] = {
-                    [item.StateId]: item
-                }
-            }
-            return result;
+            })
         }, {});
 
-    window['norm_metrics'] = Object.values(JSON.parse(JSON.stringify(window['indexed_states_by_metricid'])))
+    window['norm_metrics'] = Object.values(window['indexed_states_by_metricid'].getCopy())
         .reduce((res, item) => {
             const moved_obj = Object.values(item);
             const max = moved_obj['getMaxByField']('MaxValue');
             const min = moved_obj['getMinByField']('MinValue');
-            res[item[1].MetricTypeId] = moved_obj.map(x => {
-                x.MaxValue = (x.MaxValue - min) / ((max - min) || 1);
-                x.MinValue = (x.MinValue - min) / ((max - min) || 1);
-                return x;
-            });
-            return res;
+            return {
+                ...res,
+                [item[1].MetricTypeId]: moved_obj.map(x => ({
+                    ...x,
+                    MaxValue: (x.MaxValue - min) / ((max - min) || 1),
+                    MinValue: (x.MinValue - min) / ((max - min) || 1)
+                }))
+            };
         }, {});
-
-    window['bystates'] = groupBy(data)
 });
 
 $('#connect_to_vehicle').on('click', async event => {
@@ -107,12 +100,8 @@ $('#connect_to_vehicle').on('click', async event => {
         console.log(`Произошла ошибка с веб сокетом. ${error}`);
     };
 
-    // const charts = await charts_list;
-    window['metrics'] = await fetch_json('/api/metrics');
-    // let i = 0;
+    const _metrics = await metrics;
     const _STATES = await STATES;
-
-
 
     ws_client.onmessage = function ({ data }) {
         const parsed_data = JSON.parse(data);
@@ -132,7 +121,7 @@ $('#connect_to_vehicle').on('click', async event => {
         let j_min = Infinity;
         for (let j = 0; j < 3; j++) {
             let sum = 0;
-            for(const item of window['metrics']) {
+            for (const item of _metrics) {
                 const _state = window['norm_metrics'][item.Id][j];
                 sum += Math.pow(normalize_data[item.Id] - (_state.MaxValue + _state.MinValue) / 2, 2);
             }
@@ -145,7 +134,7 @@ $('#connect_to_vehicle').on('click', async event => {
         this.common_state.text(_STATES[j_min + 1].Name);
 
         const current_states = Object.entries(normalize_data)
-            .map(item => window['STATES'][find(...item).StateId]);
+            .map(item => _STATES[find(...item).StateId]);
 
         this.charts.forEach(
             ({ chart, Id }, i) => {
@@ -154,7 +143,6 @@ $('#connect_to_vehicle').on('click', async event => {
             }
         );
         this.counter.text(this.iterator++);
-        //window['data_' + i++] = _data;
     }.bind({
         counter: $('#counter'),
         charts: await charts_list,
