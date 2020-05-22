@@ -11,7 +11,7 @@ Chart.pluginService.register({
 });
 
 export default class {
-    constructor(label) {
+    constructor(label, min) {
         const canvas = document.createElement('canvas');
         $('#chartContainer').append(canvas);
         this.label = label;
@@ -31,7 +31,8 @@ export default class {
                 scales: {
                     yAxes: [{
                         ticks: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            min
                         }
                     }]
                 }

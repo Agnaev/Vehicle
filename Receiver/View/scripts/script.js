@@ -29,9 +29,9 @@ const getWebSocketPort = () => fetch_json('/api/get_socket_connection')
 const charts_list = fetch_json('/api/metrics')
     .then(data =>
         data.map(
-            ({ Id, Name }) => ({
+            ({ Id, Name, MinValue }) => ({
                 Id,
-                chart: new ChartCreate(Name)
+                chart: new ChartCreate(Name, MinValue)
             })
         )
     );
