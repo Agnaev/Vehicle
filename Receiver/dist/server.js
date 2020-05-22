@@ -33,7 +33,7 @@ app.listen(port, host, function () { return tslib_1.__awaiter(void 0, void 0, vo
             case 0:
                 _a.trys.push([0, 2, , 3]);
                 db_check = db_connection_1.DatabaseCheck();
-                helper_1.copyFile(path_1.default.join(basedir, 'node_modules', 'jquery', 'dist', 'jquery.min.js'), path_1.default.join(basedir, 'View', 'scripts', 'jquery.min.js'));
+                helper_1.copyFile(path_1.default.join(basedir, 'node_modules', 'jquery', 'dist', 'jquery.min.js'), path_1.default.join(basedir, 'View', 'scripts', 'minifyjs', 'jquery.min.js'));
                 return [4, db_check];
             case 1:
                 _a.sent();

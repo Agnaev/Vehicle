@@ -49,7 +49,7 @@ $(document).ready(e => {
                     if (window['redrawCharts']) {
                         window['redrawCharts']();
                     }
-                    return response.json();
+                    return;// response.json();
                 }
                 throw new Error('error');
             })

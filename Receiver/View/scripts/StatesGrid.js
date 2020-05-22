@@ -55,13 +55,12 @@ function editor(container, options) {
 }
 
 const createGrid = (metrics, states) => {
-    const getColor = color => {
-        return {
-            'green': '#6bf35c',
-            'red': 'red',
-            'yellow': '#ffff55'
-        }[color] || color;
-    };
+    const getColor = color => ({
+        'green': '#6bf35c',
+        'red': 'red',
+        'yellow': '#ffff55'
+    }[color] || color);
+
     $('#grid').kendoGrid({
         dataSource,
         pageble: true,
@@ -94,15 +93,18 @@ const createGrid = (metrics, states) => {
 };
 
 $(document).ready(async () => {
-    const [_metrics, states] = await Promise.all([fetch_json('/api/metrics'), fetch_json('/api/states/list')]);
+    const [ _metrics, states ] = await Promise.all([
+        fetch_json('/api/metrics'), 
+        fetch_json('/api/states/list')
+    ]);
 
     const metrics = _metrics.reduce((res, item) => ({
         ...res,
         [item.Id]: item
     }), {});
-
-    createGrid(metrics, states);
+    
     slider();
+    createGrid(metrics, states);
 });
 
 

@@ -47,8 +47,9 @@ export default class {
 
     push(label, data, color) {
         this.changeColor(color);
-        this.chart.data.labels.push(label);
-        this.chart.data.datasets.forEach(dataset => dataset.data.push(data));
+        const this_data = this.chart.data;
+        this_data.labels.push(label);
+        this_data.datasets.forEach(dataset => dataset.data.push(data));
         return this;
     }
 
