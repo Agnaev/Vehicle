@@ -1,11 +1,10 @@
 /** Каррирование функции, т.е. превращение фцнкции из вида f(a, b, c) в f(a)(b)(c)
  * @param {Function} func функция которую надо каррировать*/
 function Currying(func: Function) {
-    return function curried() {
-        const _args = Array.apply(null, arguments);
-        return arguments.length >= func.length
-            ? func.apply(this, arguments)
-            : (...args) => curried.apply(this, [..._args, ...args]);
+    return function curried(...args: Array<any>) {
+        return args.length >= func.length
+            ? func.apply(this, args)
+            : (..._args: Array<any>) => curried.apply(this, [...args, ..._args]);
     }
 }
 

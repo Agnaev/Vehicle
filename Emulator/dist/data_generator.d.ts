@@ -12,5 +12,5 @@ export declare type generator_type = {
     data: response_type;
     init?: true;
 };
-export declare const generator: () => any;
+export declare const generator: (...args: any[]) => any;
 //# sourceMappingURL=data_generator.d.ts.map

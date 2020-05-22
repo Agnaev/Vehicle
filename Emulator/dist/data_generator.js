@@ -4,15 +4,18 @@ var tslib_1 = require("tslib");
 function Currying(func) {
     return function curried() {
         var _this = this;
-        var _args = Array.apply(null, arguments);
-        return arguments.length >= func.length
-            ? func.apply(this, arguments)
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        return args.length >= func.length
+            ? func.apply(this, args)
             : function () {
-                var args = [];
+                var _args = [];
                 for (var _i = 0; _i < arguments.length; _i++) {
-                    args[_i] = arguments[_i];
+                    _args[_i] = arguments[_i];
                 }
-                return curried.apply(_this, tslib_1.__spreadArrays(_args, args));
+                return curried.apply(_this, tslib_1.__spreadArrays(args, _args));
             };
     };
 }

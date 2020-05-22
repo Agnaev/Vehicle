@@ -15,18 +15,13 @@ function justPrint(message) {
     console.log.apply(console, args);
     console.groupEnd();
 }
-function createWebSocketServer(types) {
-    if (typeof types === 'string') {
-        types = JSON.parse(types);
-    }
+function createWebSocketServer(types_s) {
+    var types = typeof types_s === 'string' ? JSON.parse(types_s) : types_s;
     var indexed_types = types.reduce(function (result, item) {
-        result[item.Id] = item;
-        return result;
+        var _a;
+        return (tslib_1.__assign((_a = {}, _a[item.Id] = item, _a), result));
     }, {});
-    var webSocketServer = new ws_1.Server({
-        host: config.default.web_socket.host,
-        port: config.default.web_socket.port
-    });
+    var webSocketServer = new ws_1.Server(config.default.web_socket);
     var dataSender = new DataSender_1.default(data_generator_1.generator(types));
     webSocketServer.on('connection', function (socket, request) {
         console.log("User with ip: " + request.socket.remoteAddress + " was connected.");
@@ -45,7 +40,7 @@ function createWebSocketServer(types) {
                     if (+val < +type.MinValue) {
                         val = type.MinValue;
                     }
-                    else if (+val > type.MaxValue) {
+                    else if (+val > +type.MaxValue) {
                         val = type.MaxValue;
                     }
                     return {
@@ -55,7 +50,7 @@ function createWebSocketServer(types) {
                 });
             }
             catch (exc) {
-                console.log('Received incorrect data from request.');
+                console.log('Incorrect data in request body.');
             }
         });
     });
@@ -70,7 +65,6 @@ function createWebSocketServer(types) {
 var timeout = 1000;
 function gotcha() {
     console.clear();
-    console.log(timeout);
     console.log("Could not connect to web server.");
     setTimeout(main, timeout);
     timeout += 500;
