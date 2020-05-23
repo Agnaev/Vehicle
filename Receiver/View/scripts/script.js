@@ -8,16 +8,28 @@ import { } from './minifyjs/notify.min.js';
 import { slider, fetch_json, getCookie } from './common.js';
 import { } from './Array.prototype.js';
 
+const statistic = {
+    collect_stat: false,
+    item: 0,
+    count: 100,
+    data: []
+}
 $(document).ready(() => {
     new ConnectStatus($.notify);
     $('#counter').text(0);
+    (async () => {
+        statistic.collect_stat = await fetch('/collect_stat')
+        .then(x => x.json())
+        .then(x => x.collect);
+        $('#connect_to_vehicle').trigger('click');
+    })();
 });
 
 /** @returns {Promise<{port:number, host:string}>} */
 const getWebSocketPort = () => fetch_json('/api/get_socket_connection')
     .then(({ port, host }) => {
         if (port && host) {
-            document.cookie = `ws_connection=ws://${host}:${port};max-age=1800;`
+            document.cookie = `ws_connection=ws://${host}:${port};`
             return {
                 host,
                 port
@@ -36,9 +48,9 @@ const charts_list = fetch_json('/api/metrics')
         )
     );
 
-const [ STATES, states, metrics ] = [
-    fetch_json('/api/states/list'), 
-    fetch_json('/api/states'), 
+const [STATES, states, metrics] = [
+    fetch_json('/api/states/list'),
+    fetch_json('/api/states'),
     fetch_json('/api/metrics')
 ];
 
@@ -68,6 +80,32 @@ states.then(data => {
             };
         }, {});
 });
+
+/** @param { Array<number> } data */
+const sendStatistics = async data => {
+    if (statistic.collect_stat) {
+        $.ajax({
+            url: '/api/statistic',
+            type: 'post',
+            data: JSON.stringify(data)
+        });
+        const cook = getCookie('ws_connection')
+        const socket = new WebSocket(cook);
+        setTimeout(function interval() {
+            if([2, 3].includes(socket.readyState)) {
+                throw new Error('closing connection')
+            }
+            else if(0 === socket.readyState) {
+                setTimeout(interval, 100);
+            }
+            else {
+                socket.send('reboot');
+                $('#close_connection').trigger('click');
+                window.location.reload();
+            }
+        }, 100);
+    }
+}
 
 $('#connect_to_vehicle').on('click', async event => {
     event.preventDefault();
@@ -103,13 +141,14 @@ $('#connect_to_vehicle').on('click', async event => {
     const _metrics = await metrics;
     const _STATES = await STATES;
 
+    const find = (Id, value) => window['norm_metrics'][+Id].find(x => x.MinValue <= value && x.MaxValue >= value).StateId;
+
     ws_client.onmessage = function ({ data }) {
+        const start = Date.now();
         const parsed_data = JSON.parse(data);
-        const find = (Id, value) => window['norm_metrics'][+Id].find(x => x.MinValue <= value && x.MaxValue >= value);
 
         const normalize_data = Object.entries(parsed_data)
-            .reduce((res, item) => {
-                const [Id, val] = item;
+            .reduce((res, [Id, val]) => {
                 const metric = window['indexed_states_by_metricid'][Id];
                 return {
                     ...res,
@@ -131,10 +170,8 @@ $('#connect_to_vehicle').on('click', async event => {
             }
         }
 
-        this.common_state.text(_STATES[j_min + 1].Name);
-
         const current_states = Object.entries(normalize_data)
-            .map(item => _STATES[find(...item).StateId]);
+            .map(item => _STATES[find(...item)]);
 
         this.charts.forEach(
             ({ chart, Id }, i) => {
@@ -142,7 +179,18 @@ $('#connect_to_vehicle').on('click', async event => {
                 chart.changeLabel(current_states[i].Name)
             }
         );
+
+        this.common_state.text(_STATES[j_min + 1].Name);
         this.counter.text(this.iterator++);
+
+        if (statistic.collect_stat) {
+            statistic.data.push(Date.now() - start);
+            statistic.item += 1;
+            if (statistic.item >= statistic.count) {
+                sendStatistics(statistic.data);
+                statistic.item = 0;
+            }
+        }
     }.bind({
         counter: $('#counter'),
         charts: await charts_list,

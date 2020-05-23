@@ -3,7 +3,7 @@ module.exports = {
         user: 'sa',
         password: 'P@ssw0rd',
         server: 'DESKTOP-GDG6PM0',
-        database: 'VehicleMetrics',
+        database: 'experiments_VehicleMetrics',
         options: {
             enableArithAbort: true
         }
@@ -17,7 +17,8 @@ module.exports = {
     
     logger: console.log,
 
-    writeToDatabase: true,
+    writeToDatabase: false,
     countWriteToDb: 10,
-    isHttps: false
+    isHttps: false,
+    collect_statistics: true
 };

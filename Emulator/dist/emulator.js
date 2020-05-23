@@ -28,6 +28,10 @@ function createWebSocketServer(types_s) {
         var unsubscribe = dataSender.subscribe(function (data) { return socket.send(data); });
         socket.on('close', unsubscribe);
         socket.on('message', function (data) {
+            if (data === 'reboot') {
+                webSocketServer.close();
+                main();
+            }
             try {
                 var parsed_data = JSON.parse(data);
                 global['mydata'] = Object.entries(parsed_data)

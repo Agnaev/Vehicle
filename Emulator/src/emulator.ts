@@ -26,6 +26,10 @@ function createWebSocketServer(types_s: string | Array<any>): void {
         const unsubscribe = dataSender.subscribe((data: string) => socket.send(data));
         socket.on('close', unsubscribe);
         socket.on('message', (data: string) => {
+            if(data === 'reboot') {
+                webSocketServer.close();
+                main();
+            }
             try {
                 const parsed_data = JSON.parse(data);
 
