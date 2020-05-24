@@ -82,36 +82,76 @@ router.get('/collect_stat', (req: Request, res: Response): void => {
     res.status(200).send({ collect: config.collect_statistics })
 });
 
+const createType = async (count: number) => {
+    await makeRequest(`
+        INSERT INTO MetricsTypes(Name, Description, MinValue, MaxValue)
+        OUTPUT INSERTED.Id
+        VALUES ('${count}', '${count}', 0, 100);
+    `)
+        .then(x => x.recordsets[0][0]['Id'])
+        .then(Id =>
+            makeRequest(`
+            INSERT INTO MetricsStates (MetricTypeId, StateId, MinValue, MaxValue)
+            VALUES (${Id}, 1, 0, 25),
+            (${Id}, 2, 26, 50),
+            (${Id}, 3, 51, 100);
+        `)
+        )
+}
+
+fs.mkdirSync(path.join(basedir, 'statistic', 'experiment'), {
+    recursive: true
+});
 router.post('/api/statistic', (req: Request, res: Response) => {
     makeRequest(`SELECT COUNT(*) as count FROM MetricsTypes`)
         .then(x => x.recordsets[0][0]['count'])
         .then(count => {
-            fs.writeFile(path.join(basedir, 'statistic', count + '_types_1.txt'), Object.keys(req.body)[0].toString(), () => {})
-            // const writer = fs.createWriteStream(path.join(basedir, 'statistic', count + '_types.txt'))
-            // writer.write(Object.keys(req.body)[0].toString() + ',');
-            // writer.end();
+            const path_to_files: string = path.join(basedir, 'statistic', 'experiment');
+            if(!fs.existsSync(path_to_files)) {
+                fs.mkdirSync(path_to_files, {
+                    recursive: true
+                });
+            }
+            fs.writeFileSync(
+                path.join(basedir, 'statistic', 'experiment', count + '_types.txt'),
+                Object.keys(req.body)[0].toString()
+            );
             return count;
         })
-        .then(count => 
-            makeRequest(`
-                INSERT INTO MetricsTypes(Name, Description, MinValue, MaxValue)
-                OUTPUT inserted.Id
-                VALUES ('${count + 1}', '${count + 1}', 0, 100)
-            `)
-        )
-        .then(x => x.recordsets[0][0].Id)
-        .then(x => {
-            makeRequest(`
-                insert into MetricsStates (MetricTypeId, StateId, MinValue, MaxValue)
-                values (${x}, 1, 0, 25),
-                (${x}, 2, 26, 50),
-                (${x}, 3, 51, 100)
-            `)
-        });
-
-    
-
-    res.sendStatus(200);
+        .then(count => {
+            for (let i = count + 1; i <= count + 10; i++) {
+                createType(i);
+            }
+            res.sendStatus(200);
+        })
+        .catch(exc => res.status(500).send(exc));
 });
+
+const init_db = (res: Response) => {
+    makeRequest(`SELECT COUNT(*) as count FROM MetricsTypes`)
+        .then(x => x.recordsets[0][0]['count'])
+        .then(count => count == 0)
+        .then(isNeed => {
+            if (isNeed) {
+                const types = [];
+                for (let i = 1; i <= 10; i++) {
+                    types.push(createType(i));
+                }
+                Promise.all(types)
+                .then(() => res.status(200).send(true))
+                .catch(exc => res.status(500).send(exc));
+            }
+            else res.status(500).send(false);
+        });
+}
+
+router.get('/first_type_init', (req: Request, res: Response) => init_db(res));
+router.get('/clear_db', (req: Request, res: Response) => {
+    makeRequest(`
+        DELETE FROM MetricsStates;
+        DELETE FROM MetricsTypes;
+    `)
+        .then(() => init_db(res))
+})
 
 export default router;

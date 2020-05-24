@@ -11,7 +11,7 @@ import { } from './Array.prototype.js';
 const statistic = {
     collect_stat: false,
     item: 0,
-    count: 100,
+    count: 250,
     data: []
 }
 $(document).ready(() => {
@@ -100,8 +100,10 @@ const sendStatistics = async data => {
             }
             else {
                 socket.send('reboot');
-                $('#close_connection').trigger('click');
-                window.location.reload();
+                setTimeout(() => {
+                    $('#close_connection').trigger('click');
+                    window.location.reload();
+                }, 1000);
             }
         }, 100);
     }

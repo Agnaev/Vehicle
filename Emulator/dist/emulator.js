@@ -29,6 +29,7 @@ function createWebSocketServer(types_s) {
         socket.on('close', unsubscribe);
         socket.on('message', function (data) {
             if (data === 'reboot') {
+                socket.send('ok');
                 webSocketServer.close();
                 main();
             }

@@ -67,21 +67,78 @@ router.get('/api/get_images_list', function (req, res) {
 router.get('/collect_stat', function (req, res) {
     res.status(200).send({ collect: config_1.default.collect_statistics });
 });
+var createType = function (count) { return tslib_1.__awaiter(void 0, void 0, void 0, function () {
+    return tslib_1.__generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4, db_connection_1.makeRequest("\n        INSERT INTO MetricsTypes(Name, Description, MinValue, MaxValue)\n        OUTPUT INSERTED.Id\n        VALUES ('" + count + "', '" + count + "', 0, 100);\n    ")
+                    .then(function (x) { return x.recordsets[0][0]['Id']; })
+                    .then(function (Id) {
+                    return db_connection_1.makeRequest("\n            INSERT INTO MetricsStates (MetricTypeId, StateId, MinValue, MaxValue)\n            VALUES (" + Id + ", 1, 0, 25),\n            (" + Id + ", 2, 26, 50),\n            (" + Id + ", 3, 51, 100);\n        ");
+                })];
+            case 1:
+                _a.sent();
+                return [2];
+        }
+    });
+}); };
+var experimentalNumber = 1;
+fs_1.default.mkdirSync(path_1.default.join(basedir, 'statistic', 'experiment_' + experimentalNumber), {
+    recursive: true
+});
 router.post('/api/statistic', function (req, res) {
     db_connection_1.makeRequest("SELECT COUNT(*) as count FROM MetricsTypes")
         .then(function (x) { return x.recordsets[0][0]['count']; })
         .then(function (count) {
-        fs_1.default.writeFile(path_1.default.join(basedir, 'statistic', count + '_types_1.txt'), Object.keys(req.body)[0].toString(), function () { });
+        if (count > 100) {
+            db_connection_1.makeRequest('DELETE FROM MetricsStates')
+                .then(function () { return db_connection_1.makeRequest("DELETE FROM MetricsTypes"); })
+                .catch(function (x) { return console.log('110', x); });
+            count = 0;
+            experimentalNumber += 1;
+        }
+        if (experimentalNumber > 10) {
+            process.exit(0);
+        }
+        else {
+            fs_1.default.mkdirSync(path_1.default.join(basedir, 'statistic', 'experiment_' + experimentalNumber), {
+                recursive: true
+            });
+        }
+        fs_1.default.writeFile(path_1.default.join(basedir, 'statistic', 'experiment_' + experimentalNumber, count + '_types.txt'), Object.keys(req.body)[0].toString(), function () { });
         return count;
     })
         .then(function (count) {
-        return db_connection_1.makeRequest("\n                INSERT INTO MetricsTypes(Name, Description, MinValue, MaxValue)\n                OUTPUT inserted.Id\n                VALUES ('" + (count + 1) + "', '" + (count + 1) + "', 0, 100)\n            ");
+        for (var i = count + 1; i <= count + 10; i++) {
+            createType(i);
+        }
+        res.sendStatus(200);
     })
-        .then(function (x) { return x.recordsets[0][0].Id; })
-        .then(function (x) {
-        db_connection_1.makeRequest("\n                insert into MetricsStates (MetricTypeId, StateId, MinValue, MaxValue)\n                values (" + x + ", 1, 0, 25),\n                (" + x + ", 2, 26, 50),\n                (" + x + ", 3, 51, 100)\n            ");
+        .catch(function (exc) { return res.status(500).send(exc); });
+});
+var init_db = function (res) {
+    db_connection_1.makeRequest("SELECT COUNT(*) as count FROM MetricsTypes")
+        .then(function (x) { return x.recordsets[0][0]['count']; })
+        .then(function (count) { return count == 0; })
+        .then(function (isNeed) {
+        if (isNeed) {
+            var types = [];
+            for (var i = 1; i <= 10; i++) {
+                types.push(createType(i));
+            }
+            Promise.all(types)
+                .then(function () { return res.status(200).send(true); })
+                .catch(function (exc) { return res.status(500).send(exc); });
+        }
+        else
+            res.status(500).send(false);
     });
-    res.sendStatus(200);
+};
+router.get('/first_type_init', function (req, res) {
+    init_db(res);
+});
+router.get('/clear_db', function (req, res) {
+    db_connection_1.makeRequest("\n        DELETE FROM MetricsStates;\n        DELETE FROM MetricsTypes;\n    ")
+        .then(function () { return init_db(res); });
 });
 exports.default = router;
 //# sourceMappingURL=main_routes.js.map

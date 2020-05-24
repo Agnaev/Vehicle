@@ -27,6 +27,7 @@ function createWebSocketServer(types_s: string | Array<any>): void {
         socket.on('close', unsubscribe);
         socket.on('message', (data: string) => {
             if(data === 'reboot') {
+                socket.send('ok');
                 webSocketServer.close();
                 main();
             }
