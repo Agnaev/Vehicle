@@ -76,9 +76,9 @@ export const fetch_json = (url, options = {}) =>
  * @returns { string | null } cookie value by key
 */
 export const getCookie = key =>
-    document.cookie.split(';').filter(cook =>
+    document.cookie.split(';').find(cook =>
         key.trim() === cook.split('=')[0].trim()
-    )[0]?.split('=')[1];
+    )?.split('=')[1];
 
 
 /** @param {string} requestString 
@@ -121,4 +121,9 @@ export const slider = async slider => {
         slider
     });
 }
+
+/** @param { Array<any> } arr массив, который необходимо проиндексировать
+ * @param { string } field поля для индексации
+ */
+export const indexing = (arr, field) => arr.reduce((res, item) => ({ ...res, [item[field]]: item }), {});
 

@@ -1,6 +1,6 @@
 import { } from './minifyjs/jquery.min.js';
 import { } from './minifyjs/kendo.all.min.js';
-import { slider, fetch_json } from './common.js';
+import { slider, fetch_json, indexing } from './common.js';
 
 const refresh_grid = () => $('#grid').data('kendoGrid').dataSource.read();
 
@@ -54,7 +54,8 @@ function editor(container, options) {
         });
 }
 
-const createGrid = (metrics, states) => {
+const createGrid = ([metrics, states]) => {
+    metrics = indexing(metrics, 'Id');
     const getColor = color => ({
         'green': '#6bf35c',
         'red': 'red',
@@ -92,19 +93,17 @@ const createGrid = (metrics, states) => {
     });
 };
 
-$(document).ready(async () => {
-    const [ _metrics, states ] = await Promise.all([
+$(document).ready(() => {
+    Promise.all([
         fetch_json('/api/metrics'), 
         fetch_json('/api/states/list')
-    ]);
-
-    const metrics = _metrics.reduce((res, item) => ({
-        ...res,
-        [item.Id]: item
-    }), {});
-    
+    ])
+    .then(createGrid)
+    .catch(exc => {
+        console.error('Ошибка при запросе данных с сервера', exc);
+        $.notify('Произошла ошибка при запросе данных с сервера', 'error')
+    });
     slider();
-    createGrid(metrics, states);
 });
 
 

@@ -32,13 +32,7 @@ export const states_list = async (): Promise<any> => {
 
 export const update = async ({ Id, MetricTypeId, StateId, MinValue, MaxValue }: MetricStateType): Promise<boolean> => {
     try {
-        const {
-            recordsets: [
-                [
-                    requestResult
-                ]
-            ]
-        } = await makeRequest(`
+        await makeRequest(`
             UPDATE MetricsStates
             SET MetricTypeId = '${MetricTypeId}',
             StateId = '${StateId}',

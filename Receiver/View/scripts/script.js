@@ -45,7 +45,7 @@ const [ STATES, states, metrics ] = [
 states.then(data => {
     window['indexed_states_by_metricid'] = data
         .reduce((result, item) => {
-            return Object.assign({}, result, {
+            return Object.assign(result, {
                 [item.MetricTypeId]: {
                     ...result[item.MetricTypeId],
                     [item.StateId]: item
@@ -105,11 +105,14 @@ $('#connect_to_vehicle').on('click', async event => {
 
     ws_client.onmessage = function ({ data }) {
         const parsed_data = JSON.parse(data);
-        const find = (Id, value) => window['norm_metrics'][+Id].find(x => x.MinValue <= value && x.MaxValue >= value);
+
+        /** @param { number | string } Id 
+         * @param { number } value
+        */
+        const getCurrentStateId = (Id, value) => window['norm_metrics'][+Id].find(x => x.MinValue <= value && x.MaxValue >= value)?.StateId;
 
         const normalize_data = Object.entries(parsed_data)
-            .reduce((res, item) => {
-                const [Id, val] = item;
+            .reduce((res, [Id, val]) => {
                 const metric = window['indexed_states_by_metricid'][Id];
                 return {
                     ...res,
@@ -121,9 +124,9 @@ $('#connect_to_vehicle').on('click', async event => {
         let j_min = Infinity;
         for (let j = 0; j < 3; j++) {
             let sum = 0;
-            for (const item of _metrics) {
-                const _state = window['norm_metrics'][item.Id][j];
-                sum += Math.pow(normalize_data[item.Id] - (_state.MaxValue + _state.MinValue) / 2, 2);
+            for (const { Id } of _metrics) {
+                const _state = window['norm_metrics'][Id][j];
+                sum += Math.pow(normalize_data[Id] - (_state.MaxValue + _state.MinValue) / 2, 2);
             }
             if (min > sum) {
                 j_min = j;
@@ -134,7 +137,7 @@ $('#connect_to_vehicle').on('click', async event => {
         this.common_state.text(_STATES[j_min + 1].Name);
 
         const current_states = Object.entries(normalize_data)
-            .map(item => _STATES[find(...item).StateId]);
+            .map(item => _STATES[getCurrentStateId(...item)]);
 
         this.charts.forEach(
             ({ chart, Id }, i) => {

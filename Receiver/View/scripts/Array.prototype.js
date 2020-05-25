@@ -13,8 +13,7 @@ Array.prototype.getMinByField =
 Object.defineProperty(Object.prototype, "getCopy", {
     value: function () {
         return JSON.parse(JSON.stringify(this)) 
-    },
-    enumerable: false
+    }
 });
 
 export default {}
