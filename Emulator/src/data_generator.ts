@@ -2,9 +2,7 @@
  * @param {Function} func функция которую надо каррировать*/
 function Currying(func: Function) {
     return function curried(...args: Array<any>) {
-        return args.length >= func.length
-            ? func.apply(this, args)
-            : (..._args: Array<any>) => curried.apply(this, [...args, ..._args]);
+        return args.length >= func.length ? func.apply(this, args) : curried.bind(this, ...args);
     }
 }
 
@@ -29,23 +27,25 @@ export type generator_type = {
  * @param { Array<db_item> } types метрики из базы данных
  * @param { generator_type } last_res последний результат работы функции
  */
-const data_generator = (types: Array<db_item>, last_res: generator_type): response_type =>
-    types.reduce(
-        (result: response_type, { Id, MinValue, MaxValue }) => ({
-            ...result,
-            [Id]: (({ min, max }) => Math.floor(Math.random() * (max - min) + min)) /** iife function */
-                (last_res.init /** call iife function here */
-                    ? {
-                        min: MinValue,
-                        max: MaxValue
-                    }
-                    : {
-                        min: last_res[Id] - 5 < MinValue ? MinValue : last_res[Id] - 5,
-                        max: last_res[Id] + 5 > MaxValue ? MaxValue : last_res[Id] + 5
-                    }
-                )
-        }), {}
-    );
+const data_generator = (types: Array<db_item>, last_res: generator_type): response_type => {
+    const generator = ({ min, max }) => Math.floor(Math.random() * (max - min) + min);
+
+    const result: response_type = {};
+    for (const { Id, MinValue: min, MaxValue: max } of types) {
+        const sended = { min, max };
+        if(!last_res.init) {
+            if(last_res[Id] - 5 >= min) {
+                sended.min = last_res[Id] - 5;
+            }
+
+            if(last_res[Id] + 5 <= max) {
+                sended.max = last_res[Id] + 5;
+            }
+        };
+        result[Id] = generator(sended);
+    }
+    return result;
+};
 
 export const generator = Currying(data_generator);
 
