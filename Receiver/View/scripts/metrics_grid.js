@@ -44,11 +44,11 @@ const dataSource = new kendo.data.DataSource({
     pageSize: 10
 });
 
-$(document).ready(() => {
+const createGrid = () => {
     $('#grid').kendoGrid({
         dataSource,
         pageble: true,
-        toolbar: [ { name: "create", text: "Добавить" } ],
+        toolbar: [{ name: "create", text: "Добавить" }],
         editable: "popup",
         pageable: true,
         sortable: true,
@@ -61,6 +61,8 @@ $(document).ready(() => {
             { command: ["edit", "destroy"], title: "&nbsp;" }
         ]
     });
-});
+}
+
+$(document).ready(createGrid);
 
 slider();

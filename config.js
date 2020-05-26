@@ -8,13 +8,13 @@ module.exports = {
             enableArithAbort: true
         }
     },
-    host: '192.168.0.14',
+    host: '192.168.0.13',
     port: 80,
     web_socket: {
-        host: '192.168.0.14',
+        host: '192.168.0.13',
         port: 3000
     },
-    
+
     logger: console.log,
 
     writeToDatabase: true,

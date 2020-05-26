@@ -25,7 +25,7 @@ import { slider, fetch_json } from './common.js';
         ]) => {
             $('canvas.chartjs-render-monitor').map((_, v) => v.remove());
             const getState = (Id, val) => states[Id].find(x => x.MinValue <= val && x.MaxValue >= val).StateId;
-            return metrics.forEach(({ Id, Name, MinValue, MaxValue }) => {
+            for (const { Id, Name, MinValue, MaxValue } of metrics) {
                 const chart = new ChartCreate(Name, MinValue, MaxValue);
                 values.filterWithRemove(({ TypeId }) => TypeId === Id)
                     .map(
@@ -33,7 +33,7 @@ import { slider, fetch_json } from './common.js';
                          * @param {number} index */
                         ({ Value }, index) => chart.push(index + 1, Value, STATES[getState(Id, Value)].color));
                 chart.update();
-            });
+            }
         });
 })();
 

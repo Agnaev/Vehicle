@@ -36,9 +36,9 @@ const charts_list = fetch_json('/api/metrics')
         )
     );
 
-const [ STATES, states, metrics ] = [
-    fetch_json('/api/states/list'), 
-    fetch_json('/api/states'), 
+const [STATES, states, metrics] = [
+    fetch_json('/api/states/list'),
+    fetch_json('/api/states'),
     fetch_json('/api/metrics')
 ];
 

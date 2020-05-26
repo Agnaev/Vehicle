@@ -2,7 +2,7 @@ import { } from './minifyjs/Chart.min.js';
 import { } from './minifyjs/jquery.min.js';
 
 Chart.pluginService.register({
-    afterDatasetsUpdate({chart, legend}) {
+    afterDatasetsUpdate({ chart, legend }) {
         const bgcolors = chart.data.datasets[0].backgroundColor;
         const legendItem = legend.legendItems[0];
         legendItem.fillStyle = bgcolors[bgcolors.length - 2];
@@ -28,6 +28,13 @@ export default class {
                 }]
             },
             options: {
+                legend: {
+                    onClick: null,
+                    display: true,
+                    labels: {
+                        fontSize: 20,
+                    }
+                },
                 scales: {
                     yAxes: [{
                         ticks: {
