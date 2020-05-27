@@ -44,24 +44,23 @@ const dataSource = new kendo.data.DataSource({
     pageSize: 10
 });
 
-const createGrid = () => {
-    $('#grid').kendoGrid({
-        dataSource,
-        pageble: true,
-        toolbar: [{ name: "create", text: "Добавить" }],
-        editable: "popup",
-        pageable: true,
-        sortable: true,
-        columns: [
-            { field: 'Id', title: 'Id' },
-            { field: 'Name', title: 'Тип' },
-            { field: 'Description', title: 'Описание' },
-            { field: 'MinValue', title: 'Минимальное значение' },
-            { field: 'MaxValue', title: 'Максимальное значение' },
-            { command: ["edit", "destroy"], title: "&nbsp;" }
-        ]
-    });
-}
+const createGrid = () => $('#grid').kendoGrid({
+    dataSource,
+    pageble: true,
+    toolbar: [{ name: "create", text: "Добавить" }],
+    editable: "popup",
+    pageable: true,
+    sortable: true,
+    columns: [
+        { field: 'Id', title: 'Id' },
+        { field: 'Name', title: 'Тип' },
+        { field: 'Description', title: 'Описание' },
+        { field: 'MinValue', title: 'Минимальное значение' },
+        { field: 'MaxValue', title: 'Максимальное значение' },
+        { command: ["edit", "destroy"], title: "&nbsp;" }
+    ]
+});
+
 
 $(document).ready(createGrid);
 

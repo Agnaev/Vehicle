@@ -63,6 +63,9 @@ const makePartialViwe = requestString =>
 makePartialViwe('/header.html')
     .then(x => $(x).appendTo($('header.header')));
 
+makePartialViwe('/footer.html')
+    .then(x => $(x).appendTo($('footer.footer')));
+
 export const slider = async slider => {
     await makePartialViwe('/slider.html')
         .then(x => $(x).prependTo($('main')))

@@ -1,12 +1,16 @@
 // @ts-check
 'use strict';
 
+function getExtremum(field, reducer_fn, reducer_data = this[0][field]) {
+    return this.map(x => x[field]).reduce((res, item) => reducer_fn(res, item) ? res : item, reducer_data);
+}
+
 Array.prototype['getMaxByField'] = function (field) {
-    return this.reduce((result, item) => item[field] && result > item[field] && result || item[field], this[0][field])
+    return getExtremum.call(this, field, (a, b) => a > b);
 };
 
 Array.prototype['getMinByField'] = function (field) {
-    return this.reduce((result, item) => item[field] && result < item[field] && result || item[field], this[0][field])
+    return getExtremum.call(this, field, (a, b) => a < b);
 };
 
 Array.prototype['filterWithRemove'] = function (callback) {
