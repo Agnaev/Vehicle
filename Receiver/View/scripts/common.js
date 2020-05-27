@@ -96,7 +96,7 @@ export const slider = async slider => {
 /** @param { Array<any> } arr массив, который необходимо проиндексировать
  * @param { string } field поля для индексации
  */
-export const indexing = function(arr, field) {
+export const indexing = (arr, field) => {
     return arr.reduce((res, item) => Object.assign(res, { [item[field]]: item }), {});
 }
 

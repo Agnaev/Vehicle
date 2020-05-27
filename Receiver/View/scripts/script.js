@@ -36,38 +36,21 @@ const charts_list = fetch_json('/api/metrics')
         )
     );
 
+const createWebSocket = (ws_connection) => {
+    if (ws_connection instanceof Object) {
+        const { host, port } = ws_connection;
+        return new WebSocket(`ws://${host}:${port}`);
+    }
+    else {
+        return new WebSocket(ws_connection);
+    }
+}
+
 const [STATES, states, metrics] = [
     fetch_json('/api/states/list'),
     fetch_json('/api/states'),
     fetch_json('/api/metrics')
 ];
-
-states.then(data => {
-    window['indexed_states_by_metricid'] = data
-        .reduce((result, item) => {
-            return Object.assign(result, {
-                [item.MetricTypeId]: {
-                    ...result[item.MetricTypeId],
-                    [item.StateId]: item
-                }
-            })
-        }, {});
-
-    window['norm_metrics'] = Object.values(window['indexed_states_by_metricid'].getCopy())
-        .reduce((res, item) => {
-            const moved_obj = Object.values(item);
-            const max = moved_obj['getMaxByField']('MaxValue');
-            const min = moved_obj['getMinByField']('MinValue');
-            return {
-                ...res,
-                [item[1].MetricTypeId]: moved_obj.map(x => ({
-                    ...x,
-                    MaxValue: (x.MaxValue - min) / ((max - min) || 1),
-                    MinValue: (x.MinValue - min) / ((max - min) || 1)
-                }))
-            };
-        }, {});
-});
 
 $('#connect_to_vehicle').on('click', async event => {
     event.preventDefault();
@@ -83,15 +66,7 @@ $('#connect_to_vehicle').on('click', async event => {
     }
 
     const state = new ConnectStatus($.notify);
-    let ws_client;
-
-    if (ws_connection instanceof Object) {
-        const { host, port } = ws_connection;
-        ws_client = new WebSocket(`ws://${host}:${port}`);
-    }
-    else {
-        ws_client = new WebSocket(ws_connection);
-    }
+    const ws_client = createWebSocket(ws_connection);
 
     ws_client.onopen = () => state.connect();
     ws_client.onclose = () => state.disconnect();
@@ -100,34 +75,49 @@ $('#connect_to_vehicle').on('click', async event => {
         console.log(`Произошла ошибка с веб сокетом. ${error}`);
     };
 
-    const _metrics = await metrics;
-    const _STATES = await STATES;
+    const [_metrics, _STATES, _states] = await Promise.all([metrics, STATES, states]);
+
+    const indexed_states_by_metricid = _states.reduce((result, item) => Object.assign(result, {
+        [item.MetricTypeId]: {
+            ...result[item.MetricTypeId],
+            [item.StateId]: item
+        }
+    }), {});
+
+    const norm_metrics = Object.values(indexed_states_by_metricid.getCopy)
+        .reduce((res, item) => {
+            const moved_item = Object.values(item);
+            const max = moved_item['getMaxByField']('MaxValue');
+            const min = moved_item['getMinByField']('MinValue');
+            return Object.assign(res, {
+                [item[1].MetricTypeId]: moved_item.map(x => Object.assign(x, {
+                    MaxValue: (x.MaxValue - min) / ((max - min) || 1),
+                    MinValue: (x.MinValue - min) / ((max - min) || 1)
+                }))
+            });
+        }, {});
 
     ws_client.onmessage = function ({ data }) {
         const parsed_data = JSON.parse(data);
 
-        /** @param { number | string } Id 
-         * @param { number } value
-        */
-        const getCurrentStateId = (Id, value) => window['norm_metrics'][+Id].find(x => x.MinValue <= value && x.MaxValue >= value)?.StateId;
+        const normalize_data = Object.entries(parsed_data).reduce((res, [Id, val]) => {
+            const metric = indexed_states_by_metricid[Id];
+            return Object.assign(res, {
+                [Id]: (val - metric[1].MinValue) / (metric[3].MaxValue - metric[1].MinValue)
+            });
+        }, {});
 
-        const normalize_data = Object.entries(parsed_data)
-            .reduce((res, [Id, val]) => {
-                const metric = window['indexed_states_by_metricid'][Id];
-                return {
-                    ...res,
-                    [Id]: (val - metric[1].MinValue) / (metric[3].MaxValue - metric[1].MinValue)
-                };
-            }, {});
+        const getCurrentStateId = Id => norm_metrics[+Id].find(
+            x => x.MinValue <= normalize_data[Id] && x.MaxValue >= normalize_data[Id]
+        )?.StateId;
 
         let min = Infinity;
         let j_min = Infinity;
         for (let j = 0; j < 3; j++) {
-            let sum = 0;
-            for (const { Id } of _metrics) {
-                const _state = window['norm_metrics'][Id][j];
-                sum += Math.pow(normalize_data[Id] - (_state.MaxValue + _state.MinValue) / 2, 2);
-            }
+            const sum = _metrics.reduce((res, { Id }) => {
+                const _state = norm_metrics[Id][j];
+                return res + Math.pow(normalize_data[Id] - (_state.MaxValue - _state.MinValue) / 2, 2);
+            }, 0);
             if (min > sum) {
                 j_min = j;
                 min = sum;
@@ -136,13 +126,10 @@ $('#connect_to_vehicle').on('click', async event => {
 
         this.common_state.text(_STATES[j_min + 1].Name);
 
-        const current_states = Object.entries(normalize_data)
-            .map(item => _STATES[getCurrentStateId(...item)]);
-
         this.charts.forEach(
-            ({ chart, Id }, i) => {
-                chart.push(this.iterator, parsed_data[Id], current_states[i].color).update();
-                chart.changeLabel(current_states[i].Name)
+            ({ chart, Id }) => {
+                const { Name, color } = _STATES[getCurrentStateId(Id)];
+                chart.push(this.iterator, parsed_data[Id], color).update().changeLabel(Name);
             }
         );
         this.counter.text(this.iterator++);
@@ -154,19 +141,14 @@ $('#connect_to_vehicle').on('click', async event => {
     });
 
     const closeSocket = () => ws_client.close();
-    $('#close_connection').one('click', closeSocket);
-
     window.onunload = closeSocket;
+    $('#close_connection').one('click', closeSocket);
 
     window['redrawCharts'] = () => {
         if (ws_client.readyState < 2) {
             return new Error('Connection is steel alive!');
         }
-        charts_list.then(x =>
-            x.forEach(
-                chart => chart.chart.removeData()
-            )
-        );
+        charts_list.then(x => x.forEach(chart => chart.chart.removeData()));
     }
 });
 

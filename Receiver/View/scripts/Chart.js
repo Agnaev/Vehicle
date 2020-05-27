@@ -64,6 +64,7 @@ export default class {
 
     update() {
         this.chart.update();
+        return this;
     }
 
     removeData() {
