@@ -10,25 +10,39 @@
 
 <body>
   <header class="header header-index"></header>
+  
   <main>
     <div class="fixed-block bl-1">
-      <div class="counter" id="counter"></div>
-      <div class="connection_status" id="connection_status"></div>
+      <div>
+        <span>Количество обработанных пакетов данных</span>
+        <div class="counter" id="counter"></div>
+      </div>
     </div>
+
+    <div class="fixed-block bl-2">
+      <div>
+        <span>Состояние подключения к БПЛА</span>
+        <div class="connection_status" id="connection_status"></div>
+      </div>
+    </div>
+    
     <div class="buttons">
       <input type="button" value="Открыть web socket соединение к БПЛА." id="connect_to_vehicle">
       <input type="button" value="Закрыть web socket соединение к БПЛА." id="close_connection" />
       <input type="button" id="clearTable" value="Очистить таблицу значений в Базе данных" />
     </div>
-    <div class="fixed-block bl-2">
+    
+    <div class="fixed-block bl-3">
       <label class="common_label">Общее состояние БПЛА</label>
       <div id="common_state">-</div>
     </div>
+    
     <div id="chartContainer" class="container-canvas"></div>
   </main>
-  <script src="scripts/script.js" type="module"></script>
+  
   <footer class="footer"></footer>
+  
+  <script src="scripts/script.js" type="module"></script>
 </body>
-
 
 </html>
