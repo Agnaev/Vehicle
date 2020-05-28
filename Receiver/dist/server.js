@@ -14,7 +14,7 @@ app.set("view engine", "hbs");
 app.use(body_parser_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.static(path_1.default.join(basedir, 'View')));
 app.use(function (req, res, next) {
-    logger("middleware " + req.method + " " + req.path);
+    logger("middleware " + req.method + " ip: " + req.ip + " request: " + req.path);
     next();
 });
 app.use('/api/metric_values', router_1.default.values);

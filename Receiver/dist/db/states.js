@@ -30,14 +30,14 @@ exports.states_list = function () { return tslib_1.__awaiter(void 0, void 0, voi
 exports.update = function (_a) {
     var Id = _a.Id, MetricTypeId = _a.MetricTypeId, StateId = _a.StateId, MinValue = _a.MinValue, MaxValue = _a.MaxValue;
     return tslib_1.__awaiter(void 0, void 0, void 0, function () {
-        var requestResult, exc_1;
+        var exc_1;
         return tslib_1.__generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     _b.trys.push([0, 2, , 3]);
                     return [4, db_connection_1.makeRequest("\n            UPDATE MetricsStates\n            SET MetricTypeId = '" + MetricTypeId + "',\n            StateId = '" + StateId + "',\n            MaxValue = '" + MaxValue + "',\n            MinValue = '" + MinValue + "'\n            WHERE id = '" + Id + "'\n        ")];
                 case 1:
-                    requestResult = (_b.sent()).recordsets[0][0];
+                    _b.sent();
                     return [2, true];
                 case 2:
                     exc_1 = _b.sent();

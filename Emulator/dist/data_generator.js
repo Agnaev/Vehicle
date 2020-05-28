@@ -3,20 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 function Currying(func) {
     return function curried() {
-        var _this = this;
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        return args.length >= func.length
-            ? func.apply(this, args)
-            : function () {
-                var _args = [];
-                for (var _i = 0; _i < arguments.length; _i++) {
-                    _args[_i] = arguments[_i];
-                }
-                return curried.apply(_this, tslib_1.__spreadArrays(args, _args));
-            };
+        return args.length >= func.length ? func.apply(this, args) : curried.bind.apply(curried, tslib_1.__spreadArrays([this], args));
     };
 }
 var data_generator = function (types, last_res) {
@@ -36,6 +27,7 @@ var data_generator = function (types, last_res) {
                 sended.max = last_res[Id] + 5;
             }
         }
+        ;
         result[Id] = generator(sended);
     }
     return result;

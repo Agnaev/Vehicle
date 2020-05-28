@@ -22,7 +22,7 @@ app.set("view engine", "hbs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(basedir, 'View')));
 app.use((req, res, next): void => {
-    logger(`middleware ${req.method} ${req.path}`);
+    logger(`middleware ${req.method} ip: ${req.ip} request: ${req.path}`);
     next();
 });
 app.use('/api/metric_values', routers.values);
