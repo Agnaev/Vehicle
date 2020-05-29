@@ -52,7 +52,13 @@ export default class extends Observer {
                 this.storage.push(this.data);
             }
             else {
-                const { isHttps, host, port } = config.default;
+                const {
+                    isHttps,
+                    server: {
+                        host, 
+                        port
+                    }
+                } = config.default;
                 request({
                     method: 'post',
                     url: `http${isHttps && 's' || ''}://${host}:${port}/api/metric_values/`,
@@ -64,8 +70,8 @@ export default class extends Observer {
                 this.count = 0;
             }
         }
-        if (![null, undefined].includes(global['mydata'])) {
-            const fn_foreach = function(data: { Id: number, val: string | number }) {
+        if (global['mydata']) {
+            const fn_foreach = function (data: { Id: number, val: string | number }) {
                 if (data?.Id in this.data && Number.isInteger(+data?.val)) {
                     this.data[data.Id] = data.val;
                 }

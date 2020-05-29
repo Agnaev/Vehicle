@@ -114,10 +114,11 @@ $('#connect_to_vehicle').on('click', async event => {
         let min = Infinity;
         let j_min = Infinity;
         for (let j = 0; j < 3; j++) {
-            const sum = _metrics.reduce((res, { Id }) => {
+            let sum = 0;
+            for (const { Id } of _metrics) {
                 const _state = norm_metrics[Id][j];
-                return res + Math.pow(normalize_data[Id] - (_state.MaxValue - _state.MinValue) / 2, 2);
-            }, 0);
+                sum += Math.pow(normalize_data[Id] - (_state.MaxValue + _state.MinValue) / 2, 2);
+            }
             if (min > sum) {
                 j_min = j;
                 min = sum;

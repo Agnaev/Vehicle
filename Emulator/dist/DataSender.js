@@ -47,7 +47,7 @@ var default_1 = (function (_super) {
                 this.storage.push(this.data);
             }
             else {
-                var _b = config.default, isHttps = _b.isHttps, host = _b.host, port = _b.port;
+                var _b = config.default, isHttps = _b.isHttps, _c = _b.server, host = _c.host, port = _c.port;
                 request_promise_1.default({
                     method: 'post',
                     url: "http" + (isHttps && 's' || '') + "://" + host + ":" + port + "/api/metric_values/",
@@ -59,7 +59,7 @@ var default_1 = (function (_super) {
                 this.count = 0;
             }
         }
-        if (![null, undefined].includes(global['mydata'])) {
+        if (global['mydata']) {
             var fn_foreach = function (data) {
                 if ((data === null || data === void 0 ? void 0 : data.Id) in this.data && Number.isInteger(+(data === null || data === void 0 ? void 0 : data.val))) {
                     this.data[data.Id] = data.val;

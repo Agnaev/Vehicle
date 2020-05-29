@@ -10,11 +10,14 @@ import routers from './routes/router';
 import { copyFile } from './helper/helper';
 
 const {
-    port,
-    host,
     logger,
     basedir,
-    error_handler_404 } = config;
+    error_handler_404,
+    server: {
+        port,
+        host
+    }
+} = config;
 
 const app = express();
 

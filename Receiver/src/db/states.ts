@@ -1,6 +1,5 @@
 import { makeRequest } from "./db_connection";
 import config from '../config';
-import { IResult } from 'mssql';
 
 const { logger } = config;
 
@@ -14,18 +13,14 @@ export interface MetricStateType {
 
 export const get = async (): Promise<any> => {
     const {
-        recordsets: [
-            requestResult
-        ]
+        recordsets: [requestResult]
     } = await makeRequest(`SELECT * FROM MetricsStates`);
     return requestResult;
 }
 
 export const states_list = async (): Promise<any> => {
     const {
-        recordsets: [
-            requestResult
-        ]
+        recordsets: [requestResult]
     } = await makeRequest('SELECT * FROM States');
     return requestResult;
 }
@@ -40,7 +35,7 @@ export const update = async ({ Id, MetricTypeId, StateId, MinValue, MaxValue }: 
             MinValue = '${MinValue}'
             WHERE id = '${Id}'
         `);
-        return true
+        return true;
     }
     catch (exc) {
         logger(`Произошла ошибка при обновлении состояния в базе данных. File: ${__dirname}. Error: ${exc}`)
@@ -52,21 +47,23 @@ export const create = async ({ MetricTypeId, StateId, MinValue, MaxValue }: Metr
     try {
         const {
             recordsets: [
-                [
-                    requestResult
-                ]
+                [requestResult]
             ]
         } = await makeRequest(`
             INSERT INTO MetricsStates (MetricTypeId, StateId, MinValue, MaxValue)
             OUTPUT inserted.Id
             values ('${MetricTypeId}', '${StateId}', '${MinValue}', '${MaxValue}')
         `);
-        const result = await makeRequest(`
+        const {
+            recordsets: [
+                [result]
+            ]
+        } = await makeRequest(`
             SELECT *
             FROM MetricsStates
             WHERE Id=${requestResult.Id}
         `)
-        return result.recordsets[0][0]; 
+        return result;
     }
     catch (exc) {
         logger(`Произошла ошибка при создании состояния метрики. File: ${__dirname}. Error: ${exc}`);
@@ -81,7 +78,7 @@ export const deleteState = async ({ Id }: MetricStateType): Promise<boolean> => 
         `);
         return true;
     }
-    catch(exc) {
+    catch (exc) {
         logger(`Произошла ошибка при удалении состояния метрики. File: ${__dirname}. Error: ${exc}`);
         return false;
     }

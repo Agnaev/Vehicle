@@ -61,8 +61,8 @@ exports.create = function (_a) {
                     requestResult = (_b.sent()).recordsets[0][0];
                     return [4, db_connection_1.makeRequest("\n            SELECT *\n            FROM MetricsStates\n            WHERE Id=" + requestResult.Id + "\n        ")];
                 case 2:
-                    result = _b.sent();
-                    return [2, result.recordsets[0][0]];
+                    result = (_b.sent()).recordsets[0][0];
+                    return [2, result];
                 case 3:
                     exc_2 = _b.sent();
                     logger("\u041F\u0440\u043E\u0438\u0437\u043E\u0448\u043B\u0430 \u043E\u0448\u0438\u0431\u043A\u0430 \u043F\u0440\u0438 \u0441\u043E\u0437\u0434\u0430\u043D\u0438\u0438 \u0441\u043E\u0441\u0442\u043E\u044F\u043D\u0438\u044F \u043C\u0435\u0442\u0440\u0438\u043A\u0438. File: " + __dirname + ". Error: " + exc_2);

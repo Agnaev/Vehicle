@@ -8,7 +8,7 @@ var db_connection_1 = require("./db/db_connection");
 var config_1 = tslib_1.__importDefault(require("./config"));
 var router_1 = tslib_1.__importDefault(require("./routes/router"));
 var helper_1 = require("./helper/helper");
-var port = config_1.default.port, host = config_1.default.host, logger = config_1.default.logger, basedir = config_1.default.basedir, error_handler_404 = config_1.default.error_handler_404;
+var logger = config_1.default.logger, basedir = config_1.default.basedir, error_handler_404 = config_1.default.error_handler_404, _a = config_1.default.server, port = _a.port, host = _a.host;
 var app = express_1.default();
 app.set("view engine", "hbs");
 app.use(body_parser_1.default.urlencoded({ extended: true }));
