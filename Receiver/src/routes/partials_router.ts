@@ -1,6 +1,3 @@
-// @ts-check
-'use strict';
-
 import { Router, Request, Response } from 'express';
 
 const router = Router();

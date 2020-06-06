@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Get = exports.Delete = exports.Create = void 0;
 var tslib_1 = require("tslib");

@@ -1,5 +1,3 @@
-// @ts-check
-'use strict'
 import { makeRequest } from './db_connection';
 import config from '../config';
 import { IRecordSet } from 'mssql';

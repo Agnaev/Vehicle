@@ -50,7 +50,6 @@ function createWebSocketServer(types_s: string | Array<db_item>): void {
             catch (exc) {
                 console.log('Incorrect data in request body.');
             }
-
         })
     };
 

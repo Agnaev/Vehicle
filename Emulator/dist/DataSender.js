@@ -50,7 +50,7 @@ var default_1 = (function (_super) {
                 var _b = config.default, isHttps = _b.isHttps, _c = _b.server, host = _c.host, port = _c.port;
                 request_promise_1.default({
                     method: 'post',
-                    url: "http" + (isHttps && 's' || '') + "://" + host + ":" + port + "/api/metric_values/",
+                    url: "http://" + host + ":" + port + "/api/metric_values/",
                     form: {
                         data: JSON.stringify(this.storage)
                     }

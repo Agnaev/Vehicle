@@ -1,5 +1,3 @@
-// @ts-check
-'use strict';
 import { Router, Response, Request } from 'express';
 import * as types from '../db/types';
 import config from '../config';

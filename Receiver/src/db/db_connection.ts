@@ -1,7 +1,3 @@
-// @ts-check
-
-'use strict'
-
 import { ConnectionPool, IResult } from 'mssql';
 import config from '../config';
 

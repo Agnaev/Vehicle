@@ -1,6 +1,3 @@
-// @ts-check
-'use strict'
-
 import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import path from 'path';
