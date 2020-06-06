@@ -19,7 +19,6 @@ module.exports = {
 
     logger: console.log,
 
-    writeToDatabase: true,
-    countWriteToDb: 10,
-    isHttps: false
+    writeToDatabase: false,
+    countWriteToDb: 10
 };

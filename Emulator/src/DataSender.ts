@@ -61,7 +61,7 @@ export default class extends Observer {
                 } = config.default;
                 request({
                     method: 'post',
-                    url: `http${isHttps && 's' || ''}://${host}:${port}/api/metric_values/`,
+                    url: `http://${host}:${port}/api/metric_values/`,
                     form: {
                         data: JSON.stringify(this.storage)
                     }
