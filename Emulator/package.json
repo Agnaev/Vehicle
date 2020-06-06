@@ -5,7 +5,7 @@
   "main": "emulator.js",
   "scripts": {
     "build": "npx tsc",
-    "release": "node dist\\emulator.js",
+    "start": "node dist\\emulator.js",
     "dev": "nodemon dist\\emulator.js"
   },
   "author": "Agnaev Alan",

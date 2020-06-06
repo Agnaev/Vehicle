@@ -1,7 +1,7 @@
 // @ts-check
 'use strict'
 
-import express from 'express';
+import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import path from 'path';
 import { DatabaseCheck } from './db/db_connection';
@@ -24,7 +24,7 @@ const app = express();
 app.set("view engine", "hbs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(basedir, 'View')));
-app.use((req, res, next): void => {
+app.use((req: Request, res: Response, next: Function): void => {
     logger(`middleware ${req.method} ip: ${req.ip} request: ${req.path}`);
     next();
 });
@@ -33,7 +33,7 @@ app.use('/api/metrics', routers.types);
 app.use('/api/cards', routers.partials);
 app.use('/api/states', routers.states);
 app.use('/', routers.main);
-app.use((req, res): void => {
+app.use((req: Request, res: Response): void => {
     logger(`Client with ip: ${req.ip} got 404 error with request: ${req.originalUrl}`);
     error_handler_404(res, 'Страница не найдена.')
 });

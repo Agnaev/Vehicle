@@ -4,11 +4,7 @@
 import { } from './Array.prototype.js';
 
 $(document).ready(e => {
-    ['contextmenu', 'selectstart', 'copy', 'select', 'dragstart', 'beforecopy']
-        .forEach(
-            event => $('body').on(event, e => e.preventDefault())
-        );
-    $('#clearTable')?.on('click', e => {
+    $('#clearTable')?.on('click', _e => {
         if (confirm('Вы действительно хотите удалить все записи из базы данных?') === false) {
             return;
         }
@@ -24,12 +20,12 @@ $(document).ready(e => {
                 }
                 throw new Error('error');
             })
-            .then($.notify.bind(null, 'Данные из таблицы значений были удалены.', 'success'))
-            .catch($.notify.bind(null, 'Произошла ошибка при удалении значений из таблицы значений', 'error'));
+            .then($?.notify?.bind(null, 'Данные из таблицы значений были удалены.', 'success'))
+            .catch($?.notify?.bind(null, 'Произошла ошибка при удалении значений из таблицы значений', 'error'));
     });
 });
 
-$.notify?.defaults({
+$?.notify?.defaults({
     globalPosition: 'top centre'
 });
 
@@ -38,27 +34,29 @@ $.notify?.defaults({
 * @param {{[key:string]:string}} options Request options.
 * @returns {Promise} Result from server.
 */
-export const fetch_json = (url, options = {}) =>
-    fetch(url, options)
+export const fetch_json = (url, options = {}) => {
+    return fetch(url, options)
         .then(x => x.json())
         .catch(e => e);
+}
 
 /** @param { String } key cookie key
  * @returns { string | null } cookie value by key
 */
-export const getCookie = key =>
-    document.cookie.split(';').find(cook =>
-        key.trim() === cook.split('=')[0].trim()
-    )?.split('=')[1];
-
+export const getCookie = key => {
+    return document.cookie.split(';').find(cook => {
+        return key.trim() === cook.split('=')[0].trim()
+    })?.split('=')[1];
+}
 
 /** @param {string} requestString 
  * @returns {Promise<any>}
 */
-const makePartialViwe = requestString =>
-    fetch(requestString)
+const makePartialViwe = requestString => {
+    return fetch(requestString)
         .then(x => x.text())
-        .then(x => $.parseHTML(x)[0])
+        .then(x => $.parseHTML(x)[0]);
+}
 
 makePartialViwe('/header.html')
     .then(x => $(x).appendTo($('header.header')));
@@ -97,6 +95,8 @@ export const slider = async slider => {
  * @param { string } field поля для индексации
  */
 export const indexing = (arr, field) => {
-    return arr.reduce((res, item) => Object.assign(res, { [item[field]]: item }), {});
+    return arr.reduce((res, item) => Object.assign(res, {
+        [item[field]]: item
+    }), {});
 }
 

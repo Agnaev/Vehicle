@@ -9,11 +9,11 @@ module.exports = {
         }
     },
     server: {
-        host: '192.168.0.13',
+        host: '192.168.0.11',
         port: 80
     },
     web_socket: {
-        host: '192.168.0.13',
+        host: '192.168.0.11',
         port: 3000
     },
 

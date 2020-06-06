@@ -72,7 +72,7 @@ const createGrid = ([metrics, states]) => {
         columns: [
             { field: 'Id', title: 'Id' },
             {
-                title: 'Тип',
+                title: 'Датчик',
                 editor: editor.bind(metrics),
                 field: 'MetricTypeId',
                 template: item => metrics[+item.MetricTypeId]?.Name

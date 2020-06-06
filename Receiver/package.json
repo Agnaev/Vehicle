@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "release": "node dist\\server.js",
+    "start": "node dist\\server.js",
     "dev": "node dist\\server.js",
     "build": "npx tsc"
   },

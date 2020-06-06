@@ -8,24 +8,20 @@ const dataSource = new kendo.data.DataSource({
         create: {
             url: '/api/metrics',
             type: 'post',
-            dataType: 'Json',
             complete: refresh_grid
         },
         read: {
             url: '/api/metrics',
             type: 'get',
-            dataType: 'Json'
         },
         update: {
             url: '/api/metrics',
             type: 'put',
-            dataType: 'Json',
             complete: refresh_grid
         },
         destroy: {
             url: '/api/metrics',
             type: 'delete',
-            dataType: 'Json',
             complete: refresh_grid
         }
     },

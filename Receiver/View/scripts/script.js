@@ -52,7 +52,9 @@ const [STATES, states, metrics] = [
     fetch_json('/api/metrics')
 ];
 
-$('#connect_to_vehicle').on('click', async event => {
+$('#connect_to_vehicle').on('click', openConnectionBtnHandler);
+
+async function openConnectionBtnHandler(event) {
     event.preventDefault();
 
     /** @type {{port:number, host:String} | string} */
@@ -100,12 +102,13 @@ $('#connect_to_vehicle').on('click', async event => {
     ws_client.onmessage = function ({ data }) {
         const parsed_data = JSON.parse(data);
 
-        const normalize_data = Object.entries(parsed_data).reduce((res, [Id, val]) => {
-            const metric = indexed_states_by_metricid[Id];
-            return Object.assign(res, {
-                [Id]: (val - metric[1].MinValue) / (metric[3].MaxValue - metric[1].MinValue)
-            });
-        }, {});
+        const normalize_data = Object.entries(parsed_data)
+            .reduce((res, [Id, val]) => {
+                const metric = indexed_states_by_metricid[Id];
+                return Object.assign(res, {
+                    [Id]: (val - metric[1].MinValue) / (metric[3].MaxValue - metric[1].MinValue)
+                });
+            }, {});
 
         const getCurrentStateId = Id => norm_metrics[+Id].find(
             x => x.MinValue <= normalize_data[Id] && x.MaxValue >= normalize_data[Id]
@@ -127,12 +130,11 @@ $('#connect_to_vehicle').on('click', async event => {
 
         this.common_state.text(_STATES[j_min + 1].Name);
 
-        this.charts.forEach(
-            ({ chart, Id }) => {
-                const { Name, color } = _STATES[getCurrentStateId(Id)];
-                chart.push(this.iterator, parsed_data[Id], color).update().changeLabel(Name);
-            }
-        );
+        for(const { Id, chart } of this.charts) {
+            const { Name, color } = _STATES[getCurrentStateId(Id)];
+            chart.push(this.iterator, parsed_data[Id], color).update().changeLabel(Name);
+        }
+
         this.counter.text(this.iterator++);
     }.bind({
         counter: $('#counter'),
@@ -151,7 +153,7 @@ $('#connect_to_vehicle').on('click', async event => {
         }
         charts_list.then(x => x.forEach(chart => chart.chart.removeData()));
     }
-});
+};
 
 slider();
 
