@@ -3,10 +3,14 @@
 
 /** @param {string} field
  * @param {(value: number, index: number) => boolean } reducer_fn
- * @param {number} reducer_data
+ * @param {number} reducer_init_data
  */
-function getExtremum(field, reducer_fn, reducer_data = this[0][field]) {
-    return this.map(x => x[field]).reduce((res, item) => reducer_fn(res, item) ? res : item, reducer_data);
+function getExtremum(field, reducer_fn, reducer_init_data = this[0][field]) {
+    return this.map(x => x[field])
+        .reduce(
+            (res, item) => reducer_fn(res, item) ? res : item, 
+            reducer_init_data
+        );
 }
 
 /** @param {string} field */

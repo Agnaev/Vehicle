@@ -91,12 +91,17 @@ export const slider = async slider => {
     interval();
 }
 
-/** @param { Array<any> } arr массив, который необходимо проиндексировать
- * @param { string } field поля для индексации
+/**Функция для индексации массива объектов по ключу объекта field 
+ * @param { Array<any> } arr массив, который необходимо проиндексировать
+ * @param { string } field поле, по которому необходимо индексировать
  */
 export const indexing = (arr, field) => {
-    return arr.reduce((res, item) => Object.assign(res, {
-        [item[field]]: item
-    }), {});
+    const result = {};
+    for(const item of arr) {
+        Object.assign(result, {
+            [item[field]]: item
+        })
+    }
+    return result;
 }
 

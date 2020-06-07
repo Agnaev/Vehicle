@@ -42,13 +42,12 @@ const [STATES, states, sensors] = [
     fetch_json('/api/sensors')
 ];
 
-
 const charts_list = sensors.then(data => {
     const result = [];
-    for(const { Id, Name, MinValue: min, MaxValue: max } of data) {
+    for (const { Id, Name, MinValue: min, MaxValue: max } of data) {
         result.push({
             Id,
-            chart: new ChartCreate(Name, min, max) 
+            chart: new ChartCreate(Name, min, max)
         })
     }
     return result;
@@ -56,8 +55,12 @@ const charts_list = sensors.then(data => {
 
 $('#connect_to_vehicle').on('click', openConnectionBtnHandler);
 
-async function openConnectionBtnHandler(event) {
-    event.preventDefault();
+/**
+ * Функция для обработки нажатия на кнопку для открытия соединения с БПЛА 
+ * @param {Event} e 
+ */
+async function openConnectionBtnHandler(e) {
+    e.preventDefault();
 
     /** @type {{port:number, host:String} | string} */
     let ws_connection = getCookie('ws_connection');
@@ -81,40 +84,48 @@ async function openConnectionBtnHandler(event) {
 
     const [_sensors, _STATES, _states] = await Promise.all([sensors, STATES, states]);
 
-    const indexed_states_by_sensosid = _states.reduce((result, item) => Object.assign(result, {
-        [item.SensorTypeId]: {
-            ...result[item.SensorTypeId],
-            [item.StateId]: item
-        }
-    }), {});
+    const indexed_states_by_sensosid = {};
+    for(const item of _states) {
+        Object.assign(indexed_states_by_sensosid, {
+            [item.SensorTypeId]: {
+                ...indexed_states_by_sensosid[item.SensorTypeId],
+                [item.StateId]: item
+            }
+        })
+    }
 
-    const norm_sensors = Object.values(indexed_states_by_sensosid.getCopy)
-        .reduce((res, item) => {
-            const moved_item = Object.values(item);
-            const max = moved_item['getMaxByField']('MaxValue');
-            const min = moved_item['getMinByField']('MinValue');
-            return Object.assign(res, {
-                [item[1].SensorTypeId]: moved_item.map(x => Object.assign(x, {
-                    MaxValue: (x.MaxValue - min) / ((max - min) || 1),
-                    MinValue: (x.MinValue - min) / ((max - min) || 1)
-                }))
-            });
-        }, {});
+    const norm_sensors = {};
+    for(const item of Object.values(indexed_states_by_sensosid.getCopy)) {
+        const moved_item = Object.values(item);
+        const max = moved_item['getMaxByField']('MaxValue');
+        const min = moved_item['getMinByField']('MinValue');
+        Object.assign(norm_sensors, {
+            [item[1].SensorTypeId]: moved_item.map(x => Object.assign(x, {
+                MaxValue: (x.MaxValue - min) / ((max - min) || 1),
+                MinValue: (x.MinValue - min) / ((max - min) || 1)
+            }))
+        });
+    }
 
     ws_client.onmessage = function ({ data }) {
         const parsed_data = JSON.parse(data);
 
-        const normalize_data = Object.entries(parsed_data)
-            .reduce((res, [Id, val]) => {
-                const sensor = indexed_states_by_sensosid[Id];
-                return Object.assign(res, {
-                    [Id]: (val - sensor[1].MinValue) / (sensor[3].MaxValue - sensor[1].MinValue)
-                });
-            }, {});
+        const normalize_data = {};
+        for (const [Id, val] of Object.entries(parsed_data)) {
+            const sensor = indexed_states_by_sensosid[Id];
+            Object.assign(normalize_data, {
+                [Id]: (val - sensor[1].MinValue) / (sensor[3].MaxValue - sensor[1].MinValue)
+            });
+        }
 
-        const getCurrentStateId = Id => norm_sensors[+Id].find(
-            x => x.MinValue <= normalize_data[Id] && x.MaxValue >= normalize_data[Id]
-        )?.StateId;
+        function getCurrentStateId(Id) {
+            const val = normalize_data[Id]
+            for (const { MinValue: min, MaxValue: max, StateId } of norm_sensors[+Id]) {
+                if (min <= val && max >= val) {
+                    return StateId;
+                }
+            }
+        }
 
         let min = Infinity;
         let j_min = Infinity;
@@ -132,7 +143,7 @@ async function openConnectionBtnHandler(event) {
 
         this.common_state.text(_STATES[j_min + 1].Name);
 
-        for(const { Id, chart } of this.charts) {
+        for (const { Id, chart } of this.charts) {
             const { Name, color } = _STATES[getCurrentStateId(Id)];
             chart.push(this.iterator, parsed_data[Id], color).update().changeLabel(Name);
         }

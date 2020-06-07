@@ -54,6 +54,21 @@ function editor(container, options) {
         });
 }
 
+function numericEditor(container, options) {
+    fetch_json('/api/states/get_range?Id=' + options.model.Id)
+        .then(([{ MinValue, MaxValue }]) => {
+            $(`<input type='number' name='${options.field}'/>`)
+                .appendTo(container)
+                .kendoNumericTextBox({
+                    enable: false,
+                    max: MaxValue,
+                    min: MinValue,
+                    value: options.model[options.field],
+                    format: '0'
+                });
+        })
+}
+
 const createGrid = ([sensors, states]) => {
     sensors = indexing(sensors, 'Id');
     const getColor = color => ({
@@ -86,8 +101,8 @@ const createGrid = ([sensors, states]) => {
                     return `<div style='background-color: ${getColor(_state?.color)}'>${_state?.Name}</div>`;
                 }
             },
-            { field: 'MinValue', title: 'Минимальное значение' },
-            { field: 'MaxValue', title: 'Максимальное значение' },
+            { field: 'MinValue', title: 'Минимальное значение', editor: numericEditor },
+            { field: 'MaxValue', title: 'Максимальное значение', editor: numericEditor },
             { command: ["edit", "destroy"], title: "&nbsp;" }
         ]
     });
@@ -95,14 +110,14 @@ const createGrid = ([sensors, states]) => {
 
 $(document).ready(() => {
     Promise.all([
-        fetch_json('/api/sensors'), 
+        fetch_json('/api/sensors'),
         fetch_json('/api/states/list')
     ])
-    .then(createGrid)
-    .catch(exc => {
-        console.error('Ошибка при запросе данных с сервера', exc);
-        $.notify('Произошла ошибка при запросе данных с сервера', 'error')
-    });
+        .then(createGrid)
+        .catch(exc => {
+            console.error('Ошибка при запросе данных с сервера', exc);
+            $.notify('Произошла ошибка при запросе данных с сервера', 'error')
+        });
     slider();
 });
 

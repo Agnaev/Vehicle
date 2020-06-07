@@ -8,7 +8,7 @@ var logger = config_1.default.logger;
 function Create(_a) {
     var data = _a.data;
     return tslib_1.__awaiter(this, void 0, void 0, function () {
-        var requestString_1, exc_1;
+        var requestString, _i, data_1, item, exc_1;
         return tslib_1.__generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -17,7 +17,7 @@ function Create(_a) {
                         data instanceof Array && data.length === 0) {
                         return [2, false];
                     }
-                    requestString_1 = 'INSERT INTO SensorsValues (TypeId, Value) Values ';
+                    requestString = 'INSERT INTO SensorsValues (TypeId, Value) Values ';
                     if (typeof data === 'string') {
                         data = JSON.parse(data);
                     }
@@ -26,25 +26,26 @@ function Create(_a) {
                         console.log('no arrive data create sensors values');
                         return [2, false];
                     }
-                    Object.values(data).forEach(function (item) {
-                        return requestString_1 = Object.entries(item).reduce(function (state, item) {
-                            state += "(" + item[0] + ", " + item[1] + "),";
-                            return state;
-                        }, requestString_1);
-                    });
-                    return [4, db_connection_1.makeRequest(requestString_1.replace(/,$/, ''))];
+                    for (_i = 0, data_1 = data; _i < data_1.length; _i++) {
+                        item = data_1[_i];
+                        requestString = Object.entries(item)
+                            .reduce(function (state, _item) {
+                            return state + ("(" + _item[0] + ", " + _item[1] + "),");
+                        }, requestString);
+                    }
+                    return [4, db_connection_1.makeRequest(requestString.replace(/,$/, ''))];
                 case 1:
                     _b.sent();
                     return [2, true];
                 case 2:
                     if (!('Value' in data && 'Id' in data)) return [3, 4];
-                    return [4, db_connection_1.makeRequest(requestString_1 + ("(" + data.Id + ", " + data.Value + ")"))];
+                    return [4, db_connection_1.makeRequest(requestString + ("(" + data.Id + ", " + data.Value + ")"))];
                 case 3:
                     _b.sent();
                     return [2, true];
                 case 4:
                     if (!('Value' in data && 'TypeId' in data)) return [3, 6];
-                    return [4, db_connection_1.makeRequest(requestString_1 + ("(" + data.TypeId + ", " + data.Value + ")"))];
+                    return [4, db_connection_1.makeRequest(requestString + ("(" + data.TypeId + ", " + data.Value + ")"))];
                 case 5:
                     _b.sent();
                     return [2, true];

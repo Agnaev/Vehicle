@@ -19,6 +19,12 @@ router.get('/', function (req, res) {
         .then(success_sender.bind(res))
         .catch(error_sender.bind(res));
 });
+router.get('/get_range', function (req, res) {
+    var _a;
+    states_1.getById(+((_a = req === null || req === void 0 ? void 0 : req.query) === null || _a === void 0 ? void 0 : _a.Id) || 0)
+        .then(function (result) { return res.status(200).send(result); })
+        .catch(function (exc) { return res.status(500).send(exc); });
+});
 router.post('/', function (req, res) {
     states_1.create(req.body)
         .then(success_sender.bind(res))
@@ -34,24 +40,40 @@ router.delete('/', function (req, res) {
         .then(success_sender.bind(res))
         .catch(error_sender.bind(res));
 });
-router.get('/list', function (req, res) {
-    var colors = new Proxy(['red', 'yellow', 'green'], {
-        get: function (target, prop) {
-            return target[+prop - 1];
+router.get('/list', function (req, res) { return tslib_1.__awaiter(void 0, void 0, void 0, function () {
+    var colors, _states_list, result, _i, _states_list_1, item, exc_1;
+    var _a;
+    return tslib_1.__generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _b.trys.push([0, 2, , 3]);
+                colors = new Proxy(['red', 'yellow', 'green'], {
+                    get: function (target, prop) {
+                        return target[+prop - 1];
+                    }
+                });
+                return [4, states_1.states_list()];
+            case 1:
+                _states_list = _b.sent();
+                result = {};
+                for (_i = 0, _states_list_1 = _states_list; _i < _states_list_1.length; _i++) {
+                    item = _states_list_1[_i];
+                    Object.assign(result, (_a = {},
+                        _a[item.Id] = {
+                            Name: item.Name,
+                            color: colors[item.Id]
+                        },
+                        _a));
+                }
+                success_sender.call(res, result);
+                return [3, 3];
+            case 2:
+                exc_1 = _b.sent();
+                error_sender.call(res, exc_1);
+                return [3, 3];
+            case 3: return [2];
         }
     });
-    states_1.states_list()
-        .then(function (data) {
-        return data.reduce(function (result, item) {
-            var _a;
-            return (tslib_1.__assign(tslib_1.__assign({}, result), (_a = {}, _a[item.Id] = {
-                Name: item.Name,
-                color: colors[item.Id]
-            }, _a)));
-        }, {});
-    })
-        .then(success_sender.bind(res))
-        .catch(error_sender.bind(res));
-});
+}); });
 exports.default = router;
 //# sourceMappingURL=states_router.js.map

@@ -19,13 +19,13 @@ export async function Create({ data }): Promise<boolean> {
                 console.log('no arrive data create sensors values')
                 return false;
             }
-            Object.values(data).forEach(item =>
-                requestString = Object.entries(item).reduce((state, item) => {
-                    state += `(${item[0]}, ${item[1]}),`;
-                    return state;
-                },
-                    requestString)
-            );
+            for(const item of data) {
+                requestString = Object.entries(item)
+                    .reduce((state, _item) =>
+                    state + `(${_item[0]}, ${_item[1]}),`,
+                    requestString
+                )
+            }
             await makeRequest(requestString.replace(/,$/, ''));
             return true;
         }

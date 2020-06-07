@@ -12,10 +12,14 @@ import { slider, fetch_json } from './common.js';
         fetch_json('/api/sensors')
     ])
         .then(([states, STATES, ...args]) => {
-            return [...args, states.reduce((result, item) => ({
-                ...result,
-                [item.SensorTypeId]: item.SensorTypeId in result ? [...result[item.SensorTypeId], item] : [item]
-            }), {}), STATES];
+            const _states = {};
+            for(const item of states) {
+                Object.assign(_states, {
+                    [item.SensorTypeId]: [..._states[item.SensorTypeId] ?? []].concat(item)
+                })
+            }
+            
+            return [...args, _states, STATES];
         })
         .then(([
             values,
@@ -24,10 +28,15 @@ import { slider, fetch_json } from './common.js';
             STATES
         ]) => {
             $('canvas.chartjs-render-monitor').map((_, v) => v.remove());
-            function getStateColor(Id, val) {
+            /**
+             * Функция для получения состояния по значению сенсора
+             * @param {number} Id 
+             * @param {number} val 
+             */
+            function getState(Id, val) {
                 for (const { MinValue: min, MaxValue: max, StateId } of states[Id]) {
                     if (min <= val && max >= val) {
-                        return STATES[StateId].color;
+                        return STATES[StateId];
                     }
                 }
             }
@@ -37,7 +46,7 @@ import { slider, fetch_json } from './common.js';
                     .forEach(
                         /**@param {{Value:number}} arg0
                          * @param {number} index */
-                        ({ Value }, index) => chart.push(index + 1, Value, getStateColor(Id, Value))
+                        ({ Value }, index) => chart.push(index + 1, Value, getState(Id, Value).Color)
                     );
                 chart.update();
             }
