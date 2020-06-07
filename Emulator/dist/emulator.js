@@ -74,7 +74,7 @@ function gotcha() {
 }
 function main() {
     var _a = config.default.server, host = _a.host, port = _a.port;
-    request_promise_1.default("http://" + host + ":" + port + "/api/metrics")
+    request_promise_1.default("http://" + host + ":" + port + "/api/sensors")
         .then(createWebSocketServer)
         .catch(gotcha);
 }

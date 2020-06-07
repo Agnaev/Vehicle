@@ -8,7 +8,7 @@ $(document).ready(e => {
         if (confirm('Вы действительно хотите удалить все записи из базы данных?') === false) {
             return;
         }
-        fetch('/api/metric_values', {
+        fetch('/api/sensors_values', {
             method: 'delete'
         })
             .then(response => {
@@ -34,28 +34,27 @@ $?.notify?.defaults({
 * @param {{[key:string]:string}} options Request options.
 * @returns {Promise} Result from server.
 */
-export const fetch_json = (url, options = {}) => {
-    return fetch(url, options)
-        .then(x => x.json())
-        .catch(e => e);
+export const fetch_json = async (url, options = {}) => {
+    const request = await fetch(url, options);
+    const response = await request.json();
+    return response;
 }
 
 /** @param { String } key cookie key
  * @returns { string | null } cookie value by key
 */
-export const getCookie = key => {
-    return document.cookie.split(';').find(cook => {
-        return key.trim() === cook.split('=')[0].trim()
-    })?.split('=')[1];
-}
+export const getCookie = key => 
+    document.cookie.split(';').find(
+        cook => key.trim() === cook.split('=')[0].trim()
+    )?.split('=')[1];
 
 /** @param {string} requestString 
  * @returns {Promise<any>}
 */
-const makePartialViwe = requestString => {
-    return fetch(requestString)
-        .then(x => x.text())
-        .then(x => $.parseHTML(x)[0]);
+const makePartialViwe = async requestString => {
+    const request = await fetch(requestString)
+    const text = await request.text();
+    return $.parseHTML(text)[0];
 }
 
 makePartialViwe('/header.html')
@@ -65,9 +64,9 @@ makePartialViwe('/footer.html')
     .then(x => $(x).appendTo($('footer.footer')));
 
 export const slider = async slider => {
-    await makePartialViwe('/slider.html')
-        .then(x => $(x).prependTo($('main')))
-        .then(() => slider = slider || $('#slider')[0]);
+    const slider_markup = await makePartialViwe('/slider.html');
+    $(slider_markup).prependTo($('main'));
+    slider = slider || $('#slider')[0];
 
     let images = JSON.parse(getCookie('images_list') ?? '[]');
     if (!images || images.length === 0) {
@@ -81,7 +80,8 @@ export const slider = async slider => {
         let src = localStorage.getItem(img_name);
         if (!src) {
             src = `/images/${img_name}`;
-            const blob = await fetch(src).then(x => x.blob());
+            const blob_req = await fetch(src)
+            const blob = await blob_req.blob();
             localStorage.setItem(img_name, URL.createObjectURL(blob));
         }
         slider.src = src;

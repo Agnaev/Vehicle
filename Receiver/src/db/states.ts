@@ -3,9 +3,9 @@ import config from '../config';
 
 const { logger } = config;
 
-export interface MetricStateType {
+export interface SensorsStateType {
     Id: number,
-    MetricTypeId: number,
+    SensorTypeId: number,
     StateId: number,
     MinValue: number,
     MaxValue: number
@@ -14,7 +14,7 @@ export interface MetricStateType {
 export const get = async (): Promise<any> => {
     const {
         recordsets: [requestResult]
-    } = await makeRequest(`SELECT * FROM MetricsStates`);
+    } = await makeRequest(`SELECT * FROM SensorsStates`);
     return requestResult;
 }
 
@@ -25,11 +25,11 @@ export const states_list = async (): Promise<any> => {
     return requestResult;
 }
 
-export const update = async ({ Id, MetricTypeId, StateId, MinValue, MaxValue }: MetricStateType): Promise<boolean> => {
+export const update = async ({ Id, SensorTypeId, StateId, MinValue, MaxValue }: SensorsStateType): Promise<boolean> => {
     try {
         await makeRequest(`
-            UPDATE MetricsStates
-            SET MetricTypeId = '${MetricTypeId}',
+            UPDATE SensorsStates
+            SET SensorTypeId = '${SensorTypeId}',
             StateId = '${StateId}',
             MaxValue = '${MaxValue}',
             MinValue = '${MinValue}'
@@ -43,16 +43,16 @@ export const update = async ({ Id, MetricTypeId, StateId, MinValue, MaxValue }: 
     }
 };
 
-export const create = async ({ MetricTypeId, StateId, MinValue, MaxValue }: MetricStateType): Promise<any> => {
+export const create = async ({ SensorTypeId, StateId, MinValue, MaxValue }: SensorsStateType): Promise<any> => {
     try {
         const {
             recordsets: [
                 [requestResult]
             ]
         } = await makeRequest(`
-            INSERT INTO MetricsStates (MetricTypeId, StateId, MinValue, MaxValue)
+            INSERT INTO SensorsStates (SensorTypeId, StateId, MinValue, MaxValue)
             OUTPUT inserted.Id
-            values ('${MetricTypeId}', '${StateId}', '${MinValue}', '${MaxValue}')
+            values ('${SensorTypeId}', '${StateId}', '${MinValue}', '${MaxValue}')
         `);
         const {
             recordsets: [
@@ -60,7 +60,7 @@ export const create = async ({ MetricTypeId, StateId, MinValue, MaxValue }: Metr
             ]
         } = await makeRequest(`
             SELECT *
-            FROM MetricsStates
+            FROM SensorsStates
             WHERE Id=${requestResult.Id}
         `)
         return result;
@@ -71,10 +71,10 @@ export const create = async ({ MetricTypeId, StateId, MinValue, MaxValue }: Metr
     }
 }
 
-export const deleteState = async ({ Id }: MetricStateType): Promise<boolean> => {
+export const deleteState = async ({ Id }: SensorsStateType): Promise<boolean> => {
     try {
         await makeRequest(`
-            DELETE FROM MetricsStates WHERE Id=${Id}
+            DELETE FROM SensorsStates WHERE Id=${Id}
         `);
         return true;
     }

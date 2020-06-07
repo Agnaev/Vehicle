@@ -31,7 +31,7 @@ const dataSource = new kendo.data.DataSource({
             id: 'Id',
             fields: {
                 Id: { type: 'number', editable: false },
-                MetricTypeId: { type: 'string' },
+                SensorTypeId: { type: 'string' },
                 StateId: { type: 'string' },
                 MinValue: { type: 'number' },
                 MaxValue: { type: 'number' }
@@ -54,8 +54,8 @@ function editor(container, options) {
         });
 }
 
-const createGrid = ([metrics, states]) => {
-    metrics = indexing(metrics, 'Id');
+const createGrid = ([sensors, states]) => {
+    sensors = indexing(sensors, 'Id');
     const getColor = color => ({
         'green': '#6bf35c',
         'red': 'red',
@@ -73,9 +73,9 @@ const createGrid = ([metrics, states]) => {
             { field: 'Id', title: 'Id' },
             {
                 title: 'Датчик',
-                editor: editor.bind(metrics),
-                field: 'MetricTypeId',
-                template: item => metrics[+item.MetricTypeId]?.Name
+                editor: editor.bind(sensors),
+                field: 'SensorTypeId',
+                template: item => sensors[+item.SensorTypeId]?.Name
             },
             {
                 title: 'Состояние',
@@ -95,7 +95,7 @@ const createGrid = ([metrics, states]) => {
 
 $(document).ready(() => {
     Promise.all([
-        fetch_json('/api/metrics'), 
+        fetch_json('/api/sensors'), 
         fetch_json('/api/states/list')
     ])
     .then(createGrid)

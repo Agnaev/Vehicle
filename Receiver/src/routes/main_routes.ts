@@ -25,22 +25,22 @@ router.get('/', (req: Request, res: Response): void => {
 
 router.get('/values', (req: Request, res: Response): void => {
     try {
-        const filename = path.join(basedir, 'View', 'MetricsValues.html');
+        const filename = path.join(basedir, 'View', 'SensorsValues.html');
         res.sendFile(filename);
     }
     catch (exc) {
-        logger(`Error while getting metrics values from database. filename: ${__dirname}.\r\nError${exc}`);
+        logger(`Error while getting sensors values from database. filename: ${__dirname}.\r\nError${exc}`);
         res.sendStatus(500);
     }
 })
 
-router.get('/metrics', (req: Request, res: Response) => {
+router.get('/sensors', (req: Request, res: Response) => {
     try {
-        const fileName: string = path.join(basedir, 'View', 'Metrics.html');
+        const fileName: string = path.join(basedir, 'View', 'Sensors.html');
         res.sendFile(fileName);
     }
     catch (exc) {
-        logger(`Error processing request '/metrics'.\r\nfilename: ${__dirname}`, exc);
+        logger(`Error processing request '/sensors'.\r\nfilename: ${__dirname}`, exc);
         error_handler_404(res, exc);
     }
 });

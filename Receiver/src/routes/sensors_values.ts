@@ -1,13 +1,13 @@
 import { Router, Response, Request } from 'express';
 import config from '../config';
-import * as values from '../db/metrics_values';
+import * as values from '../db/sensors_values';
 
 const { logger } = config;
 
 const router = Router();
 
 function local_logger(res: Response, action: string, exc: Error): void {
-    logger(`Error while ${action} metrics values. filename: ${__dirname}.\r\nError${exc}`);
+    logger(`Error while ${action} sensors values. filename: ${__dirname}.\r\nError${exc}`);
     res.sendStatus(500);
 }
 

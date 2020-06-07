@@ -3,7 +3,7 @@ module.exports = {
         user: 'sa',
         password: 'P@ssw0rd',
         server: 'DESKTOP-GDG6PM0',
-        database: 'VehicleMetrics',
+        database: 'VehicleMetrics_sensors',
         options: {
             enableArithAbort: true
         }

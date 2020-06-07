@@ -9,7 +9,7 @@ exports.get = function () { return tslib_1.__awaiter(void 0, void 0, void 0, fun
     var requestResult;
     return tslib_1.__generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4, db_connection_1.makeRequest("SELECT * FROM MetricsStates")];
+            case 0: return [4, db_connection_1.makeRequest("SELECT * FROM SensorsStates")];
             case 1:
                 requestResult = (_a.sent()).recordsets[0];
                 return [2, requestResult];
@@ -28,14 +28,14 @@ exports.states_list = function () { return tslib_1.__awaiter(void 0, void 0, voi
     });
 }); };
 exports.update = function (_a) {
-    var Id = _a.Id, MetricTypeId = _a.MetricTypeId, StateId = _a.StateId, MinValue = _a.MinValue, MaxValue = _a.MaxValue;
+    var Id = _a.Id, SensorTypeId = _a.SensorTypeId, StateId = _a.StateId, MinValue = _a.MinValue, MaxValue = _a.MaxValue;
     return tslib_1.__awaiter(void 0, void 0, void 0, function () {
         var exc_1;
         return tslib_1.__generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     _b.trys.push([0, 2, , 3]);
-                    return [4, db_connection_1.makeRequest("\n            UPDATE MetricsStates\n            SET MetricTypeId = '" + MetricTypeId + "',\n            StateId = '" + StateId + "',\n            MaxValue = '" + MaxValue + "',\n            MinValue = '" + MinValue + "'\n            WHERE id = '" + Id + "'\n        ")];
+                    return [4, db_connection_1.makeRequest("\n            UPDATE SensorsStates\n            SET SensorTypeId = '" + SensorTypeId + "',\n            StateId = '" + StateId + "',\n            MaxValue = '" + MaxValue + "',\n            MinValue = '" + MinValue + "'\n            WHERE id = '" + Id + "'\n        ")];
                 case 1:
                     _b.sent();
                     return [2, true];
@@ -49,17 +49,17 @@ exports.update = function (_a) {
     });
 };
 exports.create = function (_a) {
-    var MetricTypeId = _a.MetricTypeId, StateId = _a.StateId, MinValue = _a.MinValue, MaxValue = _a.MaxValue;
+    var SensorTypeId = _a.SensorTypeId, StateId = _a.StateId, MinValue = _a.MinValue, MaxValue = _a.MaxValue;
     return tslib_1.__awaiter(void 0, void 0, void 0, function () {
         var requestResult, result, exc_2;
         return tslib_1.__generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     _b.trys.push([0, 3, , 4]);
-                    return [4, db_connection_1.makeRequest("\n            INSERT INTO MetricsStates (MetricTypeId, StateId, MinValue, MaxValue)\n            OUTPUT inserted.Id\n            values ('" + MetricTypeId + "', '" + StateId + "', '" + MinValue + "', '" + MaxValue + "')\n        ")];
+                    return [4, db_connection_1.makeRequest("\n            INSERT INTO SensorsStates (SensorTypeId, StateId, MinValue, MaxValue)\n            OUTPUT inserted.Id\n            values ('" + SensorTypeId + "', '" + StateId + "', '" + MinValue + "', '" + MaxValue + "')\n        ")];
                 case 1:
                     requestResult = (_b.sent()).recordsets[0][0];
-                    return [4, db_connection_1.makeRequest("\n            SELECT *\n            FROM MetricsStates\n            WHERE Id=" + requestResult.Id + "\n        ")];
+                    return [4, db_connection_1.makeRequest("\n            SELECT *\n            FROM SensorsStates\n            WHERE Id=" + requestResult.Id + "\n        ")];
                 case 2:
                     result = (_b.sent()).recordsets[0][0];
                     return [2, result];
@@ -80,7 +80,7 @@ exports.deleteState = function (_a) {
             switch (_b.label) {
                 case 0:
                     _b.trys.push([0, 2, , 3]);
-                    return [4, db_connection_1.makeRequest("\n            DELETE FROM MetricsStates WHERE Id=" + Id + "\n        ")];
+                    return [4, db_connection_1.makeRequest("\n            DELETE FROM SensorsStates WHERE Id=" + Id + "\n        ")];
                 case 1:
                     _b.sent();
                     return [2, true];

@@ -8,30 +8,37 @@ import { slider, fetch_json } from './common.js';
     Promise.all([
         fetch_json('/api/states'),
         fetch_json('/api/states/list'),
-        fetch_json('/api/metric_values'),
-        fetch_json('/api/metrics')
+        fetch_json('/api/sensors_values'),
+        fetch_json('/api/sensors')
     ])
         .then(([states, STATES, ...args]) => {
             return [...args, states.reduce((result, item) => ({
                 ...result,
-                [item.MetricTypeId]: item.MetricTypeId in result ? [...result[item.MetricTypeId], item] : [item]
+                [item.SensorTypeId]: item.SensorTypeId in result ? [...result[item.SensorTypeId], item] : [item]
             }), {}), STATES];
         })
         .then(([
             values,
-            metrics,
+            sensors,
             states,
             STATES
         ]) => {
             $('canvas.chartjs-render-monitor').map((_, v) => v.remove());
-            const getState = (Id, val) => states[Id].find(x => x.MinValue <= val && x.MaxValue >= val).StateId;
-            for (const { Id, Name, MinValue, MaxValue } of metrics) {
+            function getStateColor(Id, val) {
+                for (const { MinValue: min, MaxValue: max, StateId } of states[Id]) {
+                    if (min <= val && max >= val) {
+                        return STATES[StateId].color;
+                    }
+                }
+            }
+            for (const { Id, Name, MinValue, MaxValue } of sensors) {
                 const chart = new ChartCreate(Name, MinValue, MaxValue);
                 values.filterWithRemove(({ TypeId }) => TypeId === Id)
-                    .map(
+                    .forEach(
                         /**@param {{Value:number}} arg0
                          * @param {number} index */
-                        ({ Value }, index) => chart.push(index + 1, Value, STATES[getState(Id, Value)].color));
+                        ({ Value }, index) => chart.push(index + 1, Value, getStateColor(Id, Value))
+                    );
                 chart.update();
             }
         });

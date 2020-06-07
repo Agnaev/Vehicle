@@ -25,9 +25,8 @@ app.use((req: Request, res: Response, next: Function): void => {
     logger(`middleware ${req.method} ip: ${req.ip} request: ${req.path}`);
     next();
 });
-app.use('/api/metric_values', routers.values);
-app.use('/api/metrics', routers.types);
-app.use('/api/cards', routers.partials);
+app.use('/api/sensors_values', routers.values);
+app.use('/api/sensors', routers.types);
 app.use('/api/states', routers.states);
 app.use('/', routers.main);
 app.use((req: Request, res: Response): void => {

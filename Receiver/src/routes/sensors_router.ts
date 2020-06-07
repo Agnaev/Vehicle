@@ -4,7 +4,7 @@ import config from '../config';
 const { logger } = config;
 
 function local_logger(res: Response, action: string, exc: Error):void {
-    logger(`Error processing request ${action} metric\r\nfilename:`, __dirname, exc);
+    logger(`Error processing request ${action} sensor\r\nfilename:`, __dirname, exc);
     res.sendStatus(500);
 }
 
@@ -28,7 +28,7 @@ router.post('/', (req: Request, res: Response): void => {
 });
 
 router.get('/', (req: Request, res: Response): void => {
-    types.GetMetrics()
+    types.GetSensors()
         .then(data => res.status(200).send(data))
         .catch(local_logger.bind(null, res, 'get'))
 });

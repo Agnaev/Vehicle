@@ -82,7 +82,7 @@ function gotcha() {
 
 function main() {
     const { host, port } = config.default.server;
-    request(`http://${host}:${port}/api/metrics`)
+    request(`http://${host}:${port}/api/sensors`)
         .then(createWebSocketServer)
         .catch(gotcha);
 };

@@ -19,21 +19,21 @@ router.get('/', function (req, res) {
 });
 router.get('/values', function (req, res) {
     try {
-        var filename = path_1.default.join(basedir, 'View', 'MetricsValues.html');
+        var filename = path_1.default.join(basedir, 'View', 'SensorsValues.html');
         res.sendFile(filename);
     }
     catch (exc) {
-        logger("Error while getting metrics values from database. filename: " + __dirname + ".\r\nError" + exc);
+        logger("Error while getting sensors values from database. filename: " + __dirname + ".\r\nError" + exc);
         res.sendStatus(500);
     }
 });
-router.get('/metrics', function (req, res) {
+router.get('/sensors', function (req, res) {
     try {
-        var fileName = path_1.default.join(basedir, 'View', 'Metrics.html');
+        var fileName = path_1.default.join(basedir, 'View', 'Sensors.html');
         res.sendFile(fileName);
     }
     catch (exc) {
-        logger("Error processing request '/metrics'.\r\nfilename: " + __dirname, exc);
+        logger("Error processing request '/sensors'.\r\nfilename: " + __dirname, exc);
         error_handler_404(res, exc);
     }
 });

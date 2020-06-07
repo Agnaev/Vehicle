@@ -17,13 +17,13 @@ function Create(_a) {
                         data instanceof Array && data.length === 0) {
                         return [2, false];
                     }
-                    requestString_1 = 'INSERT INTO MetricsValues (TypeId, Value) Values ';
+                    requestString_1 = 'INSERT INTO SensorsValues (TypeId, Value) Values ';
                     if (typeof data === 'string') {
                         data = JSON.parse(data);
                     }
                     if (!(data instanceof Array)) return [3, 2];
                     if (!data.length) {
-                        console.log('no arrive data create metric values');
+                        console.log('no arrive data create sensors values');
                         return [2, false];
                     }
                     Object.values(data).forEach(function (item) {
@@ -51,7 +51,7 @@ function Create(_a) {
                 case 6: return [2, false];
                 case 7:
                     exc_1 = _b.sent();
-                    logger("An error occurred while querying the database to create metric values. filename: " + __dirname + ".\r\nError: " + exc_1);
+                    logger("An error occurred while querying the database to create sensors values. filename: " + __dirname + ".\r\nError: " + exc_1);
                     return [2, exc_1];
                 case 8: return [2];
             }
@@ -66,13 +66,13 @@ function Delete() {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 2, , 3]);
-                    return [4, db_connection_1.makeRequest("DELETE FROM MetricsValues")];
+                    return [4, db_connection_1.makeRequest("DELETE FROM SensorsValues")];
                 case 1:
                     _a.sent();
                     return [2, true];
                 case 2:
                     exc_2 = _a.sent();
-                    logger("An error occurred while deleting data from the metrics table of values. filename: " + __dirname + ".\r\nError: " + exc_2);
+                    logger("An error occurred while deleting data from the sensors table of values. filename: " + __dirname + ".\r\nError: " + exc_2);
                     return [2, exc_2];
                 case 3: return [2];
             }
@@ -87,13 +87,13 @@ function Get() {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 2, , 3]);
-                    return [4, db_connection_1.makeRequest("\n            SELECT Name, Value, MinValue, MaxValue, TypeId\n            FROM MetricsValues AS V \n            JOIN MetricsTypes AS T ON V.TypeId = T.Id")];
+                    return [4, db_connection_1.makeRequest("\n            SELECT Name, Value, MinValue, MaxValue, TypeId\n            FROM SensorsValues AS V \n            JOIN SensorsTypes AS T ON V.TypeId = T.Id")];
                 case 1:
                     data = (_a.sent()).recordsets[0];
                     return [2, data];
                 case 2:
                     exc_3 = _a.sent();
-                    logger("An error occurred while retrieving data from the metrics table of values. filename: " + __dirname + ".\r\nError: " + exc_3);
+                    logger("An error occurred while retrieving data from the sensors table of values. filename: " + __dirname + ".\r\nError: " + exc_3);
                     return [2, exc_3];
                 case 3: return [2];
             }
@@ -101,4 +101,4 @@ function Get() {
     });
 }
 exports.Get = Get;
-//# sourceMappingURL=metrics_values.js.map
+//# sourceMappingURL=sensors_values.js.map

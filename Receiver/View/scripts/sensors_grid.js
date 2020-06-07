@@ -6,21 +6,21 @@ const refresh_grid = () => $('#grid').data('kendoGrid').dataSource.read();
 const dataSource = new kendo.data.DataSource({
     transport: {
         create: {
-            url: '/api/metrics',
+            url: '/api/sensors',
             type: 'post',
             complete: refresh_grid
         },
         read: {
-            url: '/api/metrics',
+            url: '/api/sensors',
             type: 'get',
         },
         update: {
-            url: '/api/metrics',
+            url: '/api/sensors',
             type: 'put',
             complete: refresh_grid
         },
         destroy: {
-            url: '/api/metrics',
+            url: '/api/sensors',
             type: 'delete',
             complete: refresh_grid
         }

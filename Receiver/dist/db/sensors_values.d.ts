@@ -4,4 +4,4 @@ export declare function Create({ data }: {
 }): Promise<boolean>;
 export declare function Delete(): Promise<boolean>;
 export declare function Get(): Promise<IRecordSet<any>>;
-//# sourceMappingURL=metrics_values.d.ts.map
+//# sourceMappingURL=sensors_values.d.ts.map

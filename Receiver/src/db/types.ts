@@ -12,17 +12,17 @@ export type db_item = {
 };
 
 /** Получение всех метрик из базы данных */
-export async function GetMetrics(): Promise<Array<any>> {
+export async function GetSensors(): Promise<Array<any>> {
     try {
         const {
             recordsets: [
                 types
             ]
-        } = await makeRequest(`SELECT * FROM MetricsTypes`);
+        } = await makeRequest(`SELECT * FROM SensorsTypes`);
         return types;
     }
     catch (exc) {
-        logger(`file: types; function: GetMetrics\r\nerror`, exc);
+        logger(`file: types; function: GetSensors\r\nerror`, exc);
         return exc;
     }
 }
@@ -41,7 +41,7 @@ export async function Create(item: db_item): Promise<string> {
             ]
         } = await makeRequest(`
                 SELECT COUNT(*) as count
-                FROM MetricsTypes
+                FROM SensorsTypes
                 WHERE Name LIKE '${item.Name}'
             `);
         const count = requestResult.count;
@@ -55,11 +55,11 @@ export async function Create(item: db_item): Promise<string> {
             const {
                 recordsets: [
                     [
-                        metricId
+                        sensorId
                     ]
                 ]
             } = await makeRequest(`
-                        INSERT INTO MetricsTypes([Name], [Description], [MinValue], [MaxValue]) 
+                        INSERT INTO SensorsTypes([Name], [Description], [MinValue], [MaxValue]) 
                         OUTPUT inserted.Id
                         VALUES ('${item.Name}', '${item.Description}', '${item.MinValue}', '${item.MaxValue}');
                     `);
@@ -71,8 +71,8 @@ export async function Create(item: db_item): Promise<string> {
                 ]
             } = await makeRequest(`
                     SELECT * 
-                    FROM MetricsTypes
-                    WHERE Id = '${metricId.Id}'
+                    FROM SensorsTypes
+                    WHERE Id = '${sensorId.Id}'
                 `);
             return JSON.stringify(result);
         }
@@ -89,13 +89,13 @@ export async function Create(item: db_item): Promise<string> {
  * */
 export async function Update(item: db_item): Promise<void> {
     makeRequest(`
-            UPDATE MetricsTypes
+            UPDATE SensorsTypes
             SET Name = '${item.Name}',
             Description = '${item.Description}',
             MaxValue = '${item.MaxValue}',
             MinValue = '${item.MinValue}'
             WHERE id = '${item.Id}'`)
-        .then(() => makeRequest(`SELECT * FROM MetricsTypes WHERE Id=${item.Id}`))
+        .then(() => makeRequest(`SELECT * FROM SensorsTypes WHERE Id=${item.Id}`))
         .then(x => x.recordsets[0])
         .catch(exc => {
             logger(`file: ${__dirname}; function: Update\r\nerror`, exc);
@@ -108,7 +108,7 @@ export async function Update(item: db_item): Promise<void> {
  * @returns {Promise<void>}
 */
 export async function Delete(item: db_item): Promise<any> {
-    makeRequest(`DELETE FROM MetricsTypes WHERE Id = ${item.Id}`)
+    makeRequest(`DELETE FROM SensorsTypes WHERE Id = ${item.Id}`)
         .catch(exc => {
             logger(`file: ${__dirname}; function: delete\r\nerror`, exc);
             return exc;

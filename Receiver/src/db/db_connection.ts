@@ -58,23 +58,23 @@ export const DatabaseCheck = async (): Promise<void> => {
             await makeRequest(`Create database ${db_config.database}`);
             makeRequest = connectToDatabase(db_config);
             await makeRequest(`
-                CREATE TABLE MetricsTypes (
+                CREATE TABLE SensorsTypes (
                     Id INT IDENTITY NOT NULL,
                     [Name] NVARCHAR(100) NOT NULL,
                     Description NVARCHAR(MAX),
                     MaxValue INT NOT NULL,
                     MinValue INT NOT NULL,
-                    CONSTRAINT PK_MetricsTypes PRIMARY KEY (Id),
+                    CONSTRAINT PK_SensorsTypes PRIMARY KEY (Id),
                     CONSTRAINT UQ_Type_name UNIQUE (Name)
                 )
             `);
             await makeRequest(`
-                CREATE TABLE MetricsValues (
+                CREATE TABLE SensorsValues (
                     Id INT IDENTITY NOT NULL,
                     TypeId INT NOT NULL,
                     Value INT NOT NULL,
-                    CONSTRAINT PK_MetricsValuesId PRIMARY KEY(Id),
-                    CONSTRAINT FK_MetricsValue_MetricsTypes FOREIGN KEY (TypeId) REFERENCES MetricsValues(Id)
+                    CONSTRAINT PK_SensorsValuesId PRIMARY KEY(Id),
+                    CONSTRAINT FK_SensorsValue_SensorsTypes FOREIGN KEY (TypeId) REFERENCES SensorsValues(Id)
                 )
             `);
 
@@ -87,15 +87,15 @@ export const DatabaseCheck = async (): Promise<void> => {
             `);
 
             await makeRequest(`
-                CREATE TABLE MetricsStates (
+                CREATE TABLE SensorsStates (
                     Id INT IDENTITY NOT NULL,
-                    MetricTypeId INT NOT NULL,
+                    SensorTypeId INT NOT NULL,
                     StateId INT NOT NULL,
                     MinValue INT NOT NULL,
                     MaxValue INT NOT NULL,
-                    CONSTRAINT PK_MetricsStates PRIMARY KEY (Id),
-                    CONSTRAINT FK_MetricsStates_To_MetricTypes FOREIGN KEY (MetricTypeId) REFERENCES [dbo].[MetricsTypes](Id),
-                    CONSTRAINT FK_MetricsStates_To_States FOREIGN KEY (StateId) REFERENCES [dbo].[States]
+                    CONSTRAINT PK_SensorsStates PRIMARY KEY (Id),
+                    CONSTRAINT FK_SensorsStates_To_SensorsTypes FOREIGN KEY (SensorTypeId) REFERENCES [dbo].[SensorsTypes](Id),
+                    CONSTRAINT FK_SensorsStates_To_States FOREIGN KEY (StateId) REFERENCES [dbo].[States]
                 )
             `);
 
