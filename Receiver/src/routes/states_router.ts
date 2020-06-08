@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { get, states_list, update, deleteState, create, getById } from '../db/states';
+import { get, states_list, update, deleteState, create } from '../db/states';
 
 const router: Router = Router();
 
@@ -20,12 +20,6 @@ router.get('/', (req: Request, res: Response) => {
         .then(success_sender.bind(res))
         .catch(error_sender.bind(res))
 });
-
-router.get('/get_range', (req: Request, res: Response) => {
-    getById(+req?.query?.Id || 0)
-        .then(result => res. status(200).send(result))
-        .catch(exc => res.status(500).send(exc));
-})
 
 router.post('/', (req: Request, res: Response) => {
     create(req.body)

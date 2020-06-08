@@ -66,18 +66,15 @@ function createWebSocketServer(types_s) {
     webSocketServer.on('error', justPrint.bind(null, "error"));
 }
 var timeout = 1000;
-function gotcha() {
-    console.clear();
-    console.log("Could not connect to web server.");
-    setTimeout(main, timeout);
-    timeout += 500;
-}
-function main() {
+(function main() {
     var _a = config.default.server, host = _a.host, port = _a.port;
     request_promise_1.default("http://" + host + ":" + port + "/api/sensors")
         .then(createWebSocketServer)
-        .catch(gotcha);
-}
-;
-main();
+        .catch(function () {
+        console.clear();
+        console.log("Could not connect to web server.");
+        setTimeout(main, timeout);
+        timeout += 1000;
+    });
+})();
 //# sourceMappingURL=emulator.js.map

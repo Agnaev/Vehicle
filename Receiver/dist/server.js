@@ -7,7 +7,7 @@ var path_1 = tslib_1.__importDefault(require("path"));
 var db_connection_1 = require("./db/db_connection");
 var config_1 = tslib_1.__importDefault(require("./config"));
 var router_1 = tslib_1.__importDefault(require("./routes/router"));
-var helper_1 = require("./helper/helper");
+var fs_1 = tslib_1.__importDefault(require("fs"));
 var logger = config_1.default.logger, basedir = config_1.default.basedir, error_handler_404 = config_1.default.error_handler_404, _a = config_1.default.server, port = _a.port, host = _a.host;
 var app = express_1.default();
 app.set("view engine", "hbs");
@@ -32,7 +32,7 @@ app.listen(port, host, function () { return tslib_1.__awaiter(void 0, void 0, vo
             case 0:
                 _a.trys.push([0, 2, , 3]);
                 db_check = db_connection_1.DatabaseCheck();
-                helper_1.copyFile(path_1.default.join(basedir, 'node_modules', 'jquery', 'dist', 'jquery.min.js'), path_1.default.join(basedir, 'View', 'scripts', 'minifyjs', 'jquery.min.js'));
+                fs_1.default.copyFileSync(path_1.default.join(basedir, 'node_modules', 'jquery', 'dist', 'jquery.min.js'), path_1.default.join(basedir, 'View', 'scripts', 'minifyjs', 'jquery.min.js'));
                 return [4, db_check];
             case 1:
                 _a.sent();

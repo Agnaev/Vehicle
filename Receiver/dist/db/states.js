@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteState = exports.create = exports.update = exports.states_list = exports.getById = exports.get = void 0;
+exports.deleteState = exports.create = exports.update = exports.states_list = exports.get = void 0;
 var tslib_1 = require("tslib");
 var db_connection_1 = require("./db_connection");
 var config_1 = tslib_1.__importDefault(require("../config"));
@@ -10,17 +10,6 @@ exports.get = function () { return tslib_1.__awaiter(void 0, void 0, void 0, fun
     return tslib_1.__generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4, db_connection_1.makeRequest("SELECT * FROM SensorsStates")];
-            case 1:
-                requestResult = (_a.sent()).recordsets[0];
-                return [2, requestResult];
-        }
-    });
-}); };
-exports.getById = function (Id) { return tslib_1.__awaiter(void 0, void 0, void 0, function () {
-    var requestResult;
-    return tslib_1.__generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4, db_connection_1.makeRequest("\n        select MIN(MinValue) as MinValue, MAX(MaxValue) as MaxValue\n        from SensorsStates\n        where SensorTypeId = " + Id + "\n    ")];
             case 1:
                 requestResult = (_a.sent()).recordsets[0];
                 return [2, requestResult];

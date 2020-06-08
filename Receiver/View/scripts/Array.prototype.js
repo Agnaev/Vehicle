@@ -6,21 +6,17 @@
  * @param {number} reducer_init_data
  */
 function getExtremum(field, reducer_fn, reducer_init_data = this[0][field]) {
-    return this.map(x => x[field])
-        .reduce(
-            (res, item) => reducer_fn(res, item) ? res : item, 
-            reducer_init_data
-        );
+    return this.map(x => x[field]).reduce(reducer_fn, reducer_init_data);
 }
 
 /** @param {string} field */
 Array.prototype['getMaxByField'] = function (field) {
-    return getExtremum.call(this, field, (a, b) => a > b);
+    return getExtremum.call(this, field, (a, b) => a > b ? a : b);
 };
 
 /** @param {string} field */
 Array.prototype['getMinByField'] = function (field) {
-    return getExtremum.call(this, field, (a, b) => a < b);
+    return getExtremum.call(this, field, (a, b) => a < b ? a : b);
 };
 
 /**фильтрация массива с удалением элементов 
@@ -28,9 +24,13 @@ Array.prototype['getMinByField'] = function (field) {
  * @returns {Array} массив элементов, которые будут удалены из исходного массива
  */
 Array.prototype['filterWithRemove'] = function (callback) {
-    return this.reduce((total, ...args) => 
-        callback(...args) ? [...total, args[1]] : total, []
-    ).map((index, shift) => this.splice(index - shift, 1)[0]);
+    const result = [];
+    for(let i = 0; i < this.length; i++) {
+        if(callback(this[i], i, this)) {
+            result.push(this.splice(i, 1)[0])
+        }
+    }
+    return result
 };
 
 Storage.prototype.removeBlobs = function () {

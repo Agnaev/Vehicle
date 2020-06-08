@@ -18,17 +18,6 @@ export const get = async (): Promise<any> => {
     return requestResult;
 }
 
-export const getById = async (Id: number): Promise<any> => {
-    const {
-        recordsets: [requestResult]
-    } = await makeRequest(`
-        select MIN(MinValue) as MinValue, MAX(MaxValue) as MaxValue
-        from SensorsStates
-        where SensorTypeId = ${Id}
-    `)
-    return requestResult;
-}
-
 export const states_list = async (): Promise<any> => {
     const {
         recordsets: [requestResult]

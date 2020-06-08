@@ -4,7 +4,7 @@ import path from 'path';
 import { DatabaseCheck } from './db/db_connection';
 import config from './config';
 import routers from './routes/router';
-import { copyFile } from './helper/helper';
+import fs from 'fs';
 
 const {
     logger,
@@ -38,7 +38,7 @@ app.listen(port, host, async (): Promise<void> => {
     try {
         const db_check = DatabaseCheck();
 
-        copyFile(
+        fs.copyFileSync(
             path.join(basedir, 'node_modules', 'jquery', 'dist', 'jquery.min.js'),
             path.join(basedir, 'View', 'scripts', 'minifyjs', 'jquery.min.js')
         );

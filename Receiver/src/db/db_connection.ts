@@ -3,14 +3,7 @@ import config from '../config';
 
 const { logger, db_config } = config;
 
-export type db_config = {
-    user: string,
-    password: string,
-    server: string,
-    database: string
-};
-
-type config_type = {
+type db_config = {
     user: string,
     password: string,
     server: string,
@@ -21,7 +14,7 @@ type config_type = {
  * @param {db_config} config 
  * @returns {(requestString:string) => Promise<any>} функция которая может делать запросы к базе данных
  */
-function connectToDatabase(config: config_type): (requestString: string) => Promise<IResult<any>> {
+function connectToDatabase(config: db_config): (requestString: string) => Promise<IResult<any>> {
     return async (requestString: string) => {
         try {
             const connectionPool: ConnectionPool = new ConnectionPool(config);
@@ -74,7 +67,7 @@ export const DatabaseCheck = async (): Promise<void> => {
                     TypeId INT NOT NULL,
                     Value INT NOT NULL,
                     CONSTRAINT PK_SensorsValuesId PRIMARY KEY(Id),
-                    CONSTRAINT FK_SensorsValue_SensorsTypes FOREIGN KEY (TypeId) REFERENCES SensorsValues(Id)
+                    CONSTRAINT FK_SensorsValue_SensorsTypes FOREIGN KEY (TypeId) REFERENCES SensorsTypes(Id)
                 )
             `);
 

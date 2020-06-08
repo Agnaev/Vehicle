@@ -23,8 +23,9 @@ function createWebSocketServer(types_s: string | Array<db_item>): void {
         console.log(...args);
         console.groupEnd();
     }
-    /** @param {DataSender} dataSender
+    /** @param { DataSender } dataSender
      * @param { WebSocket } socket
+     * @param { IncomingMessage } request
      */
     const connection = (dataSender: DataSender, socket: WebSocket, request: IncomingMessage) => {
         console.log(`User with ip: ${request.socket.remoteAddress} was connected.`);
@@ -72,19 +73,15 @@ function createWebSocketServer(types_s: string | Array<db_item>): void {
 }
 
 let timeout = 1000;
-
-function gotcha() {
-    console.clear();
-    console.log(`Could not connect to web server.`);
-    setTimeout(main, timeout);
-    timeout += 500
-}
-
-function main() {
+(function main() {
     const { host, port } = config.default.server;
     request(`http://${host}:${port}/api/sensors`)
         .then(createWebSocketServer)
-        .catch(gotcha);
-};
-main();
+        .catch(() => {
+            console.clear();
+            console.log(`Could not connect to web server.`);
+            setTimeout(main, timeout);
+            timeout += 1000;
+        });
+})();
 

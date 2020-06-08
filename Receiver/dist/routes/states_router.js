@@ -19,12 +19,6 @@ router.get('/', function (req, res) {
         .then(success_sender.bind(res))
         .catch(error_sender.bind(res));
 });
-router.get('/get_range', function (req, res) {
-    var _a;
-    states_1.getById(+((_a = req === null || req === void 0 ? void 0 : req.query) === null || _a === void 0 ? void 0 : _a.Id) || 0)
-        .then(function (result) { return res.status(200).send(result); })
-        .catch(function (exc) { return res.status(500).send(exc); });
-});
 router.post('/', function (req, res) {
     states_1.create(req.body)
         .then(success_sender.bind(res))

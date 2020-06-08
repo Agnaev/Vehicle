@@ -57,7 +57,7 @@ $('#connect_to_vehicle').on('click', openConnectionBtnHandler);
 
 /**
  * Функция для обработки нажатия на кнопку для открытия соединения с БПЛА 
- * @param {Event} e 
+ * @param {Event} e Событие нажатия на кнопку
  */
 async function openConnectionBtnHandler(e) {
     e.preventDefault();
@@ -114,7 +114,9 @@ async function openConnectionBtnHandler(e) {
         for (const [Id, val] of Object.entries(parsed_data)) {
             const sensor = indexed_states_by_sensosid[Id];
             Object.assign(normalize_data, {
-                [Id]: (val - sensor[1].MinValue) / (sensor[3].MaxValue - sensor[1].MinValue)
+                [Id]: (val - sensor[1].MinValue) / 
+                //--------------------------------
+                (sensor[3].MaxValue - sensor[1].MinValue)
             });
         }
 

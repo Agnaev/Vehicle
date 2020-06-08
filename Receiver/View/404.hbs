@@ -29,6 +29,18 @@
             width: 50%;
             margin: -15% 0 0 -25%;
         }
+        h1, .error-container, .buttons {
+            text-align: center;
+        }
+        .buttons button {
+            border: 1px solid black;
+            padding: 10px 20px;
+            background: red;
+            border-radius: 15px;
+        }
+        .buttons button:hover {
+            cursor: grab;
+        }
     </style>
 </head>
 
@@ -39,11 +51,15 @@
             <div class="error-container">
                 {{ exc }}
             </div>
+            <div class="buttons">
+                <button class="href">На главную</button>
+            </div>
         </div>
     </div>
 
     <script>
         'use strict';
+        document.querySelector('.href').addEventListener('click', e => location.href = location.origin);
 
         (() => {
             const canvas = document.createElement('canvas');

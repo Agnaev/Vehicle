@@ -13,7 +13,7 @@ function Currying(func) {
 var data_generator = function (types, last_res) {
     var generator = function (_a) {
         var min = _a.min, max = _a.max;
-        return Math.floor(Math.random() * (max - min) + min);
+        return Math.round(Math.random() * (max - min) + min);
     };
     var result = {};
     for (var _i = 0, types_1 = types; _i < types_1.length; _i++) {

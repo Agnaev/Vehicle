@@ -28,7 +28,7 @@ export type generator_type = {
  * @param { generator_type } last_res последний результат работы функции
  */
 const data_generator = (types: Array<db_item>, last_res: generator_type): response_type => {
-    const generator = ({ min, max }) => Math.floor(Math.random() * (max - min) + min);
+    const generator = ({ min, max }) => Math.round(Math.random() * (max - min) + min);
 
     const result: response_type = {};
     for (const { Id, MinValue: min, MaxValue: max } of types) {
