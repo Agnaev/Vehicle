@@ -46,7 +46,7 @@ import { slider, fetch_json } from './common.js';
                     .forEach(
                         /**@param {{Value:number}} arg0
                          * @param {number} index */
-                        ({ Value }, index) => chart.push(index + 1, Value, getState(Id, Value).Color)
+                        ({ Value }, index) => chart.push(index + 1, Value, getState(Id, Value).color)
                     );
                 chart.update();
             }
