@@ -14,7 +14,7 @@ $(document).ready(() => {
 });
 
 /** @returns {Promise<{port:number, host:string}>} */
-const getWebSocketPort = () => fetch_json('/api/get_socket_connection')
+const getWebSocketConnection = () => fetch_json('/api/get_socket_connection')
     .then(({ port, host }) => {
         if (port && host) {
             document.cookie = `ws_connection=ws://${host}:${port};max-age=1800;`
@@ -63,13 +63,48 @@ async function openConnectionBtnHandler(e) {
     e.preventDefault();
 
     /** @type {{port:number, host:String} | string} */
-    let ws_connection = getCookie('ws_connection');
-    if (!ws_connection) {
-        ws_connection = await getWebSocketPort();
-    }
+    const ws_connection = getCookie('ws_connection') || await getWebSocketConnection();
 
     if (!ws_connection || !Object.keys(ws_connection).length) {
-        throw Error('Web socket port was not received.');
+        throw Error('Web socket host and port was not received.');
+    }
+
+    const [_sensors, _STATES, _states] = await Promise.all([sensors, STATES, states]);
+
+    const centers = {};
+    for (const { SensorTypeId, StateId, MinValue, MaxValue } of _states) {
+        Object.assign(centers, {
+            [SensorTypeId]: Object.assign({}, centers[SensorTypeId], {
+                [StateId]: {
+                    StateId,
+                    center: (MinValue + MaxValue) / 2
+                }
+            })
+        })
+    }
+
+    const norm_centers = {};
+    const indexed_sensors = {};
+    for (const { Id, MinValue, MaxValue } of _sensors) {
+        Object.assign(norm_centers, {
+            [Id]: (() => {
+                const result = {};
+                for (const { StateId, center } of Object.values(centers[Id])) {
+                    Object.assign(result, {
+                        [StateId]: (center - MinValue) /
+                        //-----------------------------
+                        (MaxValue - MinValue)
+                    })
+                }
+                return result;
+            })()
+        })
+        Object.assign(indexed_sensors, {
+            [Id]: {
+                MinValue,
+                MaxValue
+            }
+        })
     }
 
     const state = new ConnectStatus($.notify);
@@ -82,29 +117,10 @@ async function openConnectionBtnHandler(e) {
         console.log(`Произошла ошибка с веб сокетом. ${error}`);
     };
 
-    const [_sensors, _STATES, _states] = await Promise.all([sensors, STATES, states]);
-
-    const indexed_states_by_sensosid = {};
-    for(const item of _states) {
-        Object.assign(indexed_states_by_sensosid, {
-            [item.SensorTypeId]: {
-                ...indexed_states_by_sensosid[item.SensorTypeId],
-                [item.StateId]: item
-            }
-        })
-    }
-
-    const norm_sensors = {};
-    for(const item of Object.values(indexed_states_by_sensosid.getCopy)) {
-        const moved_item = Object.values(item);
-        const max = moved_item['getMaxByField']('MaxValue');
-        const min = moved_item['getMinByField']('MinValue');
-        Object.assign(norm_sensors, {
-            [item[1].SensorTypeId]: moved_item.map(x => Object.assign(x, {
-                MaxValue: (x.MaxValue - min) / ((max - min) || 1),
-                MinValue: (x.MinValue - min) / ((max - min) || 1)
-            }))
-        });
+    function getCurrentStateId(Id, val) {
+        return Object.values(centers[Id]).reduce((res, item) => {
+            return res?.center && res.center < item.center - val ? res : item
+        }, {}).StateId
     }
 
     ws_client.onmessage = function ({ data }) {
@@ -112,30 +128,23 @@ async function openConnectionBtnHandler(e) {
 
         const normalize_data = {};
         for (const [Id, val] of Object.entries(parsed_data)) {
-            const sensor = indexed_states_by_sensosid[Id];
+            const {
+                MinValue,
+                MaxValue
+            } = indexed_sensors[Id];
             Object.assign(normalize_data, {
-                [Id]: (val - sensor[1].MinValue) / 
+                [Id]: (val - MinValue) /
                 //--------------------------------
-                (sensor[3].MaxValue - sensor[1].MinValue)
+                (MaxValue - MinValue)
             });
-        }
-
-        function getCurrentStateId(Id) {
-            const val = normalize_data[Id]
-            for (const { MinValue: min, MaxValue: max, StateId } of norm_sensors[+Id]) {
-                if (min <= val && max >= val) {
-                    return StateId;
-                }
-            }
         }
 
         let min = Infinity;
         let j_min = Infinity;
-        for (let j = 0; j < 3; j++) {
+        for (let j = 1; j <= 3; j++) {
             let sum = 0;
             for (const { Id } of _sensors) {
-                const _state = norm_sensors[Id][j];
-                sum += Math.pow(normalize_data[Id] - (_state.MaxValue + _state.MinValue) / 2, 2);
+                sum += Math.pow(normalize_data[Id] - norm_centers[Id][j], 2);
             }
             if (min > sum) {
                 j_min = j;
@@ -143,18 +152,18 @@ async function openConnectionBtnHandler(e) {
             }
         }
 
-        this.common_state.text(_STATES[j_min + 1].Name);
+        this.common_state.text(_STATES[j_min].Name);
 
         for (const { Id, chart } of this.charts) {
-            const { Name, color } = _STATES[getCurrentStateId(Id)];
-            chart.push(this.iterator, parsed_data[Id], color).update().changeLabel(Name);
+            const { Name, color } = _STATES[getCurrentStateId(Id, parsed_data[Id])];
+            chart.push(this.iterator, parsed_data[Id]).changeLabel(Name).changeColor(color).update();
         }
 
         this.counter.text(this.iterator++);
     }.bind({
-        counter: $('#counter'),
-        charts: await charts_list,
         iterator: 1,
+        charts: await charts_list,
+        counter: $('#counter'),
         common_state: $('#common_state')
     });
 

@@ -52,10 +52,10 @@ export default class {
         const ds = this.chart.data.datasets[0];
         ds.borderColor.splice(ds.borderColor.length - 1, 0, color);
         ds.backgroundColor.splice(ds.backgroundColor.length - 1, 0, color);
+        return this;
     }
 
-    push(label, data, color) {
-        this.changeColor(color);
+    push(label, data) {
         const this_data = this.chart.data;
         this_data.labels.push(label);
         this_data.datasets.forEach(dataset => dataset.data.push(data));
@@ -75,6 +75,7 @@ export default class {
     }
 
     changeLabel(state) {
-        this.chart.data.datasets[0].label = `${this.label} - ${state}`
+        this.chart.data.datasets[0].label = `${this.label} - ${state}`;
+        return this;
     }
 }
