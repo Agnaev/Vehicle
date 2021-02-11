@@ -1,13 +1,17 @@
-# Vehicle
-<h1>What is needed?</h1>
-Microsoft SQL server<br>
-Integrated development environment<br>
-Platform Node js >= 12.14.0<br>
-npm (by default it is installed with nodejs)
-<br>
-<br>
+<h1>Дипломная работа на тему: "Разработка подсистемы АСУ предназначенной для непрерывной онлайн диагностики текущего состояния БПЛА."</h1>
+<p>Код в папке [Emulator](Vehicle/src/tree/master/Emulator) предназначен для генерации фейковых данных по заранее заданным параметрам БПЛА из базы данных.</p>
+<p>Код основного приложения находится в папке [Receiver](Vehicle/tree/master/Receiver)</p>
 
-<h1>How to install?</h1>
+# Vehicle
+<h1>Необходимо для запуска:</h1>
+<ul>
+  <li>Microsoft SQL server</li>
+  <li>Integrated development environment</li>
+  <li>Platform Node js >= 12.14.0/li>
+  <li>npm (by default it is installed with nodejs)</li>
+</ul>
+
+<h1>Как установить</h1>
 cd Receiver <br>
 npm install<br>
 cd ../Emulator<br>
