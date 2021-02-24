@@ -7,7 +7,7 @@
 <ul>
   <li>Microsoft SQL server</li>
   <li>Integrated development environment</li>
-  <li>Platform Node js >= 12.14.0/li>
+  <li>Platform Node js >= 12.14.0</li>
   <li>npm (by default it is installed with nodejs)</li>
 </ul>
 
