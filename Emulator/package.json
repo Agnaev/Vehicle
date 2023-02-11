@@ -20,6 +20,6 @@
     "@types/mssql": "^6.0.0",
     "@types/request-promise": "^4.1.46",
     "@types/ws": "^7.2.4",
-    "nodemon": "^2.0.3"
+    "nodemon": "^2.0.20"
   }
 }
